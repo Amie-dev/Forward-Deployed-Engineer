@@ -1,0 +1,37 @@
+{
+  "name": "lecture-03-support-summarizer",
+  "version": "1.0.0",
+  "description": "Enterprise Support Ticket Summarizer microservice using Node.js, Express, TypeScript, and OpenAI SDK",
+  "main": "dist/server.js",
+  "type": "module",
+  "scripts": {
+    "dev": "tsx watch src/server.ts",
+    "build": "tsc",
+    "start": "node dist/server.js",
+    "prototype": "tsx src/scripts/direct-prototype.ts",
+    "test:injection": "tsx src/scripts/test-injection.ts"
+  },
+  "keywords": [
+    "fde",
+    "llm",
+    "genai",
+    "express",
+    "typescript",
+    "openai",
+    "spring-ai-equivalent"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "openai": "^4.85.4",
+    "zod": "^3.24.2"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.0",
+    "@types/node": "^22.13.8",
+    "tsx": "^4.19.3",
+    "typescript": "^5.7.3"
+  }
+}
