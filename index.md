@@ -49,25 +49,72 @@ Welcome to the **Forward Deployed Engineer (FDE) & Generative AI Systems** repos
 
 ---
 
+### [Lecture 03: Talking to an LLM from Your Application](./Lecture%2003/notes/README.md)
+
+- **Source Materials:**
+  - PDF Slides: [`Lecture 03/notes/Notes.pdf`](./Lecture%2003/notes/Notes.pdf)
+  - Excalidraw Diagrams: [`Lecture 03/notes/Excalidraw-Notes.svg`](./Lecture%2003/notes/Excalidraw-Notes.svg)
+- **Master Notes Document:**
+  - 👉 **[Lecture 03 Complete Consolidated Notes](./Lecture%2003/notes/Lecture_03_Complete_Notes.md)**
+- **Hands-on Production Codebase:**
+  - 💻 **[Lecture 03 Code Repository (Node.js + Express + TypeScript)](./Lecture%2003/code/README.md)**
+
+#### 📖 Chapter Notes Breakdown
+
+| Chapter | Module Title | Core Topics & Key Concepts |
+| :--- | :--- | :--- |
+| **[Chapter 01](./Lecture%2003/notes/01_GenAI_Applications_vs_Raw_LLMs_and_The_Engine_Analogy.md)** | **GenAI Applications vs. Raw LLMs & The Engine Analogy** | ChatGPT vs. Raw LLM, Car vs. Engine architectural analogy, tool-augmented systems (Weather in Delhi), probabilistic tokens vs. deterministic computation ($8{,}745{,}873 \times 5{,}608{,}241$ math hallucination failure), LLM as translation bridge, knowledge cut-off limits (2024 vs. 2026), Cardinal Rule: *"The LLM only knows what reaches the LLM."* |
+| **[Chapter 02](./Lecture%2003/notes/02_LLM_API_Architecture_and_The_Postman_Protocol.md)** | **LLM API Architecture & The Postman Protocol** | Demystifying AI networking as standard HTTP POST client-server interactions, the 4 Invariant Request Components (Where, Who, Which Model, What to Process), enterprise FDE case study (Payment-service 502 container restart loops), Postman validation workflow (Endpoint, Bearer Auth, JSON payload), end-to-end request-response network lifecycle. |
+| **[Chapter 03](./Lecture%2003/notes/03_Token_Economics_Metadata_and_Production_Engineering.md)** | **Token Economics, Metadata & Production Engineering** | Anatomy of the LLM API JSON response (Generated Content vs. Operational Metadata), Input (Prefill/Parallel) vs. Output (Decode/Sequential) token streams, the 4 Production Engineering Pillars of Tokens (Financial Cost modeling, Latency TTFT vs. ITL, Context Window limits & KV Cache, Rate limits RPM/TPM), 10-page Incident Report token ledger. |
+| **[Chapter 04](./Lecture%2003/notes/04_Node_Express_JS_TS_Environment_and_Architecture.md)** | **Node.js & Express Architecture and JS/TS Environment Setup** | Moving from Postman to automated Node.js microservices, the JS/TS AI ecosystem (OpenAI Node SDK `openai`, Vercel AI SDK, LangChain.js), initializing TypeScript Express projects (`package.json`, `tsconfig.json`, `tsx`), enterprise secret management via `.env` and `process.env.OPENAI_API_KEY`, declarative configuration module with Zod schema validation (`src/config/env.ts`), Postman-to-Node.js transition state matrix. |
+| **[Chapter 05](./Lecture%2003/notes/05_Building_the_Production_Support_Ticket_Summarizer.md)** | **Building the Production Support Ticket Summarizer** | Modular 3-tier Express microservice architecture, OpenAI client singleton with connection pooling (`src/lib/openai.ts`), deconstructing SDK parameters (`model`, `messages`, `temperature`), strongly-typed `SummarizerService`, Express REST routing (`POST /api/summarize`) with Zod schema validation, global error handling middleware, complete step-by-step end-to-end call stack execution trace. |
+| **[Chapter 06](./Lecture%2003/notes/06_Framework_Abstractions_Response_Metadata_and_Prompt_Hygiene.md)** | **Framework Abstractions, Response Metadata & Prompt Hygiene** | Why AI SDKs over raw `fetch`/`axios` (zero vendor lock-in, native async streaming, Zod structured outputs, conversation memory, tool calling, OpenTelemetry), extracting rich response metadata in TypeScript (`usage.prompt_tokens`, `finish_reason`), the architectural vulnerability of string concatenation (`prompt = "Summarize: " + ticket`), prompt injection and goal hijacking attack vectors, multi-role prompt architecture (`system` vs. `user` vs. `assistant`). |
+| **[Chapter 07](./Lecture%2003/notes/07_Complete_Application_Pipeline_and_Key_Takeaways.md)** | **Complete Application Pipeline & Key Takeaways** | Master End-to-End Enterprise GenAI Application Topology diagram (Node.js + Express + TypeScript), 3-tier comparative synthesis matrix (Postman vs. Raw `fetch` vs. Node.js & Express AI SDKs), comprehensive conceptual mindmap of Lecture 03, 20 essential Forward Deployed Engineering principles. |
+
+---
+
 ## 🏗 Repository Structure
 
 ```text
 Forward-Deployed-Engineer/
 ├── index.md                  # Main Repository Index & Navigation (This File)
-├── REDME.MD                  # Project Readme
+├── README.MD                 # Project Readme & Overview
+├── .gitignore                # Workspace Git Ignore Rules
 ├── Lecture 01/
-│   ├── code/                 # Lecture 01 Hands-on Code & Implementations
+│   ├── code/                 # Lecture 01 Hands-on Code
 │   └── notes/                # Lecture 01 Notes & Visual Artifacts
 │       ├── README.md         # Lecture 01 Index & Navigation
 │       ├── Notes.pdf         # Original Slide Presentation
 │       ├── Excalidraw-Notes.svg # Architectural & Conceptual Diagrams
 │       └── Lecture_01_Complete_Notes.md # Consolidated Master Document
-└── Lecture 02/
-    └── notes/                # Lecture 02 Notes & Visual Artifacts
-        ├── README.md         # Lecture 02 Index & Navigation
+├── Lecture 02/
+│   ├── code/                 # Lecture 02 Hands-on Code
+│   └── notes/                # Lecture 02 Notes & Visual Artifacts
+│       ├── README.md         # Lecture 02 Index & Navigation
+│       ├── Notes.pdf         # Original Slide Presentation
+│       ├── Excalidraw-Notes.svg # Architectural & Conceptual Diagrams
+│       └── Lecture_02_Complete_Notes.md # Consolidated Master Document
+└── Lecture 03/
+    ├── code/                 # Lecture 03 Production Microservice Codebase
+    │   ├── package.json      # Dependencies (Express, OpenAI SDK, Zod, tsx)
+    │   ├── tsconfig.json     # TypeScript Configuration (ES2022/NodeNext)
+    │   ├── .env.example      # Environment Configuration Template
+    │   ├── test-requests.http# REST Client / Postman Request Collection
+    │   ├── README.md         # Codebase Architecture & Running Instructions
+    │   └── src/
+    │       ├── app.ts        # Express Application & Middleware
+    │       ├── server.ts     # Server Bootstrap & Port Listener
+    │       ├── config/       # Boot-time Zod Environment Validation
+    │       ├── lib/          # OpenAI Client Singleton & Connection Pooling
+    │       ├── services/     # Summarizer, Audited, and Secure Services
+    │       ├── routes/       # Health & Summarizer REST Endpoints
+    │       └── scripts/      # Standalone Prototype & Security Injection Tests
+    └── notes/                # Lecture 03 Notes & Visual Artifacts
+        ├── README.md         # Lecture 03 Index & Navigation
         ├── Notes.pdf         # Original Slide Presentation
-        ├── Excalidraw-Notes.svg # Architectural & Conceptual Diagrams
-        └── Lecture_02_Complete_Notes.md # Consolidated Master Document
+        ├── Excalidraw-Notes.svg # Handwritten & Architectural Diagrams
+        ├── Lecture_03_Complete_Notes.md # Consolidated Master Document
+        └── [01 - 07 Chapters].md # Individual Modular Chapters
 ```
 
 ---
@@ -76,4 +123,6 @@ Forward-Deployed-Engineer/
 
 1. **Proposed Solution vs. True Requirement:** A client request like *"Build a chatbot"* is a proposed solution. FDEs discover the underlying business requirement (*"Reduce resolution time safely"*).
 2. **LLMs Are Reasoning Engines, Not Applications:** An LLM alone cannot run business transactions or verify facts; production systems require RAG knowledge retrieval, business APIs, RBAC authorization, guardrails, and human oversight.
-3. **The Attention Paradigm Shift:** Attention connects any two tokens across a sequence in $O(1)$ matrix operations, enabling massive GPU training parallelization and eliminating the sequential context bottleneck of RNNs.
+3. **The Attention Paradigm Shift:** Attention connects any two tokens across a sequence in $O(1)$ matrix operations, eliminating the sequential context bottleneck of RNNs.
+4. **The Cardinal Law of GenAI Engineering:** *The LLM only knows what reaches the LLM.* If session history, database rows, live weather, or current timestamps are not serialized into the prompt context window, the model cannot access them.
+5. **Decouple Authority via Role Separation:** Never concatenate application instructions with untrusted user strings. Enforce strict multi-role architectures (`system` vs. `user`) to neutralize prompt injection and goal hijacking attacks.
