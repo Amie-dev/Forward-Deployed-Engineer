@@ -2,6 +2,9 @@
 
 A production-grade **Node.js, Express, and TypeScript** microservice demonstrating enterprise integration with Large Language Models, synthesizing all concepts from **Lecture 03: Talking to an LLM from Your Application**.
 
+> 📖 **Looking for the step-by-step tutorial?**
+> Check out the **[Step-by-Step Implementation Guide](./implementations%20guide/README.md)** (or the **[Complete Consolidated Guide](./implementations%20guide/Complete_Implementation_Guide.md)**) for an exhaustive block-by-block code breakdown of every single file from Chapter 00 to Chapter 08.
+
 ---
 
 ## 🏗 System Architecture
@@ -56,6 +59,10 @@ Lecture 03/code/
 ├── .gitignore                # Git ignore rules (node_modules, dist, .env)
 ├── test-requests.http        # REST Client / Postman request test suite
 ├── README.md                 # Project documentation and guide
+├── implementations guide/    # Step-by-Step Implementation Guide (00 - 08 Chapters)
+│   ├── README.md             # Guide Navigation & Chapter Breakdown
+│   ├── Complete_Implementation_Guide.md # Consolidated Master Document
+│   └── [00 - 08 Chapters].md # Individual Step-by-Step Chapters
 └── src/
     ├── app.ts                # Express application configuration & middleware
     ├── server.ts             # Server entry point & port listener
