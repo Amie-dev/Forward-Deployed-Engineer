@@ -2,6 +2,9 @@
 
 A production-grade **Node.js, Express, and TypeScript** microservice demonstrating stateful conversational AI systems, synthesizing all concepts from **Lecture 04: Building a Chatbot — Context, Memory, Streaming & Hallucinations**.
 
+> 📖 **Looking for the step-by-step tutorial?**
+> Check out the **[Step-by-Step Implementation Guide](./implementations%20guide/README.md)** (or the **[Complete Consolidated Guide](./implementations%20guide/Complete_Implementation_Guide.md)**) for an exhaustive block-by-block code breakdown of every single file from Chapter 00 to Chapter 11.
+
 ---
 
 ## 🏗 System Architecture
@@ -61,6 +64,10 @@ Lecture 04/code/
 ├── .gitignore                # Git ignore rules (node_modules, dist, .env)
 ├── test-requests.http        # REST Client / Postman request test suite
 ├── README.md                 # Project architecture and running instructions
+├── implementations guide/    # Step-by-Step Implementation Guide (00 - 11 Chapters)
+│   ├── README.md             # Guide Navigation & Chapter Breakdown
+│   ├── Complete_Implementation_Guide.md # Consolidated Master Document
+│   └── [00 - 11 Chapters].md # Individual Step-by-Step Chapters
 └── src/
     ├── app.ts                # Express application configuration & middleware
     ├── server.ts             # Server entrypoint, port listener & graceful shutdown

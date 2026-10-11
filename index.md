@@ -82,6 +82,7 @@ Welcome to the **Forward Deployed Engineer (FDE) & Generative AI Systems** repos
   - 👉 **[Lecture 04 Complete Consolidated Notes](./Lecture%2004/notes/Lecture_04_Complete_Notes.md)**
 - **Hands-on Production Codebase:**
   - 💻 **[Lecture 04 Code Repository (Node.js + Express + TypeScript)](./Lecture%2004/code/README.md)**
+  - 🛠️ **[Step-by-Step Implementation Guide](./Lecture%2004/code/implementations%20guide/README.md)** (Block-by-Block Code Tutorial)
 
 #### 📖 Chapter Notes Breakdown
 
@@ -147,6 +148,7 @@ Forward-Deployed-Engineer/
     │   ├── .env.example      # Environment Configuration Template
     │   ├── test-requests.http# REST Client / Postman Request Collection
     │   ├── README.md         # Codebase Architecture & Running Instructions
+    │   ├── implementations guide/ # Step-by-Step Implementation Guide (00 - 11 Chapters)
     │   └── src/
     │       ├── app.ts        # Express Application & Middleware
     │       ├── server.ts     # Server Bootstrap & Graceful Shutdown
