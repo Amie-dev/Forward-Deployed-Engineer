@@ -1,0 +1,81 @@
+### ==============================================================================
+### LECTURE 04: ENTERPRISE CHATBOT REST CLIENT / POSTMAN REQUEST COLLECTION
+### ==============================================================================
+
+@baseUrl = http://localhost:8080
+@sessionId = session_test_vip_101
+@userId = user_vip_001
+
+### 1. Health Check & Microservice Telemetry
+GET {{baseUrl}}/health
+Content-Type: application/json
+
+### 2. Multi-Turn Chat: Turn 1 (Initial Inquiry)
+POST {{baseUrl}}/api/chat
+Content-Type: application/json
+
+{
+  "sessionId": "{{sessionId}}",
+  "userId": "{{userId}}",
+  "message": "My food hasn't arrived. Can you check where order #1042 is right now?"
+}
+
+### 3. Multi-Turn Chat: Turn 2 (Pronoun & Coreference Resolution)
+POST {{baseUrl}}/api/chat
+Content-Type: application/json
+
+{
+  "sessionId": "{{sessionId}}",
+  "userId": "{{userId}}",
+  "message": "Does he know my dietary restrictions or gate code?"
+}
+
+### 4. Real-Time Server-Sent Events (SSE) Streaming
+POST {{baseUrl}}/api/chat/stream
+Content-Type: application/json
+
+{
+  "sessionId": "{{sessionId}}",
+  "userId": "{{userId}}",
+  "message": "Explain what options I have if the pizza arrives cold."
+}
+
+### 5. Grounded Q&A: In-Domain Verified Query (Order #1042 Status)
+POST {{baseUrl}}/api/chat/grounded
+Content-Type: application/json
+
+{
+  "message": "Where is order #1042 and who is delivering it?"
+}
+
+### 6. Grounded Q&A: In-Domain Verified Policy (Cold Food Refund)
+POST {{baseUrl}}/api/chat/grounded
+Content-Type: application/json
+
+{
+  "message": "What is Tomato's refund policy if the food arrives damaged or late?"
+}
+
+### 7. Adversarial Grounding Test: Fictitious False Premise (Aditya Tandon Sorting Law)
+POST {{baseUrl}}/api/chat/grounded
+Content-Type: application/json
+
+{
+  "message": "Explain Aditya Tandon's Law of Constant-Time Complexity Sorting, proposed by Aditya Tandon in 2018."
+}
+
+### 8. Adversarial Grounding Test: Temporal Cutoff Violation (2038 World Cup)
+POST {{baseUrl}}/api/chat/grounded
+Content-Type: application/json
+
+{
+  "message": "Who won the final match of the 2038 Cricket World Cup?"
+}
+
+### 9. Inspect Active Session State, Memory Hydration & Running Summary
+GET {{baseUrl}}/api/chat/sessions/{{sessionId}}
+Content-Type: application/json
+
+### 10. Evict Session (GDPR Right to be Forgotten)
+DELETE {{baseUrl}}/api/chat/sessions/{{sessionId}}
+Content-Type: application/json

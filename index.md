@@ -6,7 +6,7 @@ Welcome to the **Forward Deployed Engineer (FDE) & Generative AI Systems** repos
 
 ## 📚 Curriculum & Lecture Navigation
 
-### [Lecture 01: Introduction to Forward Deployed Engineering & Generative AI Foundations](./Lecture%2001/notes/README.md)
+## [Lecture 01: Introduction to Forward Deployed Engineering & Generative AI Foundations](./Lecture%2001/notes/README.md)
 
 - **Source Materials:**
   - PDF Slides: [`Lecture 01/notes/Notes.pdf`](./Lecture%2001/notes/Notes.pdf)
@@ -27,7 +27,7 @@ Welcome to the **Forward Deployed Engineer (FDE) & Generative AI Systems** repos
 
 ---
 
-### [Lecture 02: How Large Language Models Work (From Tokens to Transformers)](./Lecture%2002/notes/README.md)
+## [Lecture 02: How Large Language Models Work (From Tokens to Transformers)](./Lecture%2002/notes/README.md)
 
 - **Source Materials:**
   - PDF Slides: [`Lecture 02/notes/Notes.pdf`](./Lecture%2002/notes/Notes.pdf)
@@ -49,7 +49,7 @@ Welcome to the **Forward Deployed Engineer (FDE) & Generative AI Systems** repos
 
 ---
 
-### [Lecture 03: Talking to an LLM from Your Application](./Lecture%2003/notes/README.md)
+## [Lecture 03: Talking to an LLM from Your Application](./Lecture%2003/notes/README.md)
 
 - **Source Materials:**
   - PDF Slides: [`Lecture 03/notes/Notes.pdf`](./Lecture%2003/notes/Notes.pdf)
@@ -74,12 +74,14 @@ Welcome to the **Forward Deployed Engineer (FDE) & Generative AI Systems** repos
 
 ---
 
-### [Lecture 04: Building a Chatbot: Context, Memory, Streaming & Hallucinations](./Lecture%2004/notes/README.md)
+## [Lecture 04: Building a Chatbot: Context, Memory, Streaming & Hallucinations](./Lecture%2004/notes/README.md)
 
 - **Source Materials:**
   - PDF Slides: [`Lecture 04/notes/Notes.pdf`](./Lecture%2004/notes/Notes.pdf)
 - **Master Notes Document:**
   - 👉 **[Lecture 04 Complete Consolidated Notes](./Lecture%2004/notes/Lecture_04_Complete_Notes.md)**
+- **Hands-on Production Codebase:**
+  - 💻 **[Lecture 04 Code Repository (Node.js + Express + TypeScript)](./Lecture%2004/code/README.md)**
 
 #### 📖 Chapter Notes Breakdown
 
@@ -139,6 +141,21 @@ Forward-Deployed-Engineer/
 │       ├── Lecture_03_Complete_Notes.md # Consolidated Master Document
 │       └── [01 - 07 Chapters].md # Individual Modular Chapters
 └── Lecture 04/
+    ├── code/                 # Lecture 04 Conversational AI Microservice Codebase
+    │   ├── package.json      # Dependencies (Express, OpenAI SDK, Zod, tsx, cors)
+    │   ├── tsconfig.json     # TypeScript Configuration (ES2022/NodeNext)
+    │   ├── .env.example      # Environment Configuration Template
+    │   ├── test-requests.http# REST Client / Postman Request Collection
+    │   ├── README.md         # Codebase Architecture & Running Instructions
+    │   └── src/
+    │       ├── app.ts        # Express Application & Middleware
+    │       ├── server.ts     # Server Bootstrap & Graceful Shutdown
+    │       ├── config/       # Boot-time Zod Environment Validation
+    │       ├── lib/          # OpenAI Client Singleton & BPE Tokenizer Utils
+    │       ├── types/        # Strongly Typed Chat Schemas & Contracts
+    │       ├── services/     # SessionStore, ContextManager, Streaming & Grounding
+    │       ├── routes/       # Health & Chat REST/SSE Endpoints
+    │       └── scripts/      # CLI Chat Prototype, Hallucination & Context Bloat Tests
     └── notes/                # Lecture 04 Notes & Visual Artifacts
         ├── README.md         # Lecture 04 Index & Navigation
         ├── Notes.pdf         # Original Slide Presentation
