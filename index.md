@@ -74,6 +74,27 @@ Welcome to the **Forward Deployed Engineer (FDE) & Generative AI Systems** repos
 
 ---
 
+### [Lecture 04: Building a Chatbot: Context, Memory, Streaming & Hallucinations](./Lecture%2004/notes/README.md)
+
+- **Source Materials:**
+  - PDF Slides: [`Lecture 04/notes/Notes.pdf`](./Lecture%2004/notes/Notes.pdf)
+- **Master Notes Document:**
+  - 👉 **[Lecture 04 Complete Consolidated Notes](./Lecture%2004/notes/Lecture_04_Complete_Notes.md)**
+
+#### 📖 Chapter Notes Breakdown
+
+| Chapter | Module Title | Core Topics & Key Concepts |
+| :--- | :--- | :--- |
+| **[Chapter 01](./Lecture%2004/notes/01_Stateless_LLMs_Conversation_History_and_Role_Architecture.md)** | **Stateless LLMs, Conversation History & Role Architecture** | Statelessness of HTTP LLM endpoints, the illusion of conversational continuity, coreference and pronoun binding failure, message roles (`system`, `user`, `assistant`), prompt contamination anti-patterns, the 4 Pillars of system prompts (`ROLE`, `TASK`, `BEHAVIOUR`, `CONSTRAINTS`), why prompts are not security barriers, TypeScript session state engine. |
+| **[Chapter 02](./Lecture%2004/notes/02_Context_Windows_Token_Accumulation_and_Context_Management.md)** | **Context Windows, Token Accumulation & Context Management** | Context window capacity constraint ($L_{\text{total}} = L_{\text{input}} + L_{\text{output}} \le C_{\text{max}}$), composite prompt structure, quadratic token accumulation problem ($O(N^2)$ bloat), numerical token ledger and cost analysis, the fallacy of "send everything", U-shaped "Lost-in-the-Middle" phenomenon, context strategies in TypeScript (Sliding Window, Pinned Anchor, Rolling Summarization, Semantic History RAG). |
+| **[Chapter 03](./Lecture%2004/notes/03_Context_vs_Model_Weights_and_The_Illusion_of_Learning.md)** | **Context vs. Model Weights & The Illusion of Learning** | Illusion of memory, Parametric Knowledge ($\Theta$) vs In-Context Working Memory ($X_{\text{prompt}}$), mathematical formulation ($P(w_t \mid w_{<t}, \text{Context})$), "Same Question, Different Context" (Docker beginner vs principal engineer), training loop (backprop, loss, weight updates) vs inference pass (static frozen weights, zero gradients), in-context activation vs parameter learning, Application Memory vs Fine-Tuning trade-off matrix. |
+| **[Chapter 04](./Lecture%2004/notes/04_Real_Time_Streaming_Architecture_and_SSE_Protocols.md)** | **Real-Time Streaming Architecture & SSE Protocols** | Autoregressive token generation mechanics, latency decomposition (TTFT vs ITL vs Total), blocking request-response bottlenecks, Server-Sent Events (SSE) and chunked transfer encoding (`Transfer-Encoding: chunked`), production Express streaming endpoint in TypeScript, OpenAI SDK `stream: true` async iterables, client-side `fetch` stream consumption, `AbortSignal` disconnect handling. |
+| **[Chapter 05](./Lecture%2004/notes/05_Hallucination_Mechanisms_Fluency_vs_Truth_and_Vulnerabilities.md)** | **Hallucination Mechanisms, Fluency vs. Truth & Vulnerabilities** | Cross-entropy loss and statistical plausibility vs empirical truth, the Fluency Heuristic cognitive trap, why hallucinations sound confident (lack of metacognition), Coherent Fabrication vs Obvious Nonsense (Gosling IBM Project Oak case study, 2038 Cricket World Cup), 5 catalysts of hallucination, the Aditya Tandon sorting law experiment, model sycophancy. |
+| **[Chapter 06](./Lecture%2004/notes/06_Engineering_Defenses_RAG_Guardrails_and_Verification.md)** | **Engineering Defenses: RAG, Guardrails & Verification** | Why system prompts alone cannot guarantee truth or security, 7-layer defense-in-depth architecture, hybrid RAG grounding, deterministic tools and APIs, calibrated refusal engineering ("I don't know"), type-safe structured outputs via Zod and OpenAI JSON Schema mode, programmatic post-generation citation verification guardrail. |
+| **[Chapter 07](./Lecture%2004/notes/07_Complete_Enterprise_Chatbot_Architecture_and_Takeaways.md)** | **Complete Enterprise Chatbot Architecture & Key Takeaways** | Master End-to-End Enterprise Chatbot Topology diagram, FDE mental model: LLM as an unprivileged stateless kernel, Naïve Prototype vs Enterprise Production Chatbot comparison matrix, comprehensive conceptual mindmap, 25 Cardinal Engineering Principles for production conversational AI. |
+
+---
+
 ## 🏗 Repository Structure
 
 ```text
@@ -95,27 +116,33 @@ Forward-Deployed-Engineer/
 │       ├── Notes.pdf         # Original Slide Presentation
 │       ├── Excalidraw-Notes.svg # Architectural & Conceptual Diagrams
 │       └── Lecture_02_Complete_Notes.md # Consolidated Master Document
-└── Lecture 03/
-    ├── code/                 # Lecture 03 Production Microservice Codebase
-    │   ├── package.json      # Dependencies (Express, OpenAI SDK, Zod, tsx)
-    │   ├── tsconfig.json     # TypeScript Configuration (ES2022/NodeNext)
-    │   ├── .env.example      # Environment Configuration Template
-    │   ├── test-requests.http# REST Client / Postman Request Collection
-    │   ├── README.md         # Codebase Architecture & Running Instructions
-    │   ├── implementations guide/ # Step-by-Step Implementation Guide (00 - 08 Chapters)
-    │   └── src/
-    │       ├── app.ts        # Express Application & Middleware
-    │       ├── server.ts     # Server Bootstrap & Port Listener
-    │       ├── config/       # Boot-time Zod Environment Validation
-    │       ├── lib/          # OpenAI Client Singleton & Connection Pooling
-    │       ├── services/     # Summarizer, Audited, and Secure Services
-    │       ├── routes/       # Health & Summarizer REST Endpoints
-    │       └── scripts/      # Standalone Prototype & Security Injection Tests
-    └── notes/                # Lecture 03 Notes & Visual Artifacts
-        ├── README.md         # Lecture 03 Index & Navigation
+├── Lecture 03/
+│   ├── code/                 # Lecture 03 Production Microservice Codebase
+│   │   ├── package.json      # Dependencies (Express, OpenAI SDK, Zod, tsx)
+│   │   ├── tsconfig.json     # TypeScript Configuration (ES2022/NodeNext)
+│   │   ├── .env.example      # Environment Configuration Template
+│   │   ├── test-requests.http# REST Client / Postman Request Collection
+│   │   ├── README.md         # Codebase Architecture & Running Instructions
+│   │   ├── implementations guide/ # Step-by-Step Implementation Guide (00 - 08 Chapters)
+│   │   └── src/
+│   │       ├── app.ts        # Express Application & Middleware
+│   │       ├── server.ts     # Server Bootstrap & Port Listener
+│   │       ├── config/       # Boot-time Zod Environment Validation
+│   │       ├── lib/          # OpenAI Client Singleton & Connection Pooling
+│   │       ├── services/     # Summarizer, Audited, and Secure Services
+│   │       ├── routes/       # Health & Summarizer REST Endpoints
+│   │       └── scripts/      # Standalone Prototype & Security Injection Tests
+│   └── notes/                # Lecture 03 Notes & Visual Artifacts
+│       ├── README.md         # Lecture 03 Index & Navigation
+│       ├── Notes.pdf         # Original Slide Presentation
+│       ├── Excalidraw-Notes.svg # Handwritten & Architectural Diagrams
+│       ├── Lecture_03_Complete_Notes.md # Consolidated Master Document
+│       └── [01 - 07 Chapters].md # Individual Modular Chapters
+└── Lecture 04/
+    └── notes/                # Lecture 04 Notes & Visual Artifacts
+        ├── README.md         # Lecture 04 Index & Navigation
         ├── Notes.pdf         # Original Slide Presentation
-        ├── Excalidraw-Notes.svg # Handwritten & Architectural Diagrams
-        ├── Lecture_03_Complete_Notes.md # Consolidated Master Document
+        ├── Lecture_04_Complete_Notes.md # Consolidated Master Document
         └── [01 - 07 Chapters].md # Individual Modular Chapters
 ```
 
@@ -128,3 +155,6 @@ Forward-Deployed-Engineer/
 3. **The Attention Paradigm Shift:** Attention connects any two tokens across a sequence in $O(1)$ matrix operations, eliminating the sequential context bottleneck of RNNs.
 4. **The Cardinal Law of GenAI Engineering:** *The LLM only knows what reaches the LLM.* If session history, database rows, live weather, or current timestamps are not serialized into the prompt context window, the model cannot access them.
 5. **Decouple Authority via Role Separation:** Never concatenate application instructions with untrusted user strings. Enforce strict multi-role architectures (`system` vs. `user`) to neutralize prompt injection and goal hijacking attacks.
+6. **The LLM Has Zero Native Memory:** Every conversation is an isolated forward pass. The application layer alone constructs conversational continuity.
+7. **Autoregressive Generation Demands Streaming:** Streaming does not make generation faster, but it drops perceived latency (TTFT) from $20\text{s}$ to $< 500\text{ms}$ using Server-Sent Events (SSE).
+8. **Fluency is Decoupled from Truth:** Flawless grammar and confident language do not guarantee factuality. Treat hallucinations as an inherent engineering problem solvable only through defense-in-depth: RAG grounding, deterministic tools, structured outputs, and output verification.
