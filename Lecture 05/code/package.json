@@ -1,0 +1,45 @@
+{
+  "name": "lecture-05-autonomous-ai-agents",
+  "version": "1.0.0",
+  "description": "Enterprise Autonomous AI Agent Framework demonstrating Native Tool Calling Protocols, Multi-Step ReAct Execution Loops, Sandboxed Workspace File Operations, and Human-in-the-Loop (HITL) Governance",
+  "main": "dist/server.js",
+  "type": "module",
+  "scripts": {
+    "dev": "tsx watch src/server.ts",
+    "build": "tsc",
+    "start": "tsc && node dist/server.js",
+    "agent:multitool": "tsx src/scripts/cli-multitool-agent.ts",
+    "agent:website": "tsx src/scripts/cli-website-agent.ts",
+    "test:hitl": "tsx src/scripts/test-hitl-flow.ts"
+  },
+  "keywords": [
+    "fde",
+    "genai",
+    "ai-agents",
+    "tool-calling",
+    "react-loop",
+    "function-calling",
+    "workspace-sandbox",
+    "hitl",
+    "human-in-the-loop",
+    "typescript",
+    "express",
+    "openai"
+  ],
+  "author": "Forward Deployed Engineering Team",
+  "license": "MIT",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "openai": "^4.85.4",
+    "zod": "^3.24.2"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.17",
+    "@types/express": "^5.0.0",
+    "@types/node": "^22.13.8",
+    "tsx": "^4.19.3",
+    "typescript": "^5.7.3"
+  }
+}

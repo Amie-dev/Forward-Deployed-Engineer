@@ -1,0 +1,72 @@
+### Variables
+@baseUrl = http://localhost:8080
+
+### 1. Health Check
+GET {{baseUrl}}/health
+Accept: application/json
+
+### 2. Multi-Tool Chat: Sequential Chaining (USD to INR then Divide)
+POST {{baseUrl}}/api/chat
+Content-Type: application/json
+
+{
+  "message": "Convert $120 into Indian rupees and then divide that amount equally among 6 people."
+}
+
+### 3. Multi-Tool Chat: Parallel Dispatch (Delhi Weather + USD Currency Conversion)
+POST {{baseUrl}}/api/chat
+Content-Type: application/json
+
+{
+  "message": "I am travelling to Delhi. What is the current weather there, and how much is $500 in Indian rupees?"
+}
+
+### 4. Autonomous Website Builder: BrewLab Coffee Shop
+POST {{baseUrl}}/api/generate-site
+Content-Type: application/json
+
+{
+  "prompt": "Create a premium landing page for a coffee shop called BrewLab. Use a dark elegant design with a hero section, featured coffees, customer testimonials and a contact section."
+}
+
+### 5. Autonomous Website Builder: NeuralForge AI Robotics
+POST {{baseUrl}}/api/generate-site
+Content-Type: application/json
+
+{
+  "prompt": "Create a futuristic landing page for a company called NeuralForge that builds AI robots. Use a dark space-like design with glowing cards and subtle animations."
+}
+
+### 6. Critical Action Tool: High-Value Refund (Triggers HITL Pause)
+POST {{baseUrl}}/api/chat
+Content-Type: application/json
+
+{
+  "message": "Please process a refund of ₹50,000 for customer order ORD-50001 due to late shipment."
+}
+
+### 7. Inspect Pending Human Approvals Queue
+GET {{baseUrl}}/api/approvals
+Accept: application/json
+
+### 8. Webhook: Approve Pending Refund Ticket
+POST {{baseUrl}}/api/agent/resume
+Content-Type: application/json
+
+{
+  "ticketId": "TICK-XXXXXX",
+  "action": "approve",
+  "reviewedBy": "Support Manager John Doe",
+  "rejectionReason": ""
+}
+
+### 9. Webhook: Reject Pending Refund Ticket
+POST {{baseUrl}}/api/agent/resume
+Content-Type: application/json
+
+{
+  "ticketId": "TICK-XXXXXX",
+  "action": "reject",
+  "reviewedBy": "Compliance Officer Alice",
+  "rejectionReason": "Refund requested 60 days past policy return window."
+}
