@@ -23,6 +23,7 @@ This repository contains structured lecture notes, system architectures, mathema
 - 📂 **[Lecture 02 Index & Notes](./Lecture%2002/notes/README.md)** | 📄 **[Complete Document](./Lecture%2002/notes/Lecture_02_Complete_Notes.md)**
 - 📂 **[Lecture 03 Index & Notes](./Lecture%2003/notes/README.md)** | 📄 **[Complete Document](./Lecture%2003/notes/Lecture_03_Complete_Notes.md)** | 💻 **[Codebase](./Lecture%2003/code/README.md)** | 🛠️ **[Implementation Guide](./Lecture%2003/code/implementations%20guide/README.md)**
 - 📂 **[Lecture 04 Index & Notes](./Lecture%2004/notes/README.md)** | 📄 **[Complete Document](./Lecture%2004/notes/Lecture_04_Complete_Notes.md)** | 💻 **[Codebase](./Lecture%2004/code/README.md)** | 🛠️ **[Implementation Guide](./Lecture%2004/code/implementations%20guide/README.md)**
+- 📂 **[Lecture 05 Index & Notes](./Lecture%2005/notes/README.md)** | 📄 **[Complete Document](./Lecture%2005/notes/Lecture_05_Complete_Notes.md)** | 💻 **[Codebase](./Lecture%2005/code/README.md)** | 🛠️ **[Implementation Guide](./Lecture%2005/code/implementations%20guide/README.md)**
 
 ---
 
@@ -39,4 +40,7 @@ ChatGPT vs Raw LLM (Car vs Engine analogy), Deterministic tools (Calculator, DB,
 
 ### [Lecture 04: Building a Chatbot: Context, Memory, Streaming & Hallucinations](./Lecture%2004/notes/README.md)
 Statelessness of HTTP LLM endpoints, the illusion of conversational continuity, coreference and pronoun binding failure, message roles (`system`, `user`, `assistant`), prompt contamination anti-patterns, the 4 Pillars of system prompts, context window budget constraints, quadratic token accumulation problem ($O(N^2)$ bloat), lost-in-the-middle phenomenon, sliding window and rolling summarization in TypeScript, Parametric Knowledge ($\Theta$) vs In-Context Working Memory ($X_{\text{prompt}}$), autoregressive token streaming via Server-Sent Events (SSE), fluency vs truth orthogonality, coherent fabrication vs benign nonsense, model sycophancy (Aditya Tandon sorting law experiment), and the 7-layer defense-in-depth architecture.
+
+### [Lecture 05: Autonomous AI Agents, Tool Calling & Human-in-the-Loop Architecture](./Lecture%2005/notes/README.md)
+From token prediction to deterministic tool delegation (Safe Calculator, Weather, Currency Exchange), the 5-step tool calling wire protocol, JSON Schema parameter validation via Zod, multi-step ReAct closed loop (Thought ➔ Action ➔ Observation), $O(N^2)$ quadratic context economics, agency spectrum (Fixed Code ➔ Dynamic Router ➔ Plan & Execute ➔ Autonomous ReAct), workspace filesystem sandboxing (`safePath` jail, symlink containment), autonomous website builder case study (BrewLab coffee landing page), and 3-tier Human-in-the-Loop (HITL) authorization with durable pause/resume webhooks.
 

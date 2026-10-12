@@ -98,6 +98,31 @@ Welcome to the **Forward Deployed Engineer (FDE) & Generative AI Systems** repos
 
 ---
 
+## [Lecture 05: Autonomous AI Agents, Tool Calling & Human-in-the-Loop Architecture](./Lecture%2005/notes/README.md)
+
+- **Source Materials:**
+  - PDF Slides: [`Lecture 05/notes/Notes.pdf`](./Lecture%2005/notes/Notes.pdf)
+  - Excalidraw Diagrams: [`Lecture 05/notes/Excalidraw-Notes.svg`](./Lecture%2005/notes/Excalidraw-Notes.svg)
+- **Master Notes Document:**
+  - 👉 **[Lecture 05 Complete Consolidated Notes](./Lecture%2005/notes/Lecture_05_Complete_Notes.md)**
+- **Hands-on Production Codebase:**
+  - 💻 **[Lecture 05 Code Repository (Node.js + Express + TypeScript)](./Lecture%2005/code/README.md)**
+  - 🛠️ **[Step-by-Step Implementation Guide](./Lecture%2005/code/implementations%20guide/README.md)** (Block-by-Block Code Tutorial)
+
+#### 📖 Chapter Notes Breakdown
+
+| Chapter | Module Title | Core Topics & Key Concepts |
+| :--- | :--- | :--- |
+| **[Chapter 01](./Lecture%2005/notes/01_From_Token_Prediction_to_Tool_Augmentation.md)** | **From Token Prediction to Tool Augmentation** | Fundamental limits of autoregressive token prediction ($P(w_t \mid w_{<t})$), generating action strings vs. performing actions, the "Hands vs. Brain" mental model (the genius trapped in a room), linguistic impedance mismatch, LLMs as universal semantic decoders, why naïve "Return JSON" prompting fails in production (markdown fences, schema drift, hallucinated keys). |
+| **[Chapter 02](./Lecture%2005/notes/02_The_Tool_Calling_Protocol_and_Wire_Architecture.md)** | **The Tool Calling Protocol & Wire Architecture** | Deconstructing tools: ordinary functions + JSON Schema contracts, OpenAPI/JSON Schema wire format (`name`, `description`, `parameters`, `required`), the 5-step wire protocol lifecycle (`user` ➔ `assistant` with `tool_calls` ➔ runtime execution ➔ `tool` message ➔ final response), TypeScript schemas with Zod, building deterministic tools (Safe Calculator) and live telemetry tools (Weather, Currency Exchange), multi-tool routing and `tool_choice` policies. |
+| **[Chapter 03](./Lecture%2005/notes/03_Multi_Step_Tool_Chaining_and_Execution_Loops.md)** | **Multi-Step Tool Chaining & Execution Loops** | Multi-tool sequential dependencies (Currency ➔ Calculator) and parallel dispatches (Weather + Currency), the ReAct framework (Reasoning + Acting: Thought ➔ Action ➔ Observation), two functional families: Informative Tools vs. Action Tools, building the autonomous TypeScript execution engine, recursion guards, maximum turn limits, and runaway loop prevention, self-correction of runtime tool exceptions, token ledger accumulation across iterations. |
+| **[Chapter 04](./Lecture%2005/notes/04_First_Principles_of_AI_Agents_and_Agency_Spectrum.md)** | **First Principles of AI Agents & The Agency Spectrum** | The 4 Levels of Agency, the First-Principles 6-Component Agent Model (Goal, Decision Maker, Actions, Environment, Observations, Decision Loop), Agent vs. Workflow architectural comparison (Deterministic Graph/DAG vs. Dynamic Emergence; What+How vs. What+Self-Directed How), hybrid workflows (Agent inside DAG), general-purpose emergence: BrewLab Coffee Shop vs. NeuralForge AI Robotics with zero code changes. |
+| **[Chapter 05](./Lecture%2005/notes/05_Workspace_Sandboxing_and_Agent_Security.md)** | **Workspace Sandboxing & Agent Security** | Principle of Least Privilege: Tool = Capability + Permission, why unrestricted shell tools (`exec`, `bash`) are fatal in production, threat modeling: path traversal (`../../etc/passwd`), privilege escalation, data wiping, and indirect prompt injection, building `WorkspaceTools` in TypeScript, rigorous path normalization and boundary containment (`safePath`), containerization vs. chroot vs. in-process sandbox layers. |
+| **[Chapter 06](./Lecture%2005/notes/06_Building_an_Autonomous_Website_Builder_Agent.md)** | **Building an Autonomous Website Builder Agent** | Complete end-to-end case study: The Website Builder Agent, job description and system prompt engineering ("Don't describe the action. Perform it!"), four core workspace tools (`createDirectory`, `writeFile`, `readFile`, `listFiles`), end-to-end TypeScript orchestrator, trace execution of BrewLab coffee landing page, the environmental feedback loop: reading back generated files, verifying DOM structure, and iterative self-repair. |
+| **[Chapter 07](./Lecture%2005/notes/07_Human_In_The_Loop_Safety_and_Enterprise_Patterns.md)** | **Human-in-the-Loop Safety & Enterprise Patterns** | High-impact actions and catastrophic risk (financial transfers, data deletion, customer emails), Human-in-the-Loop (HITL) approval gates, tool authorization classifications (Tier 1 Read-only Auto, Tier 2 Scoped Mutate, Tier 3 Critical Approval Required), synchronous vs. asynchronous durable pause/resume state machines, Naïve Chatbot vs. Enterprise Autonomous Agent comparison matrix, 25 Cardinal Engineering Principles for Production AI Agents. |
+
+---
+
 ## 🏗 Repository Structure
 
 ```text
@@ -141,27 +166,51 @@ Forward-Deployed-Engineer/
 │       ├── Excalidraw-Notes.svg # Handwritten & Architectural Diagrams
 │       ├── Lecture_03_Complete_Notes.md # Consolidated Master Document
 │       └── [01 - 07 Chapters].md # Individual Modular Chapters
-└── Lecture 04/
-    ├── code/                 # Lecture 04 Conversational AI Microservice Codebase
+├── Lecture 04/
+│   ├── code/                 # Lecture 04 Conversational AI Microservice Codebase
+│   │   ├── package.json      # Dependencies (Express, OpenAI SDK, Zod, tsx, cors)
+│   │   ├── tsconfig.json     # TypeScript Configuration (ES2022/NodeNext)
+│   │   ├── .env.example      # Environment Configuration Template
+│   │   ├── test-requests.http# REST Client / Postman Request Collection
+│   │   ├── README.md         # Codebase Architecture & Running Instructions
+│   │   ├── implementations guide/ # Step-by-Step Implementation Guide (00 - 11 Chapters)
+│   │   └── src/
+│   │       ├── app.ts        # Express Application & Middleware
+│   │       ├── server.ts     # Server Bootstrap & Graceful Shutdown
+│   │       ├── config/       # Boot-time Zod Environment Validation
+│   │       ├── lib/          # OpenAI Client Singleton & BPE Tokenizer Utils
+│   │       ├── types/        # Strongly Typed Chat Schemas & Contracts
+│   │       ├── services/     # SessionStore, ContextManager, Streaming & Grounding
+│   │       ├── routes/       # Health & Chat REST/SSE Endpoints
+│   │       └── scripts/      # CLI Chat Prototype, Hallucination & Context Bloat Tests
+│   └── notes/                # Lecture 04 Notes & Visual Artifacts
+│       ├── README.md         # Lecture 04 Index & Navigation
+│       ├── Notes.pdf         # Original Slide Presentation
+│       ├── Lecture_04_Complete_Notes.md # Consolidated Master Document
+│       └── [01 - 07 Chapters].md # Individual Modular Chapters
+└── Lecture 05/
+    ├── code/                 # Lecture 05 Autonomous AI Agent Microservice Codebase
     │   ├── package.json      # Dependencies (Express, OpenAI SDK, Zod, tsx, cors)
     │   ├── tsconfig.json     # TypeScript Configuration (ES2022/NodeNext)
     │   ├── .env.example      # Environment Configuration Template
-    │   ├── test-requests.http# REST Client / Postman Request Collection
+    │   ├── test-requests.http# REST Client / Postman Request Collection (9 Test Cases)
     │   ├── README.md         # Codebase Architecture & Running Instructions
-    │   ├── implementations guide/ # Step-by-Step Implementation Guide (00 - 11 Chapters)
+    │   ├── implementations guide/ # Step-by-Step Implementation Guide (00 - 15 Chapters)
     │   └── src/
     │       ├── app.ts        # Express Application & Middleware
     │       ├── server.ts     # Server Bootstrap & Graceful Shutdown
     │       ├── config/       # Boot-time Zod Environment Validation
-    │       ├── lib/          # OpenAI Client Singleton & BPE Tokenizer Utils
-    │       ├── types/        # Strongly Typed Chat Schemas & Contracts
-    │       ├── services/     # SessionStore, ContextManager, Streaming & Grounding
-    │       ├── routes/       # Health & Chat REST/SSE Endpoints
-    │       └── scripts/      # CLI Chat Prototype, Hallucination & Context Bloat Tests
-    └── notes/                # Lecture 04 Notes & Visual Artifacts
-        ├── README.md         # Lecture 04 Index & Navigation
+    │       ├── engine/       # Autonomous ReAct Loop & Token Economics Ledger
+    │       ├── tools/        # Tool Registry, Calculator, Weather, Currency, Refund, Workspace
+    │       ├── prompts/      # System Prompts & Critical Action Mandates
+    │       ├── services/     # HITL Approval Service & Website Builder Orchestrator
+    │       ├── routes/       # Chat, Website Generation & HITL Webhook Routers
+    │       └── scripts/      # CLI Multi-Tool Agent, Website Agent & HITL Test Runners
+    └── notes/                # Lecture 05 Notes & Visual Artifacts
+        ├── README.md         # Lecture 05 Index & Navigation
         ├── Notes.pdf         # Original Slide Presentation
-        ├── Lecture_04_Complete_Notes.md # Consolidated Master Document
+        ├── Excalidraw-Notes.svg # Architectural & Conceptual Diagrams
+        ├── Lecture_05_Complete_Notes.md # Consolidated Master Document
         └── [01 - 07 Chapters].md # Individual Modular Chapters
 ```
 
@@ -177,3 +226,6 @@ Forward-Deployed-Engineer/
 6. **The LLM Has Zero Native Memory:** Every conversation is an isolated forward pass. The application layer alone constructs conversational continuity.
 7. **Autoregressive Generation Demands Streaming:** Streaming does not make generation faster, but it drops perceived latency (TTFT) from $20\text{s}$ to $< 500\text{ms}$ using Server-Sent Events (SSE).
 8. **Fluency is Decoupled from Truth:** Flawless grammar and confident language do not guarantee factuality. Treat hallucinations as an inherent engineering problem solvable only through defense-in-depth: RAG grounding, deterministic tools, structured outputs, and output verification.
+9. **The Hands vs. Brain Paradigm:** The LLM is a reasoning kernel without arms or senses. Tools grant actuation and perception through deterministic function execution.
+10. **The ReAct Closed-Loop Invariant:** Autonomous agency requires a dynamic feedback loop (Thought $\rightarrow$ Action $\rightarrow$ Observation). The agent evaluates real-world output and self-corrects until the goal is fulfilled.
+11. **Principle of Least Privilege & Sandboxing:** Never grant unconstrained execution rights to autonomous agents. Enforce path traversal jails (`safePath`), symlink verification, and managerial Human-in-the-Loop (HITL) authorization gates on high-impact actions.
