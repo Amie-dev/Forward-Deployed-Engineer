@@ -123,6 +123,34 @@ Welcome to the **Forward Deployed Engineer (FDE) & Generative AI Systems** repos
 
 ---
 
+## [Lecture 06: AI Streaming — From LLM Tokens to a Live Chat Experience](./Lecture%2006/notes/README.md)
+
+- **Source Materials:**
+  - PDF Slides: [`Lecture 06/notes/Notes.pdf`](./Lecture%2006/notes/Notes.pdf)
+  - Excalidraw Diagrams: [`Lecture 06/notes/Excalidraw-Notes.svg`](./Lecture%2006/notes/Excalidraw-Notes.svg)
+- **Master Notes Document:**
+  - 👉 **[Lecture 06 Complete Consolidated Notes](./Lecture%2006/notes/Lecture_06_Complete_Notes.md)**
+- **Hands-on Production Codebase:**
+  - 💻 **[Lecture 06 Streaming Microservice + Browser Client (Node.js + Express + TypeScript)](./Lecture%2006/code/README.md)**
+  - 🛠️ **[Step-by-Step Implementation Guide](./Lecture%2006/code/implementations%20guide/README.md)** (00 → 16 chapters, block-by-block code tutorial)
+
+#### 📖 Chapter Notes Breakdown
+
+| Chapter | Module Title | Core Topics & Key Concepts |
+| :--- | :--- | :--- |
+| **[Chapter 01](./Lecture%2006/notes/01_How_LLMs_Generate_Text.md)** | **How an LLM Generates Text — Autoregressive Decoding** | Tokenization and BPE boundaries, logits and softmax, temperature / top-k / top-p sampling, the per-token decoding loop, **prefill vs. decode** phases, compute-bound vs. memory-bandwidth-bound inference, **KV cache** growth and its latency/cost tax, and why streaming is the same loop with `yield` instead of `append`. |
+| **[Chapter 02](./Lecture%2006/notes/02_Generation_vs_Delivery_Non_Streaming_and_Streaming_Responses.md)** | **Generation vs. Delivery — Non-Streaming and Streaming Responses** | The two independent processes (generation vs. delivery), the buffered response lifecycle and its hidden costs, the streaming lifecycle and progressive assembly, wire-level comparison (`message` vs. `delta` frames, `[DONE]`), the endpoint decision framework, and the delivery-path taxonomy (buffered JSON, raw chunked text, SSE, WebSockets, polling, webhooks). |
+| **[Chapter 03](./Lecture%2006/notes/03_Latency_Anatomy_TTFT_ITL_and_Perceived_Performance.md)** | **Latency Anatomy — TTFT, ITL & Perceived Performance** | **Time-to-first-token vs. total generation time**, the full latency decomposition (`network + queue + prefill + N×ITL + tail`), TPS and TPOT, human reading speed as the throughput threshold, **input processing precedes output** (prompt engineering becomes latency engineering), formal latency budgets and TTFT SLAs, per-hop instrumentation. |
+| **[Chapter 04](./Lecture%2006/notes/04_Token_Chunk_Network_and_Byte_Granularity.md)** | **Token, Provider Chunk, Network Chunk & Byte — Four Layers of Granularity** | The four-layer granularity model, token coalescing into deltas, transport re-framing by TCP, proxies, compression and HTTP/2, **UTF-8 multi-byte splits** and the `TextDecoder({stream:true})` discipline, the boundary-agnostic client contract, the **fragmentation torture test**, and `charsPerChunk` as a diagnostic metric. |
+| **[Chapter 05](./Lecture%2006/notes/05_HTTP_Streaming_Mechanics_Chunked_Encoding_SSE_and_WebSockets.md)** | **HTTP Streaming Mechanics — Chunked Encoding, SSE & WebSockets** | Conventional vs. progressive HTTP, `Transfer-Encoding: chunked` and the absence of `Content-Length`, the exact **SSE grammar** (`data`/`event`/`id`/`retry`, `\n\n` framing, heartbeats) and mandatory headers, the SSE vs. WebSockets decision matrix, raw `text/plain` vs. `text/event-stream`, infrastructure kill-switches (proxy buffering, compression, idle timeouts) and the `curl -N` debugging heuristic. |
+| **[Chapter 06](./Lecture%2006/notes/06_End_to_End_Streaming_Architecture_and_Pipeline_Invariants.md)** | **The Complete End-to-End Streaming Architecture** | **Two streams that must both stay streamed**, the full pipeline from click to rendered DOM, the **7 pipeline invariants**, backpressure and flow-control reality (stalls, not overflows), cancellation propagation and orphaned-generation economics, and the final end-to-end mental model. |
+| **[Chapter 07](./Lecture%2006/notes/07_Backend_Streaming_Call_vs_Stream_and_Flux.md)** | **Backend Streaming — `.call()` vs. `.stream()` and the `Flux` Abstraction** | Why the *return type* (`String` → `Flux<String>`) is the architecture rather than the method name, box vs. conveyor belt, the cross-language translation table (`Flux`/`Flow`/`AsyncIterable`/`ReadableStream`/`IAsyncEnumerable`), the four operators that matter (`doOnNext`/`doOnComplete`/`doOnError`/`doFinally`), **in-band error protocols**, and multi-user isolation with per-conversation locks. |
+| **[Chapter 08](./Lecture%2006/notes/08_Conversation_History_Buffering_and_Persistence.md)** | **Conversation History, Buffering & Persistence in Streaming Systems** | Why transport chunks must never become messages, the **dual-write pattern** (stream out, buffer in), prompt bloat from one-message-per-chunk, interrupted turns (`status: "interrupted"`), idempotent persistence with a stable `messageId`, token accounting, context budgets, and the three storage layers (hot buffer, conversation store, analytics ledger). |
+| **[Chapter 09](./Lecture%2006/notes/09_Frontend_Streaming_Fetch_ReadableStream_TextDecoder.md)** | **Frontend Streaming — `fetch`, `ReadableStream` & `TextDecoder`** | What `await fetch()` actually waits for (headers, not the body), `response.body.getReader()` and `{value, done}`, one `TextDecoder` with `{stream:true}` plus the final flush, the one-growing-bubble contract, lazy bubble creation, `AbortController` cancellation, sticky auto-scroll, sanitised incremental markdown, `requestAnimationFrame` rendering, accessibility (`aria-live`), and 12 client-side pitfalls. |
+| **[Chapter 10](./Lecture%2006/notes/10_Production_Hardening_Observability_and_Takeaways.md)** | **Production Hardening, Observability & Key Takeaways** | The consolidated granularity model, the production hardening checklist (proxies, compression, timeouts, heartbeats, headers, cancellation, rate limits, payload limits, failover), the streaming-specific metrics (server/client TTFT, **TTFT gap**, ITL, chunk sizes, in-band error rate, abort rate), the testing strategy (fragmentation, chaos, canaries), the 15-row anti-pattern catalogue, and 28 consolidated takeaways. |
+
+---
+
 ## 🏗 Repository Structure
 
 ```text
@@ -188,30 +216,35 @@ Forward-Deployed-Engineer/
 │       ├── Notes.pdf         # Original Slide Presentation
 │       ├── Lecture_04_Complete_Notes.md # Consolidated Master Document
 │       └── [01 - 07 Chapters].md # Individual Modular Chapters
-└── Lecture 05/
-    ├── code/                 # Lecture 05 Autonomous AI Agent Microservice Codebase
-    │   ├── package.json      # Dependencies (Express, OpenAI SDK, Zod, tsx, cors)
+└── Lecture 06/
+    ├── code/                 # Lecture 06 AI Streaming Microservice + Browser Client
+    │   ├── package.json      # Dependencies (Express, OpenAI SDK, Zod, eventsource-parser, tsx)
     │   ├── tsconfig.json     # TypeScript Configuration (ES2022/NodeNext)
-    │   ├── .env.example      # Environment Configuration Template
-    │   ├── test-requests.http# REST Client / Postman Request Collection (9 Test Cases)
-    │   ├── README.md         # Codebase Architecture & Running Instructions
-    │   ├── implementations guide/ # Step-by-Step Implementation Guide (00 - 15 Chapters)
+    │   ├── .env.example      # Streaming Knobs (granularity, flush, heartbeat, 3 timeouts, limits)
+    │   ├── test-requests.http# REST Client Collection (18 Cases + curl Diagnostics)
+    │   ├── README.md         # Architecture, Wire Protocol, Results & Running Instructions
+    │   ├── implementations guide/ # Step-by-Step Implementation Guide (00 - 16 Chapters)
+    │   ├── public/           # The BROWSER half: fetch · ReadableStream · TextDecoder · HUD
+    │   │   ├── index.html    # Chat UI, telemetry HUD, wire inspector, chaos toggles
+    │   │   ├── app.js        # Frame parsing, rAF rendering, cancellation, recovery
+    │   │   └── styles.css
     │   └── src/
-    │       ├── app.ts        # Express Application & Middleware
-    │       ├── server.ts     # Server Bootstrap & Graceful Shutdown
-    │       ├── config/       # Boot-time Zod Environment Validation
-    │       ├── engine/       # Autonomous ReAct Loop & Token Economics Ledger
-    │       ├── tools/        # Tool Registry, Calculator, Weather, Currency, Refund, Workspace
-    │       ├── prompts/      # System Prompts & Critical Action Mandates
-    │       ├── services/     # HITL Approval Service & Website Builder Orchestrator
-    │       ├── routes/       # Chat, Website Generation & HITL Webhook Routers
-    │       └── scripts/      # CLI Multi-Tool Agent, Website Agent & HITL Test Runners
-    └── notes/                # Lecture 05 Notes & Visual Artifacts
-        ├── README.md         # Lecture 05 Index & Navigation
+    │       ├── app.ts        # Express Factory, Static Mount & Error Boundary
+    │       ├── server.ts     # Bootstrap, Node Timeout Tuning & Stream-Aware Shutdown
+    │       ├── config/       # Zod-Validated Streaming Configuration
+    │       ├── types/        # Provider Contract, Wire Frames & Store Records
+    │       ├── lib/          # Logger, Metrics Registry, Byte/Frame Codec, Timing
+    │       ├── providers/    # Live OpenAI Provider, Deterministic Simulator, Error Taxonomy
+    │       ├── stream/       # StreamPump, DeltaCoalescer, BackpressureWriter
+    │       ├── services/     # ConversationStore, HistoryService, StreamRegistry, ChatService
+    │       ├── routes/       # Chat (3 transports), Conversation & Observability Routers
+    │       └── scripts/      # CLI Consumer, UTF-8 Torture Test, Invariants, Cancel, Benchmark
+    └── notes/                # Lecture 06 Notes & Visual Artifacts
+        ├── README.md         # Lecture 06 Index & Navigation
         ├── Notes.pdf         # Original Slide Presentation
         ├── Excalidraw-Notes.svg # Architectural & Conceptual Diagrams
-        ├── Lecture_05_Complete_Notes.md # Consolidated Master Document
-        └── [01 - 07 Chapters].md # Individual Modular Chapters
+        ├── Lecture_06_Complete_Notes.md # Consolidated Master Document
+        └── [01 - 10 Chapters].md # Individual Modular Chapters
 ```
 
 ---
@@ -229,3 +262,14 @@ Forward-Deployed-Engineer/
 9. **The Hands vs. Brain Paradigm:** The LLM is a reasoning kernel without arms or senses. Tools grant actuation and perception through deterministic function execution.
 10. **The ReAct Closed-Loop Invariant:** Autonomous agency requires a dynamic feedback loop (Thought $\rightarrow$ Action $\rightarrow$ Observation). The agent evaluates real-world output and self-corrects until the goal is fulfilled.
 11. **Principle of Least Privilege & Sandboxing:** Never grant unconstrained execution rights to autonomous agents. Enforce path traversal jails (`safePath`), symlink verification, and managerial Human-in-the-Loop (HITL) authorization gates on high-impact actions.
+12. **The Return Type Is the Architecture:** Streaming is not enabled by calling `.stream()` instead of `.call()`; it is enabled by changing the contract from `String` (a box: one value, after completion) to `Flux`/`AsyncIterable` (a conveyor belt: zero, one or many values over time). With a stream type, no layer above it *can* buffer without visibly choosing to.
+13. **Streaming Is a Pipeline, Not a Feature:** Six links — generation → provider → backend → HTTP → browser → UI. A single buffering hop anywhere collapses the experience, and the failure is invisible to every backend dashboard.
+14. **TTFT Is the Number the User Feels:** Perceived latency is time-to-first-token, not total generation time. Streaming rarely makes the model finish faster; it drops perceived latency from tens of seconds to a few hundred milliseconds.
+15. **Token ≠ Provider Chunk ≠ Network Chunk ≠ Decoded Piece:** Four layers of granularity. The client must be boundary-agnostic: buffer bytes, decode incrementally with one `TextDecoder({stream:true})`, and append whatever arrives.
+16. **Once the First Byte Is Written, the Status Is Frozen:** After `200 OK`, failures, timeouts and cancellations can only be expressed **in-band** (`event: error` + `done{status:"interrupted"}`). Design that protocol before you need it.
+17. **Streaming ≠ SSE:** SSE is one delivery format, not a synonym for streaming. Raw chunked `text/plain` is enough for a simple chatbot; SSE adds framing, `id`-based resumption and heartbeats; WebSockets add bidirectionality.
+18. **The Dual-Write Pattern:** Every chunk must be forwarded to the client *and* appended to a per-request buffer. Persist exactly ONE reconstructed assistant message per turn — chunks are transport artefacts, never messages, or prompt size grows quadratically.
+19. **Interrupted Answers Belong in History:** Whatever the user already read must be persisted, flagged `status: "interrupted"` with a finish reason, and annotated in the next prompt so the model does not read a truncated turn as complete.
+20. **Cancellation Is a Financial Control:** `AbortController` on the client → socket close → provider cancellation. Without propagation, closed tabs keep generating tokens that nobody reads and somebody pays for.
+21. **Backpressure Stalls; It Does Not Overflow:** `res.write()` returning `false` is an instruction to wait for `drain`, not a warning to ignore. The alternative is unbounded server memory growth under a slow client.
+22. **Measure the Gap, Not the Average:** `p95(clientTTFT − serverTTFT)` is the single most valuable streaming alert — it catches proxy buffering, compression re-enabled on SSE, a buffering middleware, a CDN misconfiguration and a frontend that collapsed to `await response.text()`, in one rule.
