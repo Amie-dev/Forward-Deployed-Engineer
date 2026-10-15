@@ -1,0 +1,146 @@
+### ============================================================================
+### Lecture 06 — AI Streaming Microservice · REST Client collection
+### Use with the VS Code "REST Client" extension, or copy the curl equivalents.
+### Start the server first:  npm run dev   (default http://localhost:8090)
+### ============================================================================
+
+@baseUrl = http://localhost:8090
+@conversationId = conv_demo_001
+
+### 1. Health + active provider (simulator unless an API key is configured)
+GET {{baseUrl}}/health
+Accept: application/json
+
+### 2. Streaming health, latency percentiles and alerts (the streaming dashboard)
+GET {{baseUrl}}/api/observability
+Accept: application/json
+
+### 3. Prometheus exposition (scrape target: TTFT, ITL, chunks, aborts, in-band errors)
+GET {{baseUrl}}/metrics
+Accept: text/plain
+
+### 4. ❌ BUFFERED baseline — one JSON body, TTFT is internal only
+# Note the timings in the response: the client waited for totalMs, not ttftMs.
+POST {{baseUrl}}/api/chat
+Content-Type: application/json
+
+{
+  "message": "Explain AI streaming in detail.",
+  "conversationId": "{{conversationId}}",
+  "granularity": "sentence"
+}
+
+### 5. ✅ STREAMING over NDJSON (one JSON envelope per line)
+# In VS Code REST Client this appears progressively; curl equivalent below.
+POST {{baseUrl}}/api/chat/stream?transport=ndjson
+Content-Type: application/json
+
+{
+  "message": "Explain AI streaming in detail.",
+  "conversationId": "{{conversationId}}",
+  "granularity": "sentence"
+}
+
+### 6. ✅ STREAMING over SSE (named events, ids, heartbeats)
+POST {{baseUrl}}/api/chat/events
+Content-Type: application/json
+
+{
+  "message": "Explain the difference between TTFT and total latency.",
+  "conversationId": "conv_demo_sse",
+  "granularity": "sentence"
+}
+
+### 7. ✅ STREAMING as RAW text/plain (the PDF/Tomato pattern — no framing at all)
+POST {{baseUrl}}/api/chat/stream?transport=text
+Content-Type: application/json
+
+{
+  "message": "Explain why streaming does not require SSE.",
+  "conversationId": "conv_demo_text"
+}
+
+### 8. Coalescing granularity: token (provider cadence, many small chunks)
+POST {{baseUrl}}/api/chat/stream?transport=ndjson
+Content-Type: application/json
+
+{
+  "message": "Explain token coalescing.",
+  "conversationId": "conv_demo_granularity",
+  "granularity": "token"
+}
+
+### 9. Chaos: mid-stream provider failure ⇒ IN-BAND `error` frame + partial text kept
+POST {{baseUrl}}/api/chat/events
+Content-Type: application/json
+
+{
+  "message": "This answer will be cut off mid-stream.",
+  "conversationId": "conv_demo_error",
+  "chaos": { "failAfterDeltas": 3, "failCode": "provider_error" }
+}
+
+### 10. Chaos: silent provider ⇒ idle watchdog (`upstream_stall`) + heartbeats
+POST {{baseUrl}}/api/chat/events
+Content-Type: application/json
+
+{
+  "message": "This answer will stall.",
+  "conversationId": "conv_demo_stall",
+  "chaos": { "stallAfterDeltas": 2, "stallMs": 40000 }
+}
+
+### 11. Live in-flight streams (cancellation + catch-up inventory)
+GET {{baseUrl}}/api/chat/streams
+Accept: application/json
+
+### 12. Cancel a stream by requestId (paste one from response 11)
+POST {{baseUrl}}/api/chat/streams/req_PASTE_REQUEST_ID/cancel
+Content-Type: application/json
+
+{ "reason": "Supervisor cancelled this generation." }
+
+### 13. Catch-up after a socket loss: frames the client has not seen yet
+GET {{baseUrl}}/api/chat/streams/req_PASTE_REQUEST_ID/catch-up?fromSeq=0
+Accept: application/json
+
+### 14. Conversation transcript — ONE assistant message per turn, with status
+GET {{baseUrl}}/api/conversations/{{conversationId}}
+Accept: application/json
+
+### 15. What the NEXT prompt will actually contain (context budget + annotation)
+GET {{baseUrl}}/api/conversations/{{conversationId}}/budget
+Accept: application/json
+
+### 16. Report the TTFT the user felt ⇒ drives the p95 TTFT-gap alert
+POST {{baseUrl}}/api/observability/client-ttft
+Content-Type: application/json
+
+{
+  "serverTtftMs": 380,
+  "clientTtftMs": 460
+}
+
+### 17. Reset metrics/state (disabled when NODE_ENV=production)
+POST {{baseUrl}}/api/observability/reset
+
+### 18. GDPR-style purge of a transcript
+DELETE {{baseUrl}}/api/conversations/{{conversationId}}
+
+### ============================================================================
+### curl equivalents — the diagnostics used in Chapter 16 of the guide
+### ============================================================================
+### Watch the wire live, byte by byte (bypasses browsers AND proxies):
+# curl -N -X POST 'http://localhost:8090/api/chat/stream?transport=text' \
+#   -H 'Content-Type: application/json' -d '{"message":"hi"}'
+#
+### Prove the response is chunked and NOT content-length framed:
+# curl -sD - -o /dev/null -X POST 'http://localhost:8090/api/chat/stream?transport=ndjson' \
+#   -H 'Content-Type: application/json' -d '{"message":"hi"}'
+#
+### Count how many network reads a single answer produced (expect ≫ 1):
+# curl -sN -X POST 'http://localhost:8090/api/chat/stream?transport=sse' \
+#   -H 'Content-Type: application/json' -d '{"message":"hi"}' | grep -c '^event: delta'
+#
+### Watch cancellation propagate: Ctrl+C mid-answer, then check the server log for
+### a `stream.aborted` telemetry line with finishReason "client_abort".

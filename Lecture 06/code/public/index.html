@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Lecture 06 · AI Streaming Client — fetch · ReadableStream · TextDecoder</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <div>
+        <h1>AI Streaming Client</h1>
+        <p class="subtitle">
+          The browser half of the pipeline: <code>fetch()</code> → <code>response.body</code> →
+          <code>ReadableStream</code> → <code>TextDecoder({stream:true})</code> → ONE growing bubble.
+        </p>
+      </div>
+      <div class="badges">
+        <span class="badge" id="badge-model">model: …</span>
+        <span class="badge" id="badge-provider">provider: …</span>
+        <span class="badge" id="badge-transport">transport: ndjson</span>
+      </div>
+    </header>
+
+    <main class="layout">
+      <!-- ================= LEFT: conversation ================= -->
+      <section class="panel chat-panel">
+        <div class="controls">
+          <label>
+            Transport
+            <select id="transport">
+              <option value="ndjson" selected>NDJSON (application/x-ndjson)</option>
+              <option value="sse">SSE (text/event-stream)</option>
+              <option value="text">Raw text/plain (PDF/Tomato pattern)</option>
+            </select>
+          </label>
+
+          <label>
+            Granularity (coalescing)
+            <select id="granularity">
+              <option value="sentence" selected>sentence — natural bubbles</option>
+              <option value="word">word — 3 tokens per delta</option>
+              <option value="token">token — provider cadence</option>
+              <option value="random">random — hostile 1–3 chars</option>
+            </select>
+          </label>
+
+          <label class="checkbox">
+            <input type="checkbox" id="chaos-stall" />
+            Inject a mid-stream stall (idle watchdog)
+          </label>
+          <label class="checkbox">
+            <input type="checkbox" id="chaos-error" />
+            Inject a mid-stream provider error (in-band <code>error</code>)
+          </label>
+          <label class="checkbox">
+            <input type="checkbox" id="chaos-ttft" />
+            Breach the TTFT budget
+          </label>
+          <label class="checkbox danger">
+            <input type="checkbox" id="antipattern" />
+            ❌ Anti-pattern mode: <code>await response.text()</code>
+          </label>
+        </div>
+
+        <div
+          id="messages"
+          class="messages"
+          role="log"
+          aria-live="polite"
+          aria-relevant="additions text"
+          aria-label="Conversation transcript"
+        ></div>
+
+        <button id="jump-latest" class="jump-latest" hidden>↓ Jump to latest</button>
+
+        <form id="composer" class="composer">
+          <textarea
+            id="prompt"
+            rows="2"
+            placeholder="Ask something… (Enter to send, Shift+Enter for a newline)"
+            aria-label="Message"
+          ></textarea>
+          <div class="composer-actions">
+            <button type="submit" id="send">Send</button>
+            <button type="button" id="stop" disabled aria-label="Stop generating">Stop</button>
+            <button
+              type="button"
+              id="drop"
+              disabled
+              title="Abort the socket, then recover the missed frames by cursor"
+            >
+              Drop &amp; recover
+            </button>
+          </div>
+        </form>
+      </section>
+
+      <!-- ================= RIGHT: telemetry ================= -->
+      <aside class="panel hud">
+        <h2>Streaming telemetry</h2>
+        <p class="hint">
+          Measured in the client. <strong>TTFT</strong> is what the user feels;
+          <strong>ITL</strong> decides whether the model can keep up with the reader.
+        </p>
+
+        <div class="grid">
+          <div class="metric"><span class="k">Client TTFT</span><span class="v" id="m-client-ttft">–</span></div>
+          <div class="metric"><span class="k">Total</span><span class="v" id="m-total">–</span></div>
+          <div class="metric"><span class="k">ITL mean</span><span class="v" id="m-itl-mean">–</span></div>
+          <div class="metric"><span class="k">ITL max</span><span class="v" id="m-itl-max">–</span></div>
+          <div class="metric"><span class="k">Chunks</span><span class="v" id="m-chunks">0</span></div>
+          <div class="metric"><span class="k">Network reads</span><span class="v" id="m-reads">0</span></div>
+          <div class="metric"><span class="k">Bytes</span><span class="v" id="m-bytes">0</span></div>
+          <div class="metric"><span class="k">Chars</span><span class="v" id="m-chars">0</span></div>
+          <div class="metric"><span class="k">Chars / chunk</span><span class="v" id="m-chars-per-chunk">–</span></div>
+          <div class="metric"><span class="k">Chars / sec</span><span class="v" id="m-tps">–</span></div>
+          <div class="metric"><span class="k">Heartbeats</span><span class="v" id="m-heartbeats">0</span></div>
+          <div class="metric"><span class="k">State</span><span class="v" id="m-state">idle</span></div>
+        </div>
+
+        <div class="server-panel">
+          <h3>Server side</h3>
+          <div class="metric wide"><span class="k">Server TTFT</span><span class="v" id="m-server-ttft">–</span></div>
+          <div class="metric wide"><span class="k">TTFT gap (client − server)</span><span class="v" id="m-ttft-gap">–</span></div>
+          <div class="metric wide"><span class="k">In-band error / status</span><span class="v" id="m-error">none</span></div>
+          <button type="button" id="refresh-server" class="ghost">Refresh /api/observability</button>
+        </div>
+
+        <h3>Wire inspector</h3>
+        <p class="hint">Raw frames exactly as they arrived (most recent first).</p>
+        <pre id="wire" class="wire"></pre>
+      </aside>
+    </main>
+
+    <script type="module" src="./app.js"></script>
+  </body>
+</html>
