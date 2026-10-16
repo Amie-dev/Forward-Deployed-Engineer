@@ -151,6 +151,26 @@ Welcome to the **Forward Deployed Engineer (FDE) & Generative AI Systems** repos
 
 ---
 
+## [Lecture 07: Vector Embeddings — From First Principles](./Lecture%2007/notes/README.md)
+
+- **Source Materials:**
+  - PDF Slides: [`Lecture 07/notes/Notes.pdf`](./Lecture%2007/notes/Notes.pdf)
+  - Excalidraw Diagrams: [`Lecture 07/notes/Excalidraw-Notes.svg`](./Lecture%2007/notes/Excalidraw-Notes.svg)
+
+#### 📖 Chapter Notes Breakdown
+
+| Chapter | Module Title | Core Topics & Key Concepts |
+| :--- | :--- | :--- |
+| **[Chapter 01](./Lecture%2007/notes/01_The_Problem_of_Meaning_in_Computers.md)** | **The Problem of Meaning in Computers** | Symbol vs. meaning gap (Batman example), identity matching vs. semantic similarity (`"I forgot my password"` ≡ `"How can I recover my login credentials?"`), why mathematical operations require numbers, why randomly assigned numbers carry no relational information. |
+| **[Chapter 02](./Lecture%2007/notes/02_From_Numbers_to_Vectors.md)** | **From Numbers to Vectors** | One-number representations and their limitations (Titanic vs. Hera Pheri both score `2`), adding comedy as a second dimension, 2D vector space visualization, why order within a vector matters (`[9,2]` ≠ `[2,9]`), dimensions defined, vector spaces and continuous similarity (`0.92` vs. `true/false`). |
+| **[Chapter 03](./Lecture%2007/notes/03_Measuring_Similarity_Between_Vectors.md)** | **Measuring Similarity Between Vectors** | Euclidean distance (straight-line gap, formula, User A vs. User B scale problem), Dot Product (direction + magnitude, `A·B = |A||B|cos θ`), Cosine Similarity (angle only, scale-invariant, range `−1 → +1`), comparison table, pseudo-code for all three, when to prefer each metric. |
+| **[Chapter 04](./Lecture%2007/notes/04_The_Failure_of_Hand_Crafted_Features.md)** | **The Failure of Hand-Crafted Features** | Feature engineering definition & ML history timeline, Problem 1 — dimensionality explosion (Interstellar has 1000s of valid features), Problem 2 — features are task-specific (recommendation vs. box-office vs. parental-controls need different dimensions), Problem 3 — natural language ambiguity (`bank`, `apple`, `java`, `king/queen`), context changes meaning, the scaling impossibility. |
+| **[Chapter 05](./Lecture%2007/notes/05_What_Are_Embeddings_Learning_Representations.md)** | **What Are Embeddings? Learning Representations** | Formal definition `f: input → ℝᵈ`, meaning-through-context (Firth's *"You shall know a word by the company it keeps"*), toy training objective (predict nearby words), the embedding lookup table (king/queen/dog/cat/banana/apple), the gradient-descent training cycle (random → useful vectors), king−man+woman≈queen vector arithmetic, latent features vs. human-readable dimensions. |
+| **[Chapter 06](./Lecture%2007/notes/06_Vector_vs_Embedding_And_Applications.md)** | **Vector vs. Embedding & Applications** | Critical distinction (every embedding is a vector; not every vector is an embedding), feature vector vs. learned embedding, embedding model as a function `f(input) → ℝᵈ`, multi-modal shared spaces (CLIP text+image), full application taxonomy (semantic search, nearest-neighbor, clustering, classification, ranking, recommendation, RAG), embedding model reference table (ada-002, BERT, CLIP, Word2Vec). |
+| **[Chapter 07](./Lecture%2007/notes/07_The_Complete_Journey_Synthesis.md)** | **The Complete Journey — Synthesis** | End-to-end progression (real-world object → manual vector → does not scale → training objective → learned embedding), the definitive final definition, complete semantic-search worked example (support ticket system with pseudo-code + sequence diagram), feature engineering vs. embeddings comparison matrix, why geometry encodes semantics. |
+
+---
+
 ## 🏗 Repository Structure
 
 ```text
@@ -216,35 +236,41 @@ Forward-Deployed-Engineer/
 │       ├── Notes.pdf         # Original Slide Presentation
 │       ├── Lecture_04_Complete_Notes.md # Consolidated Master Document
 │       └── [01 - 07 Chapters].md # Individual Modular Chapters
-└── Lecture 06/
-    ├── code/                 # Lecture 06 AI Streaming Microservice + Browser Client
-    │   ├── package.json      # Dependencies (Express, OpenAI SDK, Zod, eventsource-parser, tsx)
-    │   ├── tsconfig.json     # TypeScript Configuration (ES2022/NodeNext)
-    │   ├── .env.example      # Streaming Knobs (granularity, flush, heartbeat, 3 timeouts, limits)
-    │   ├── test-requests.http# REST Client Collection (18 Cases + curl Diagnostics)
-    │   ├── README.md         # Architecture, Wire Protocol, Results & Running Instructions
-    │   ├── implementations guide/ # Step-by-Step Implementation Guide (00 - 16 Chapters)
-    │   ├── public/           # The BROWSER half: fetch · ReadableStream · TextDecoder · HUD
-    │   │   ├── index.html    # Chat UI, telemetry HUD, wire inspector, chaos toggles
-    │   │   ├── app.js        # Frame parsing, rAF rendering, cancellation, recovery
-    │   │   └── styles.css
-    │   └── src/
-    │       ├── app.ts        # Express Factory, Static Mount & Error Boundary
-    │       ├── server.ts     # Bootstrap, Node Timeout Tuning & Stream-Aware Shutdown
-    │       ├── config/       # Zod-Validated Streaming Configuration
-    │       ├── types/        # Provider Contract, Wire Frames & Store Records
-    │       ├── lib/          # Logger, Metrics Registry, Byte/Frame Codec, Timing
-    │       ├── providers/    # Live OpenAI Provider, Deterministic Simulator, Error Taxonomy
-    │       ├── stream/       # StreamPump, DeltaCoalescer, BackpressureWriter
-    │       ├── services/     # ConversationStore, HistoryService, StreamRegistry, ChatService
-    │       ├── routes/       # Chat (3 transports), Conversation & Observability Routers
-    │       └── scripts/      # CLI Consumer, UTF-8 Torture Test, Invariants, Cancel, Benchmark
-    └── notes/                # Lecture 06 Notes & Visual Artifacts
-        ├── README.md         # Lecture 06 Index & Navigation
+├── Lecture 06/
+│   ├── code/                 # Lecture 06 AI Streaming Microservice + Browser Client
+│   │   ├── package.json      # Dependencies (Express, OpenAI SDK, Zod, eventsource-parser, tsx)
+│   │   ├── tsconfig.json     # TypeScript Configuration (ES2022/NodeNext)
+│   │   ├── .env.example      # Streaming Knobs (granularity, flush, heartbeat, 3 timeouts, limits)
+│   │   ├── test-requests.http# REST Client Collection (18 Cases + curl Diagnostics)
+│   │   ├── README.md         # Architecture, Wire Protocol, Results & Running Instructions
+│   │   ├── implementations guide/ # Step-by-Step Implementation Guide (00 - 16 Chapters)
+│   │   ├── public/           # The BROWSER half: fetch · ReadableStream · TextDecoder · HUD
+│   │   │   ├── index.html    # Chat UI, telemetry HUD, wire inspector, chaos toggles
+│   │   │   ├── app.js        # Frame parsing, rAF rendering, cancellation, recovery
+│   │   │   └── styles.css
+│   │   └── src/
+│   │       ├── app.ts        # Express Factory, Static Mount & Error Boundary
+│   │       ├── server.ts     # Bootstrap, Node Timeout Tuning & Stream-Aware Shutdown
+│   │       ├── config/       # Zod-Validated Streaming Configuration
+│   │       ├── types/        # Provider Contract, Wire Frames & Store Records
+│   │       ├── lib/          # Logger, Metrics Registry, Byte/Frame Codec, Timing
+│   │       ├── providers/    # Live OpenAI Provider, Deterministic Simulator, Error Taxonomy
+│   │       ├── stream/       # StreamPump, DeltaCoalescer, BackpressureWriter
+│   │       ├── services/     # ConversationStore, HistoryService, StreamRegistry, ChatService
+│   │       ├── routes/       # Chat (3 transports), Conversation & Observability Routers
+│   │       └── scripts/      # CLI Consumer, UTF-8 Torture Test, Invariants, Cancel, Benchmark
+│   └── notes/                # Lecture 06 Notes & Visual Artifacts
+│       ├── README.md         # Lecture 06 Index & Navigation
+│       ├── Notes.pdf         # Original Slide Presentation
+│       ├── Excalidraw-Notes.svg # Architectural & Conceptual Diagrams
+│       ├── Lecture_06_Complete_Notes.md # Consolidated Master Document
+│       └── [01 - 10 Chapters].md # Individual Modular Chapters
+└── Lecture 07/
+    └── notes/                # Lecture 07 Notes & Visual Artifacts
+        ├── README.md         # Lecture 07 Index & Navigation
         ├── Notes.pdf         # Original Slide Presentation
-        ├── Excalidraw-Notes.svg # Architectural & Conceptual Diagrams
-        ├── Lecture_06_Complete_Notes.md # Consolidated Master Document
-        └── [01 - 10 Chapters].md # Individual Modular Chapters
+        ├── Excalidraw-Notes.svg # Handwritten Conceptual Diagrams
+        └── [01 - 07 Chapters].md # Individual Modular Chapters
 ```
 
 ---
@@ -273,3 +299,9 @@ Forward-Deployed-Engineer/
 20. **Cancellation Is a Financial Control:** `AbortController` on the client → socket close → provider cancellation. Without propagation, closed tabs keep generating tokens that nobody reads and somebody pays for.
 21. **Backpressure Stalls; It Does Not Overflow:** `res.write()` returning `false` is an instruction to wait for `drain`, not a warning to ignore. The alternative is unbounded server memory growth under a slow client.
 22. **Measure the Gap, Not the Average:** `p95(clientTTFT − serverTTFT)` is the single most valuable streaming alert — it catches proxy buffering, compression re-enabled on SSE, a buffering middleware, a CDN misconfiguration and a frontend that collapsed to `await response.text()`, in one rule.
+23. **Symbols Are Not Meaning:** A computer can store `"Batman"` but cannot understand it without a numerical representation. Representing symbols is not the same as representing meaning — the entire field of vector embeddings exists to bridge this gap.
+24. **Geometry Encodes Semantics:** An embedding is not the meaning itself — it is a *position* in a learned mathematical space where useful relationships in meaning or behavior become relationships in geometry. Objects with similar meanings end up geometrically close.
+25. **Let the Model Decide the Dimensions:** Feature engineering (manually choosing which characteristics to measure) fails at scale due to dimensionality explosion, task specificity, and language ambiguity. The scalable solution is to train a model on a useful objective and let useful representations emerge as a by-product.
+26. **Every Embedding Is a Vector; Not Every Vector Is an Embedding:** A feature vector `[height, weight, age]` is human-designed. An embedding `[0.21, -0.71, 0.45, ...]` is a *learned* position in a continuous space. The distinction matters for understanding what mathematical operations are meaningful.
+27. **Context Determines Meaning:** Words in similar contexts develop similar embeddings (Firth's principle: *"You shall know a word by the company it keeps"*). `king` and `queen` cluster together; `banana` drifts to a separate region — with no human labeling, purely from training data patterns.
+28. **Embeddings Unlock an Entire Suite of Operations:** Once objects are vectors, similarity search, nearest-neighbor retrieval, clustering, classification, ranking, recommendation, and RAG all become possible using nothing but distance and angle calculations over that learned space.
