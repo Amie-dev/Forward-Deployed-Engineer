@@ -156,6 +156,7 @@ Welcome to the **Forward Deployed Engineer (FDE) & Generative AI Systems** repos
 - **Source Materials:**
   - PDF Slides: [`Lecture 07/notes/Notes.pdf`](./Lecture%2007/notes/Notes.pdf)
   - Excalidraw Diagrams: [`Lecture 07/notes/Excalidraw-Notes.svg`](./Lecture%2007/notes/Excalidraw-Notes.svg)
+- **Complete Consolidated Notes:** [`Lecture_07_Complete_Notes.md`](./Lecture%2007/notes/Lecture_07_Complete_Notes.md) — all 7 chapters merged, with formula sheet, glossary, misconceptions, self-check questions, and the Lecture 08/09 bridge
 
 #### 📖 Chapter Notes Breakdown
 
@@ -179,6 +180,7 @@ Welcome to the **Forward Deployed Engineer (FDE) & Generative AI Systems** repos
 - **Hands-on Production Codebase:**
   - 💻 **[Lecture 08 Movie Recommendation Engine (Node.js + Express + TypeScript)](./Lecture%2008/code/README.md)**
   - 🛠️ **[Step-by-Step Implementation Guide](./Lecture%2008/code/implementations%20guide/README.md)** (00 → 08 chapters, block-by-block code tutorial)
+- **Complete Consolidated Notes:** [`Lecture_08_Complete_Notes.md`](./Lecture%2008/notes/Lecture_08_Complete_Notes.md) — all 7 chapters synthesised, with cheat sheet, glossary, misconceptions, self-check, failure modes, and the Lecture 09 bridge
 
 #### 📖 Chapter Notes Breakdown
 
@@ -199,6 +201,7 @@ Welcome to the **Forward Deployed Engineer (FDE) & Generative AI Systems** repos
 - **Source Materials:**
   - PDF Slides: [`Lecture 09/notes/Notes.pdf`](./Lecture%2009/notes/Notes.pdf)
   - Excalidraw Diagrams: [`Lecture 09/notes/Excalidraw-Notes.svg`](./Lecture%2009/notes/Excalidraw-Notes.svg)
+- **Complete Consolidated Notes:** [`Lecture_09_Complete_Notes.md`](./Lecture%2009/notes/Lecture_09_Complete_Notes.md) — all 8 chapters synthesised, with capacity maths, index-selection and failure tables, cheat sheet, glossary, and self-check
 
 #### 📖 Chapter Notes Breakdown
 
@@ -314,6 +317,7 @@ Forward-Deployed-Engineer/
 │       ├── README.md         # Lecture 07 Index & Navigation
 │       ├── Notes.pdf         # Original Slide Presentation
 │       ├── Excalidraw-Notes.svg # Handwritten Conceptual Diagrams
+│       ├── Lecture_07_Complete_Notes.md # Consolidated Master Document
 │       └── [01 - 07 Chapters].md # Individual Modular Chapters
 ├── Lecture 08/
     ├── code/                 # Lecture 08 Movie Recommendation Engine Codebase
@@ -336,12 +340,14 @@ Forward-Deployed-Engineer/
         ├── README.md         # Lecture 08 Index & Navigation
         ├── Notes.pdf         # Original Slide Presentation
         ├── Excalidraw-Notes.svg # Handwritten Conceptual Diagrams
+        ├── Lecture_08_Complete_Notes.md # Consolidated Master Document
         └── [01 - 07 Chapters].md # Individual Modular Chapters
 └── Lecture 09/
     └── notes/                # Lecture 09 Notes & Visual Artifacts
         ├── README.md         # Lecture 09 Index & Navigation
         ├── Notes.pdf         # Original Slide Presentation
         ├── Excalidraw-Notes.svg # Handwritten Conceptual Diagrams
+        ├── Lecture_09_Complete_Notes.md # Consolidated Master Document
         └── [01 - 08 Chapters].md # Individual Modular Chapters
 
 ```

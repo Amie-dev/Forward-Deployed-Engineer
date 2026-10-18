@@ -16,6 +16,10 @@
 | [06](./06_The_Curse_of_Dimensionality.md) | The Curse of Dimensionality | Why do k-d trees collapse at 1536 dimensions? |
 | [07](./07_Approximate_Nearest_Neighbor_Indexes.md) | Approximate Nearest Neighbor Indexes | What do IVF, HNSW, PQ, and LSH actually do? |
 | [08](./08_Production_Vector_Search_Design.md) | Production Vector Search Design | How do we run, evaluate, secure, and migrate this system? |
+| [**Complete**](./Lecture_09_Complete_Notes.md) | **Complete Consolidated Notes** | All 8 chapters synthesised into one production reference + cheat sheet, glossary, misconceptions, self-check, and capacity maths |
+
+> 📄 **Prefer a single document?** Read the **[Lecture 09 — Complete Consolidated Notes](./Lecture_09_Complete_Notes.md)**. It follows the chapter dependency chain, keeps the arithmetic that makes the argument, and adds the decision tables, failure runbooks, and recall maths that the chapters spread across eight files.
+
 
 ---
 

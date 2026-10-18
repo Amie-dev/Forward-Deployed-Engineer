@@ -15,6 +15,9 @@
 | [05](./05_What_Are_Embeddings_Learning_Representations.md) | What Are Embeddings? | Learned representations via training |
 | [06](./06_Vector_vs_Embedding_And_Applications.md) | Vector vs Embedding & Applications | What embeddings unlock: Search, RAG, Recommendation |
 | [07](./07_The_Complete_Journey_Synthesis.md) | The Complete Journey — Synthesis | The full picture + definitive definition |
+| [**Complete**](./Lecture_07_Complete_Notes.md) | **Complete Consolidated Notes** | All 7 chapters in one file + formula sheet, glossary, misconceptions, self-check, and Lecture 08/09 bridge |
+
+> 📄 **Prefer a single document?** Read the **[Lecture 07 — Complete Consolidated Notes](./Lecture_07_Complete_Notes.md)**. It merges every chapter, resolves the source deck's `Titanic [2,1]` vs `[2,10]` inconsistency, and adds worked calculations, engineering guardrails, and revision material.
 
 ---
 

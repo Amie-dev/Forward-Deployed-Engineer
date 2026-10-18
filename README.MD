@@ -25,9 +25,9 @@ This repository contains structured lecture notes, system architectures, mathema
 - 📂 **[Lecture 04 Index & Notes](./Lecture%2004/notes/README.md)** | 📄 **[Complete Document](./Lecture%2004/notes/Lecture_04_Complete_Notes.md)** | 💻 **[Codebase](./Lecture%2004/code/README.md)** | 🛠️ **[Implementation Guide](./Lecture%2004/code/implementations%20guide/README.md)**
 - 📂 **[Lecture 05 Index & Notes](./Lecture%2005/notes/README.md)** | 📄 **[Complete Document](./Lecture%2005/notes/Lecture_05_Complete_Notes.md)** | 💻 **[Codebase](./Lecture%2005/code/README.md)** | 🛠️ **[Implementation Guide](./Lecture%2005/code/implementations%20guide/README.md)**
 - 📂 **[Lecture 06 Index & Notes](./Lecture%2006/notes/README.md)** | 📄 **[Complete Document](./Lecture%2006/notes/Lecture_06_Complete_Notes.md)** | 💻 **[Codebase](./Lecture%2006/code/README.md)** | 🛠️ **[Implementation Guide](./Lecture%2006/code/implementations%20guide/README.md)**
-- 📂 **[Lecture 07 Index & Notes](./Lecture%2007/notes/README.md)**
-- 📂 **[Lecture 08 Index & Notes](./Lecture%2008/notes/README.md)** | 💻 **[Codebase](./Lecture%2008/code/README.md)** | 🛠️ **[Implementation Guide](./Lecture%2008/code/implementations%20guide/README.md)**
-- 📂 **[Lecture 09 Index & Notes](./Lecture%2009/notes/README.md)**
+- 📂 **[Lecture 07 Index & Notes](./Lecture%2007/notes/README.md)** | 📄 **[Complete Document](./Lecture%2007/notes/Lecture_07_Complete_Notes.md)**
+- 📂 **[Lecture 08 Index & Notes](./Lecture%2008/notes/README.md)** | 📄 **[Complete Document](./Lecture%2008/notes/Lecture_08_Complete_Notes.md)** | 💻 **[Codebase](./Lecture%2008/code/README.md)** | 🛠️ **[Implementation Guide](./Lecture%2008/code/implementations%20guide/README.md)**
+- 📂 **[Lecture 09 Index & Notes](./Lecture%2009/notes/README.md)** | 📄 **[Complete Document](./Lecture%2009/notes/Lecture_09_Complete_Notes.md)**
 
 ---
 

@@ -15,6 +15,10 @@
 | [05](./05_Cosine_Similarity_Measuring_Closeness.md) | Cosine Similarity — Measuring Closeness | How do we mathematically measure similarity? |
 | [06](./06_Core_Mental_Model_REPRESENT_STORE_COMPARE_RANK.md) | Core Mental Model: REPRESENT → STORE → COMPARE → RANK | What is the universal pattern behind all embedding systems? |
 | [07](./07_Complete_System_Design_and_Applications.md) | Complete System Design and Applications | How does everything fit together? |
+| [**Complete**](./Lecture_08_Complete_Notes.md) | **Complete Consolidated Notes** | All 7 chapters synthesised into one build reference + cheat sheet, glossary, misconceptions, self-check, and failure modes |
+
+> 📄 **Prefer a single document?** Read the **[Lecture 08 — Complete Consolidated Notes](./Lecture_08_Complete_Notes.md)**. It reorganises the chapters into seven dependency-ordered parts, corrects the slide's cost arithmetic, and adds the production failure modes and scale maths that the chapters leave out.
+
 
 ---
 
