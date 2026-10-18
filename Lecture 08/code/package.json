@@ -1,0 +1,39 @@
+{
+  "name": "lecture-08-vector-embeddings-movie-recommendation",
+  "version": "1.0.0",
+  "description": "Movie Recommendation Engine using Vector Embeddings and Cosine Similarity — demonstrating REPRESENT → STORE → COMPARE → RANK pattern with OpenAI text-embedding-3-small",
+  "main": "dist/server.js",
+  "type": "module",
+  "scripts": {
+    "dev": "tsx watch src/server.ts",
+    "build": "tsc",
+    "start": "tsc && node dist/server.js"
+  },
+  "keywords": [
+    "fde",
+    "vector-embeddings",
+    "cosine-similarity",
+    "semantic-search",
+    "movie-recommendation",
+    "content-based-filtering",
+    "openai",
+    "typescript",
+    "express"
+  ],
+  "author": "Forward Deployed Engineering Team",
+  "license": "MIT",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "openai": "^4.85.4",
+    "zod": "^3.24.2"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.17",
+    "@types/express": "^5.0.0",
+    "@types/node": "^22.13.8",
+    "tsx": "^4.19.3",
+    "typescript": "^5.7.3"
+  }
+}

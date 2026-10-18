@@ -1,0 +1,136 @@
+### Lecture 08 — Movie Recommendation Engine
+### Test all endpoints with VS Code REST Client or curl
+
+@baseUrl = http://localhost:3008
+
+# ─── Health Check ─────────────────────────────────────────────────────────────
+
+GET {{baseUrl}}/health
+
+###
+
+# ─── Catalog Status ───────────────────────────────────────────────────────────
+# Check how many movies are embedded and ready
+
+GET {{baseUrl}}/api/movies/status
+
+###
+
+# ─── List All Movies ──────────────────────────────────────────────────────────
+# Browse the full catalog
+
+GET {{baseUrl}}/api/movies
+
+###
+
+# ─── FEATURE 1: Semantic Movie Search ─────────────────────────────────────────
+# User describes a movie in natural language — different words, same meaning
+
+### Test 1: Space survival (should surface The Martian, Gravity, Interstellar)
+POST {{baseUrl}}/api/movies/search
+Content-Type: application/json
+
+{
+  "query": "astronaut stranded alone trying to survive on another planet"
+}
+
+###
+
+### Test 2: Same idea, completely different words (tests semantic understanding)
+POST {{baseUrl}}/api/movies/search
+Content-Type: application/json
+
+{
+  "query": "person stuck far from earth trying to stay alive"
+}
+
+###
+
+### Test 3: Alien contact / linguistics
+POST {{baseUrl}}/api/movies/search
+Content-Type: application/json
+
+{
+  "query": "humans trying to communicate with extraterrestrial beings"
+}
+
+###
+
+### Test 4: Heist or dream manipulation
+POST {{baseUrl}}/api/movies/search
+Content-Type: application/json
+
+{
+  "query": "stealing secrets inside someone's mind and consciousness"
+}
+
+###
+
+### Test 5: Love story and tragedy
+POST {{baseUrl}}/api/movies/search
+Content-Type: application/json
+
+{
+  "query": "tragic love story between two people from different worlds"
+}
+
+###
+
+### Test 6: Superhero saving the world
+POST {{baseUrl}}/api/movies/search
+Content-Type: application/json
+
+{
+  "query": "heroes fight to save humanity from a powerful villain"
+}
+
+###
+
+### Test 7: Custom topN
+POST {{baseUrl}}/api/movies/search
+Content-Type: application/json
+
+{
+  "query": "dark city with a caped vigilante fighting crime",
+  "topN": 3
+}
+
+###
+
+# ─── FEATURE 2: Similar Movie Recommendation ──────────────────────────────────
+# User is watching a movie and clicks "Show Similar" — no text input needed
+
+### Similar to Interstellar (id: 1)
+GET {{baseUrl}}/api/movies/1/similar
+
+###
+
+### Similar to The Martian (id: 2)
+GET {{baseUrl}}/api/movies/2/similar
+
+###
+
+### Similar to The Dark Knight (id: 7)
+GET {{baseUrl}}/api/movies/7/similar
+
+###
+
+### Similar to Titanic (id: 10)
+GET {{baseUrl}}/api/movies/10/similar
+
+###
+
+### Similar to Inception (id: 13)
+GET {{baseUrl}}/api/movies/13/similar
+
+###
+
+### Similar to Interstellar — top 3 only
+GET {{baseUrl}}/api/movies/1/similar?topN=3
+
+###
+
+### 404 — movie ID that doesn't exist
+GET {{baseUrl}}/api/movies/999/similar
+
+###
