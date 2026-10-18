@@ -194,6 +194,27 @@ Welcome to the **Forward Deployed Engineer (FDE) & Generative AI Systems** repos
 
 ---
 
+## [Lecture 09: Vector Embedding Search & Storage](./Lecture%2009/notes/README.md)
+
+- **Source Materials:**
+  - PDF Slides: [`Lecture 09/notes/Notes.pdf`](./Lecture%2009/notes/Notes.pdf)
+  - Excalidraw Diagrams: [`Lecture 09/notes/Excalidraw-Notes.svg`](./Lecture%2009/notes/Excalidraw-Notes.svg)
+
+#### 📖 Chapter Notes Breakdown
+
+| Chapter | Module Title | Core Topics & Key Concepts |
+| :--- | :--- | :--- |
+| **[Chapter 01](./Lecture%2009/notes/01_The_Scale_Wall_Why_Toy_Vector_Search_Breaks.md)** | **The Scale Wall — Why Toy Vector Search Breaks** | The 30-movie Lecture 08 loop, what changes when `N` reaches 10K → 100M → 1B, storage vs search as two separate problems, the three hidden costs (comparison count, per-comparison work, bytes read), the `O(N × D)` preview, 10M × 1536 = 15.36 billion dimension operations, and the transition from exact search to approximate retrieval. |
+| **[Chapter 02](./Lecture%2009/notes/02_Why_Relational_Databases_Are_Not_Enough.md)** | **Why a Relational Database Is Not Enough** | The myth that relational databases cannot store vectors (JSON/JSONB, `bytea`, native `vector(D)`), exact/ordered SQL predicates vs graded similarity, the Netflix/Interstellar example, why a B-tree needs a total order, hybrid metadata filters, the cost of `SELECT`-then-score in application code, and when PostgreSQL + `pgvector` is genuinely sufficient. |
+| **[Chapter 03](./Lecture%2009/notes/03_Anatomy_of_a_Vector_Database.md)** | **Anatomy of a Vector Database** | The minimum record (ID + vector + metadata), production fields (document, tenant, model id/version, timestamps), embedding model vs vector database, collections with fixed dimensions/metric/index, the write path (chunk → embed → upsert → index), the read path (embed → candidates → filter → rescore → rerank), pre/post/filtered-ANN strategies, hybrid search and RRF, and the essential `VectorStore` interface in TypeScript-style pseudo-code. |
+| **[Chapter 04](./Lecture%2009/notes/04_Brute_Force_KNN_The_Correct_Baseline.md)** | **Brute Force and KNN — The Correct Baseline** | KNN definition and how to choose `K`, cosine vs dot vs L2 vs L1, normalization as a constant-factor optimization, the real cost of one comparison at 1536 dimensions, top-K with a bounded heap (`O(N log K)`), memory/disk bandwidth as the true bottleneck, storage math (6 KB per vector, 6 GB per million, 60 GB per 10M, 600 GB per 100M), exact nearest-neighbor guarantees, and when brute force is the right production choice. |
+| **[Chapter 05](./Lecture%2009/notes/05_Indexes_and_Why_Scalar_Indexes_Fail_for_Vectors.md)** | **Indexes and Why Scalar Indexes Fail for Vectors** | Why B-trees work (total order, selectivity, provable pruning), scanning vs indexed lookup, one-dimensional number-line search, the loss of order in 2D (`A = [2,8]`, `B = [5,3]`), k-d tree construction on `A–F`, the full `Q = [7,6]` search trace, the five-step branch-and-bound pruning rule (`planeDist < bestDist`), when pruning works, when it fails near a boundary, and complexity (`O(log N)` average, `O(N)` worst). |
+| **[Chapter 06](./Lecture%2009/notes/06_The_Curse_of_Dimensionality.md)** | **The Curse of Dimensionality** | The precise meaning (gradual degradation, not a cliff), boundary proliferation with `(1 − p)^D`, high-dimensional volume concentration (ball vs cube), distance concentration and why pruning margins vanish, trees inspecting 70–100% of the dataset, why real embeddings are clustered but still fatal to k-d trees, Matryoshka/dimension reduction, quantization, and the pivot from "prove irrelevance" to "measure recall". |
+| **[Chapter 07](./Lecture%2009/notes/07_Approximate_Nearest_Neighbor_Indexes.md)** | **Approximate Nearest Neighbor Indexes** | The recall/latency/memory/build/freshness bargain, IVF (`nlist`, `nprobe`, inverted lists, k-means training), HNSW (multi-layer graph, `M`, `efConstruction`, `efSearch`, greedy descent, best-first layer-0 search), product quantization (subvectors, codebooks, ADC, 32× compression), float16/int8/binary quantization, LSH bands and rows with collision probability, DiskANN/ScaNN/FAISS, full comparison table, two-stage retrieval with exact rescoring, tuning playbook, and common mistakes. |
+| **[Chapter 08](./Lecture%2009/notes/08_Production_Vector_Search_Design.md)** | **Production Vector Search Design** | The reference architecture (source of truth → CDC/queue → embed → index → retrieve → rerank), capacity planning with 20M vectors, ingestion patterns and freshness, deletes and orphaned chunks, zero-downtime model re-embedding with alias swaps, sharding/replication/multi-tenancy, offline metrics (recall@K, MRR, nDCG) and online metrics, golden sets, caching and semantic-cache risks, ACL/tenant security and prompt injection via retrieved text, vendor landscape, failure runbooks, production checklist, 20 consolidated takeaways, and 10 exercises. |
+
+---
+
 ## 🏗 Repository Structure
 
 ```text
@@ -294,7 +315,7 @@ Forward-Deployed-Engineer/
 │       ├── Notes.pdf         # Original Slide Presentation
 │       ├── Excalidraw-Notes.svg # Handwritten Conceptual Diagrams
 │       └── [01 - 07 Chapters].md # Individual Modular Chapters
-└── Lecture 08/
+├── Lecture 08/
     ├── code/                 # Lecture 08 Movie Recommendation Engine Codebase
     │   ├── package.json      # Dependencies (Express, OpenAI SDK, Zod, cors, tsx)
     │   ├── tsconfig.json     # TypeScript Configuration (ES2022/NodeNext)
@@ -316,6 +337,13 @@ Forward-Deployed-Engineer/
         ├── Notes.pdf         # Original Slide Presentation
         ├── Excalidraw-Notes.svg # Handwritten Conceptual Diagrams
         └── [01 - 07 Chapters].md # Individual Modular Chapters
+└── Lecture 09/
+    └── notes/                # Lecture 09 Notes & Visual Artifacts
+        ├── README.md         # Lecture 09 Index & Navigation
+        ├── Notes.pdf         # Original Slide Presentation
+        ├── Excalidraw-Notes.svg # Handwritten Conceptual Diagrams
+        └── [01 - 08 Chapters].md # Individual Modular Chapters
+
 ```
 
 ---
@@ -353,3 +381,12 @@ Forward-Deployed-Engineer/
 29. **Precompute What Is Stable; Process What Changes:** Movie descriptions are stable — embed them once at startup and reuse the vectors forever. User queries are changing — embed them per request. This single distinction is the difference between a scalable embedding system and one that re-embeds its entire catalog on every search.
 30. **Search and Recommendation Are the Same Operation:** Semantic search and similar-movie recommendation share one ranking engine and one cosine-similarity implementation. The only difference is where the starting vector comes from: embed the query, or reuse a movie's precomputed vector. Design the shared core once.
 31. **Match the Tool to the Problem:** Recommendation is a ranking problem, not a generation problem. Embeddings plus cosine similarity produce the ranking cheaply and deterministically; an LLM is optional and belongs *after* retrieval, explaining the results rather than deciding them.
+32. **Scale Changes the Algorithm, Not the Math:** The 30-movie cosine loop is still the specification. At 100M vectors, `O(N × D)` per query becomes 100M comparisons and tens of gigabytes of memory reads — the operation is right, the cost model is fatal.
+33. **Storage and Search Are Separate Problems:** A relational database can hold vectors as JSON, blobs, or a native `vector` type. The unsolved part is similarity search, because a B-tree needs a total order and embeddings do not have one.
+34. **A Vector Database Does Not Understand Meaning:** The embedding model turns meaning into coordinates; the vector database stores and retrieves those coordinates. Mixing model versions silently mixes coordinate systems.
+35. **Brute Force Is the Ground Truth:** Exact KNN checks every vector, returns 100% of the true top-K, and is the only way to measure whether an approximate index is any good. Never tune ANN without an exact baseline.
+36. **Every Index Is a Pruning Proof:** A B-tree proves a sorted subtree irrelevant; a k-d tree proves a region irrelevant when `planeDist >= bestDist`. The curse of dimensionality is the collapse of that proof, not of the arithmetic.
+37. **High Dimensions Kill Geometric Pruning:** With 1536 dimensions, a query is almost always near some splitting plane; distance concentration removes the margin between nearest and farthest. A k-d tree inspects 70–100% of the data and can be slower than a flat scan.
+38. **Approximation Must Be Measured, Not Assumed:** IVF, HNSW, PQ, and LSH all trade recall for speed. The correct production contract is an explicit recall@K target validated on a versioned golden set, plus p95 latency and freshness budgets.
+39. **Retrieve Cheaply, Rescore Exactly:** Use the ANN index for candidate generation, then recompute full-precision similarity on a few hundred candidates and apply business ranking. Final recall can never exceed candidate-stage recall.
+40. **The Index Is a Derived Artifact:** Design it to be rebuilt from the source of truth, versioned by embedding model, migrated through a new collection plus alias swap, and filtered by tenant/ACL inside the query. Operability is part of correctness.
