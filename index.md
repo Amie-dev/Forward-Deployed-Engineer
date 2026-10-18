@@ -171,6 +171,29 @@ Welcome to the **Forward Deployed Engineer (FDE) & Generative AI Systems** repos
 
 ---
 
+## [Lecture 08: Vector Embeddings Project — Building a Movie Recommendation System](./Lecture%2008/notes/README.md)
+
+- **Source Materials:**
+  - PDF Slides: [`Lecture 08/notes/Notes.pdf`](./Lecture%2008/notes/Notes.pdf)
+  - Excalidraw Diagrams: [`Lecture 08/notes/Excalidraw-Notes.svg`](./Lecture%2008/notes/Excalidraw-Notes.svg)
+- **Hands-on Production Codebase:**
+  - 💻 **[Lecture 08 Movie Recommendation Engine (Node.js + Express + TypeScript)](./Lecture%2008/code/README.md)**
+  - 🛠️ **[Step-by-Step Implementation Guide](./Lecture%2008/code/implementations%20guide/README.md)** (00 → 08 chapters, block-by-block code tutorial)
+
+#### 📖 Chapter Notes Breakdown
+
+| Chapter | Module Title | Core Topics & Key Concepts |
+| :--- | :--- | :--- |
+| **[Chapter 01](./Lecture%2008/notes/01_Embeddings_and_The_Problem_of_Meaning.md)** | **Embeddings and the Problem of Meaning** | The symbol-vs-meaning gap, why mathematics requires numbers, text → fixed-size vector representation, why individual dimensions have no human-readable labels, how semantic closeness becomes geometric closeness, and the distinction between an embedding model and a generative LLM. |
+| **[Chapter 02](./Lecture%2008/notes/02_Why_Not_Just_Use_an_LLM.md)** | **Why Not Just Use an LLM?** | The naive “send the whole catalog to the LLM” approach, context-window ceilings, repeated and wasted inference work, why ranking does not require text generation, cost and latency comparison, matching the tool to the problem, and the hybrid pattern: embeddings for retrieval + LLM for explanation (RAG). |
+| **[Chapter 03](./Lecture%2008/notes/03_Precomputation_The_Key_Engineering_Insight.md)** | **Precomputation — The Key Engineering Insight** | Stable data vs. changing data, the two-phase offline/online architecture, “compute once, query many times,” batch-embedding the catalog at startup vs. embedding each query on demand, estimated API-call savings at scale, storage choices (in-memory, `pgvector`, Pinecone, Qdrant), and when vectors must be recomputed. |
+| **[Chapter 04](./Lecture%2008/notes/04_Semantic_Search_and_Movie_Recommendation.md)** | **Semantic Search and Movie Recommendation** | Why keyword search misses semantically equivalent queries, the complete semantic-search flow (query → embed → compare → sort), the similar-movie flow using a precomputed vector, the shared engine with two different starting vectors, content-based vs. collaborative filtering, and what production recommenders add on top. |
+| **[Chapter 05](./Lecture%2008/notes/05_Cosine_Similarity_Measuring_Closeness.md)** | **Cosine Similarity — Measuring Closeness** | Euclidean distance and its magnitude sensitivity for text, dot product and vector direction, the cosine formula `(A · B) / (‖A‖ × ‖B‖)`, score range `−1 → +1`, zero-vector and dimension-mismatch guards, single-pass implementation, `O(N × D)` scoring complexity, and why direction beats distance for embeddings. |
+| **[Chapter 06](./Lecture%2008/notes/06_Core_Mental_Model_REPRESENT_STORE_COMPARE_RANK.md)** | **Core Mental Model: REPRESENT → STORE → COMPARE → RANK** | The four universal operations behind every embedding system: convert meaning to numbers, persist the vectors, measure closeness, and sort by score. What to represent (movie descriptions vs. user queries), precomputed storage, cosine comparison, top-N ranking, and how the same pattern powers semantic search, recommendation, and RAG. |
+| **[Chapter 07](./Lecture%2008/notes/07_Complete_System_Design_and_Applications.md)** | **Complete System Design and Applications** | The full movie-platform data model, Phase 1 catalog construction, Phase 2 request serving, end-to-end architecture, the optional LLM explanation layer (the bridge to RAG), applications beyond movies (support, e-commerce, recruiting, code, healthcare), and production next steps: vector databases, ANN indexes (HNSW/IVF), and hybrid search. |
+
+---
+
 ## 🏗 Repository Structure
 
 ```text
@@ -265,9 +288,31 @@ Forward-Deployed-Engineer/
 │       ├── Excalidraw-Notes.svg # Architectural & Conceptual Diagrams
 │       ├── Lecture_06_Complete_Notes.md # Consolidated Master Document
 │       └── [01 - 10 Chapters].md # Individual Modular Chapters
-└── Lecture 07/
-    └── notes/                # Lecture 07 Notes & Visual Artifacts
-        ├── README.md         # Lecture 07 Index & Navigation
+├── Lecture 07/
+│   └── notes/                # Lecture 07 Notes & Visual Artifacts
+│       ├── README.md         # Lecture 07 Index & Navigation
+│       ├── Notes.pdf         # Original Slide Presentation
+│       ├── Excalidraw-Notes.svg # Handwritten Conceptual Diagrams
+│       └── [01 - 07 Chapters].md # Individual Modular Chapters
+└── Lecture 08/
+    ├── code/                 # Lecture 08 Movie Recommendation Engine Codebase
+    │   ├── package.json      # Dependencies (Express, OpenAI SDK, Zod, cors, tsx)
+    │   ├── tsconfig.json     # TypeScript Configuration (ES2022/NodeNext)
+    │   ├── .env.example      # Environment Configuration Template
+    │   ├── test-requests.http# REST Client / Postman Request Collection
+    │   ├── README.md         # Codebase Architecture & Running Instructions
+    │   ├── implementations guide/ # Step-by-Step Implementation Guide (00 - 08 Chapters)
+    │   ├── movies.json       # 30-movie dataset used by the standalone jsDemo
+    │   └── src/
+    │       ├── app.ts        # Express Application & Middleware
+    │       ├── server.ts     # Bootstrap: Build Catalog, Then Listen
+    │       ├── config/       # Boot-time Zod Environment Validation
+    │       ├── data/         # 18-Movie Typed Catalog
+    │       ├── types/        # Domain & API Contracts
+    │       ├── services/     # EmbeddingService, VectorStore, RecommendationService
+    │       └── routes/       # Catalog, Search, Similar-Movie & Status Endpoints
+    └── notes/                # Lecture 08 Notes & Visual Artifacts
+        ├── README.md         # Lecture 08 Index & Navigation
         ├── Notes.pdf         # Original Slide Presentation
         ├── Excalidraw-Notes.svg # Handwritten Conceptual Diagrams
         └── [01 - 07 Chapters].md # Individual Modular Chapters
@@ -305,3 +350,6 @@ Forward-Deployed-Engineer/
 26. **Every Embedding Is a Vector; Not Every Vector Is an Embedding:** A feature vector `[height, weight, age]` is human-designed. An embedding `[0.21, -0.71, 0.45, ...]` is a *learned* position in a continuous space. The distinction matters for understanding what mathematical operations are meaningful.
 27. **Context Determines Meaning:** Words in similar contexts develop similar embeddings (Firth's principle: *"You shall know a word by the company it keeps"*). `king` and `queen` cluster together; `banana` drifts to a separate region — with no human labeling, purely from training data patterns.
 28. **Embeddings Unlock an Entire Suite of Operations:** Once objects are vectors, similarity search, nearest-neighbor retrieval, clustering, classification, ranking, recommendation, and RAG all become possible using nothing but distance and angle calculations over that learned space.
+29. **Precompute What Is Stable; Process What Changes:** Movie descriptions are stable — embed them once at startup and reuse the vectors forever. User queries are changing — embed them per request. This single distinction is the difference between a scalable embedding system and one that re-embeds its entire catalog on every search.
+30. **Search and Recommendation Are the Same Operation:** Semantic search and similar-movie recommendation share one ranking engine and one cosine-similarity implementation. The only difference is where the starting vector comes from: embed the query, or reuse a movie's precomputed vector. Design the shared core once.
+31. **Match the Tool to the Problem:** Recommendation is a ranking problem, not a generation problem. Embeddings plus cosine similarity produce the ranking cheaply and deterministically; an LLM is optional and belongs *after* retrieval, explaining the results rather than deciding them.
