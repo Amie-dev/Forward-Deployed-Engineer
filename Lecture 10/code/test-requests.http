@@ -1,0 +1,137 @@
+@host = http://localhost:3000
+@json = application/json
+
+### Health — provider, metric, document count, active index
+GET {{host}}/health
+
+### List documents (newest insertion order, no vectors)
+GET {{host}}/api/documents?limit=5
+
+### List only one tenant
+GET {{host}}/api/documents?limit=5&tenant=acme
+
+### Upsert one document (201 first time, 200 on update)
+PUT {{host}}/api/documents/doc-101
+Content-Type: {{json}}
+
+{
+  "text": "HNSW keeps a multi-layer proximity graph and searches it with a bounded beam.",
+  "payload": {
+    "tenant": "acme",
+    "category": "ann",
+    "year": 2026
+  }
+}
+
+### Read one document (add ?includeVector=true to see the 128-float vector)
+GET {{host}}/api/documents/doc-101
+
+### Batch upsert (max 128)
+POST {{host}}/api/documents/batch
+Content-Type: {{json}}
+
+{
+  "documents": [
+    {
+      "id": "doc-102",
+      "text": "Product quantization stores 8-bit codeword indices instead of floats.",
+      "payload": { "tenant": "acme", "category": "ann", "year": 2026 }
+    },
+    {
+      "id": "doc-103",
+      "text": "pgvector adds HNSW and IVFFlat indexes to PostgreSQL.",
+      "payload": { "tenant": "globex", "category": "storage", "year": 2026 }
+    }
+  ]
+}
+
+### Dense query — exact flat index (ground truth)
+POST {{host}}/api/query
+Content-Type: {{json}}
+
+{
+  "query": "graph based approximate nearest neighbour index",
+  "k": 3
+}
+
+### Dense query — IVF, tune nprobe
+POST {{host}}/api/query
+Content-Type: {{json}}
+
+{
+  "query": "graph based approximate nearest neighbour index",
+  "k": 3,
+  "index": "ivf",
+  "nprobe": 2
+}
+
+### Dense query — HNSW, tune efSearch
+POST {{host}}/api/query
+Content-Type: {{json}}
+
+{
+  "query": "graph based approximate nearest neighbour index",
+  "k": 3,
+  "index": "hnsw",
+  "efSearch": 40
+}
+
+### Dense query — PQ with exact rescoring
+POST {{host}}/api/query
+Content-Type: {{json}}
+
+{
+  "query": "graph based approximate nearest neighbour index",
+  "k": 3,
+  "index": "pq",
+  "rescore": 20
+}
+
+### Metadata filter (tenant + category), pre-filter semantics
+POST {{host}}/api/query
+Content-Type: {{json}}
+
+{
+  "query": "graph based approximate nearest neighbour index",
+  "k": 3,
+  "filter": {
+    "$and": [
+      { "tenant": "acme" },
+      { "category": "ann" },
+      { "year": { "$gte": 2025 } }
+    ]
+  }
+}
+
+### Hybrid retrieval — dense + BM25 fused with RRF
+POST {{host}}/api/query
+Content-Type: {{json}}
+
+{
+  "query": "HNSW graph",
+  "k": 3,
+  "hybrid": true
+}
+
+### Admin stats — count, vector bytes, index memory, provider
+GET {{host}}/api/admin/stats
+
+### Build an index explicitly (flat | ivf | hnsw | pq)
+POST {{host}}/api/admin/index
+Content-Type: {{json}}
+
+{
+  "kind": "pq",
+  "pq": { "m": 32, "ksub": 24, "iterations": 8 }
+}
+
+### Re-seed the 24-document demo corpus
+POST {{host}}/api/admin/seed
+Content-Type: {{json}}
+
+{
+  "reset": false
+}
+
+### Delete one document (204, then GET returns 404)
+DELETE {{host}}/api/documents/doc-101

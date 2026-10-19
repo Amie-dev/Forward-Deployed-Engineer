@@ -1,0 +1,57 @@
+{
+  "name": "lecture-10-vector-databases",
+  "version": "1.0.0",
+  "description": "Lecture 10 — embeddings, similarity metrics, exact KNN, IVF, HNSW, product quantization, a CRUD vector store, and Qdrant/pgvector adapters. Learning-focused, production-shaped TypeScript.",
+  "main": "dist/server.js",
+  "type": "module",
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "scripts": {
+    "dev": "tsx watch src/server.ts",
+    "build": "tsc",
+    "start": "node dist/server.js",
+    "verify": "tsx src/scripts/verify.ts",
+    "demo": "tsx src/scripts/demo.ts",
+    "bench": "tsx src/scripts/benchmark.ts",
+    "services:check": "tsx src/scripts/check-services.ts",
+    "seed:qdrant": "tsx src/scripts/seed.ts qdrant",
+    "seed:pgvector": "tsx src/scripts/seed.ts pgvector",
+    "adapter:crud:qdrant": "tsx src/scripts/adapter-crud.ts qdrant",
+    "adapter:crud:pgvector": "tsx src/scripts/adapter-crud.ts pgvector",
+    "qdrant:up": "docker run --rm -p 6333:6333 -p 6334:6334 qdrant/qdrant",
+    "pgvector:up": "docker run --rm -e POSTGRES_PASSWORD=postgres -p 5432:5432 pgvector/pgvector:pg17"
+  },
+  "keywords": [
+    "fde",
+    "genai",
+    "embeddings",
+    "vector-database",
+    "knn",
+    "ivf",
+    "hnsw",
+    "product-quantization",
+    "qdrant",
+    "pgvector",
+    "typescript"
+  ],
+  "author": "Forward Deployed Engineering Team",
+  "license": "MIT",
+  "dependencies": {
+    "@qdrant/js-client-rest": "^1.19.0",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "openai": "^4.85.4",
+    "pg": "^8.13.1",
+    "zod": "^3.24.2"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.17",
+    "@types/express": "^5.0.0",
+    "@types/node": "^22.13.8",
+    "@types/pg": "^8.11.10",
+    "tsx": "^4.19.3",
+    "typescript": "^5.7.3"
+  }
+}
