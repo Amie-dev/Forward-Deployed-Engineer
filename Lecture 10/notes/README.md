@@ -20,6 +20,8 @@
 | [**Complete**](./Lecture_10_Complete_Notes.md) | **Complete Consolidated Notes** | All nine chapters condensed into one reference with cheat sheet, glossary and self-check |
 
 > 📄 **Prefer a single document?** Read the **[Lecture 10 — Complete Consolidated Notes](./Lecture_10_Complete_Notes.md)**. It keeps the load-bearing ideas, numbers and decision tables, and links back to the chapters for derivations and full pseudo-code.
+>
+> 💻 **Companion code:** **[Lecture 10 codebase](../code/README.md)** · 🛠️ **[Implementation guide](../code/implementations%20guide/README.md)** — full TypeScript implementations of IVF, HNSW, PQ, a CRUD vector store, Qdrant/pgvector adapters and a verified HTTP API.
 
 ---
 

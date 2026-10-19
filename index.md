@@ -218,6 +218,32 @@ Welcome to the **Forward Deployed Engineer (FDE) & Generative AI Systems** repos
 
 ---
 
+## [Lecture 10: Deep Dive into Vector Databases and ANN Algorithms](./Lecture%2010/notes/README.md)
+
+- **Source Materials:**
+  - PDF Slides: [`Lecture 10/notes/Notes.pdf`](./Lecture%2010/notes/Notes.pdf)
+  - Excalidraw Diagrams: [`Lecture 10/notes/Excalidraw-Notes.svg`](./Lecture%2010/notes/Excalidraw-Notes.svg)
+- **Hands-on Production Codebase:**
+  - 💻 **[Lecture 10 Vector Database & ANN Codebase (Node.js + Express + TypeScript)](./Lecture%2010/code/README.md)** — IVF, HNSW, PQ, CRUD store, filters, BM25/RRF, Qdrant and pgvector adapters
+  - 🛠️ **[Step-by-Step Implementation Guide](./Lecture%2010/code/implementations%20guide/README.md)** (00 → 10 chapters, full source + block-by-block explanations)
+- **Complete Consolidated Notes:** [`Lecture_10_Complete_Notes.md`](./Lecture%2010/notes/Lecture_10_Complete_Notes.md) — 9 chapters synthesised with capacity maths, index-selection tables, cheat sheet, glossary, misconceptions and self-check
+
+#### 📖 Chapter Notes Breakdown
+
+| Chapter | Module Title | Core Topics & Key Concepts |
+| :--- | :--- | :--- |
+| **[Chapter 01](./Lecture%2010/notes/01_Embeddings_and_the_Geometry_of_Meaning.md)** | **Embeddings and the Geometry of Meaning** | Meaning → coordinates, dimensions, what gets embedded (documents, chunks, queries), keyword vs semantic vs hybrid search, embedding model vs generative LLM, the model-compatibility rule, choosing a model, and the embedding contract in TypeScript-style pseudo-code. |
+| **[Chapter 02](./Lecture%2010/notes/02_Similarity_Distance_and_Metric_Consistency.md)** | **Similarity, Distance and Metric Consistency** | Dot product, cosine similarity, Euclidean and Manhattan distance, a full worked comparison where the metrics disagree, normalisation and the cosine/dot collision, metric consistency across embedding model → index → query, what a score means, and numeric precision guards. |
+| **[Chapter 03](./Lecture%2010/notes/03_Exact_KNN_and_the_ANN_Bargain.md)** | **Exact KNN and the ANN Bargain** | The baseline loop, the true cost of one query (`O(N × D)`), the Delhi coffee-shop analogy, what ANN actually approximates, why it misses, Recall@K, the speed–recall–memory spectrum, two-stage retrieval and the recall ceiling, and when exact search is still correct. |
+| **[Chapter 04](./Lecture%2010/notes/04_IVF_Inverted_File_Index.md)** | **IVF — Inverted File Index** | Divide the space, centroids, k-means training, inverted lists, query → probe → candidates, the 1M-vector arithmetic, the boundary problem, `nlist`/`nprobe`, IVF variants (IVF-Flat, IVF-PQ, IVF-SQ), updates, drift, filtering and tuning. |
+| **[Chapter 05](./Lecture%2010/notes/05_HNSW_Hierarchical_Navigable_Small_World.md)** | **HNSW — Hierarchical Navigable Small World** | From partitioning to connectivity, search by navigation, the flat-graph problem, the highway analogy, exponential layer sampling, insertion and query algorithms, `M`/`M0`/`efConstruction`/`efSearch`, memory accounting, build cost, tombstones, the filtered-search weakness, IVF vs HNSW and a tuning playbook. |
+| **[Chapter 06](./Lecture%2010/notes/06_Vector_Compression_and_Product_Quantization.md)** | **Vector Compression and Product Quantization** | Why float32 is expensive, scalar/binary quantization, PQ split → codebooks → codes, 1536-dimension worked example, ADC, lossy compression, exact rescoring, IVF-PQ/HNSW-PQ combinations, capacity planning, and a compression decision table. |
+| **[Chapter 07](./Lecture%2010/notes/07_Anatomy_of_a_Vector_Database.md)** | **Anatomy of a Vector Database** | The five layers, the record model (id + vector + payload), collections/points/segments, write and read paths, pre- vs post- vs filter-aware search, hybrid search and RRF, lifecycle and source-of-truth rules, what a vector DB does not do, and a design checklist. |
+| **[Chapter 08](./Lecture%2010/notes/08_Qdrant_pgvector_and_the_Storage_Decision.md)** | **Qdrant, pgvector and the Storage Decision** | Qdrant object model, Docker, the JavaScript client, collections, upsert/query/filter, payload indexes, multi-tenancy, operations and snapshots; pgvector schema, operators, HNSW/IVFFlat, dimension limits and iterative scans; the wider vendor landscape, decision framework, cost and failure modes. |
+| **[Chapter 09](./Lecture%2010/notes/09_Production_RAG_Retrieval_Systems.md)** | **Production RAG Retrieval Systems** | Retrieval architecture, chunking as the ceiling, query understanding, candidate generation, reranking, context assembly, retrieval vs generation evaluation, latency/cost budgets, freshness, multi-tenant security, a failure runbook, and a capstone retrieval project — generation deferred to Lecture 11. |
+
+---
+
 ## 🏗 Repository Structure
 
 ```text
@@ -342,13 +368,41 @@ Forward-Deployed-Engineer/
         ├── Excalidraw-Notes.svg # Handwritten Conceptual Diagrams
         ├── Lecture_08_Complete_Notes.md # Consolidated Master Document
         └── [01 - 07 Chapters].md # Individual Modular Chapters
-└── Lecture 09/
-    └── notes/                # Lecture 09 Notes & Visual Artifacts
-        ├── README.md         # Lecture 09 Index & Navigation
+├── Lecture 09/
+│   └── notes/                # Lecture 09 Notes & Visual Artifacts
+│       ├── README.md         # Lecture 09 Index & Navigation
+│       ├── Notes.pdf         # Original Slide Presentation
+│       ├── Excalidraw-Notes.svg # Handwritten Conceptual Diagrams
+│       ├── Lecture_09_Complete_Notes.md # Consolidated Master Document
+│       └── [01 - 08 Chapters].md # Individual Modular Chapters
+└── Lecture 10/
+    ├── code/                 # Lecture 10 Vector Database & ANN Codebase
+    │   ├── package.json      # Express, Zod, OpenAI SDK, Qdrant client, pg, tsx
+    │   ├── tsconfig.json     # Strict TypeScript (ES2022 / NodeNext)
+    │   ├── .env.example      # Provider, metric, index, Qdrant, pgvector config
+    │   ├── README.md         # Architecture, quick start, API and measured results
+    │   ├── test-requests.http # Every endpoint with example bodies
+    │   ├── implementations guide/ # 00 - 10 chapters (full source + explanations)
+    │   └── src/
+    │       ├── app.ts        # Express app, health, error mapping
+    │       ├── server.ts     # Boot, seed, eager index, graceful shutdown
+    │       ├── config/       # Zod environment validation
+    │       ├── types/        # Vector, record, filter and index contracts
+    │       ├── lib/          # Heap, top-K, RNG, async, errors, HTTP wrapper
+    │       ├── core/         # Metrics, exact KNN, k-means, IVF, HNSW, PQ, evaluation
+    │       ├── embeddings/   # Provider factory, mock, OpenAI, Gemini, cache
+    │       ├── store/        # CRUD vector store, filters, BM25 + RRF
+    │       ├── adapters/     # Official Qdrant client and pg/pgvector
+    │       ├── routes/       # Documents, query and admin APIs
+    │       ├── services/     # Corpus seeding
+    │       ├── data/         # 24-document corpus, synthetic generator
+    │       └── scripts/      # verify, demo, benchmark, seed, adapter CRUD
+    └── notes/                # Lecture 10 Notes & Visual Artifacts
+        ├── README.md         # Lecture 10 Index & Navigation
         ├── Notes.pdf         # Original Slide Presentation
         ├── Excalidraw-Notes.svg # Handwritten Conceptual Diagrams
-        ├── Lecture_09_Complete_Notes.md # Consolidated Master Document
-        └── [01 - 08 Chapters].md # Individual Modular Chapters
+        ├── Lecture_10_Complete_Notes.md # Consolidated Master Document
+        └── [01 - 09 Chapters].md # Individual Modular Chapters
 
 ```
 

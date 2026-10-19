@@ -21,6 +21,7 @@ export interface QdrantRecord {
 export interface QdrantHit {
   id: string;
   score: number;
+  distance: number;
   payload: Record<string, unknown>;
   text?: string;
 }
@@ -109,7 +110,7 @@ export class QdrantAdapter {
       with_vector: withVector,
     });
     if (points.length === 0) return null;
-    return toHit(points[0]);
+    return toHit(points[0], this.metric);
   }
 
   async delete(ids: readonly string[]): Promise<void> {
@@ -142,7 +143,7 @@ export class QdrantAdapter {
           ? { hnsw_ef: options.efSearch, exact: false }
           : undefined,
     });
-    return response.points.map(toHit);
+    return response.points.map((point) => toHit(point, this.metric));
   }
 
   async count(): Promise<number> {
@@ -157,7 +158,7 @@ export class QdrantAdapter {
       with_payload: true,
       with_vector: false,
     });
-    return result.points.map(toHit);
+    return result.points.map((point) => toHit(point, this.metric));
   }
 
   async health(): Promise<{ ok: boolean; collections: string[]; count: number }> {
@@ -201,17 +202,25 @@ function distanceName(metric: Metric): 'Cosine' | 'Dot' | 'Euclid' | 'Manhattan'
   }
 }
 
-function toHit(point: Schemas['ScoredPoint'] | Schemas['Record']): QdrantHit {
+function toHit(point: Schemas['ScoredPoint'] | Schemas['Record'], metric: Metric): QdrantHit {
   const payload = { ...(point.payload ?? {}) } as Record<string, unknown>;
   const external = payload._external_id;
   const text = payload.text;
   delete payload._external_id;
   delete payload.text;
-  const score = 'score' in point && typeof point.score === 'number' ? point.score : 0;
+
+  // Qdrant returns similarity for cosine/dot and distance for euclid/manhattan.
+  // Normalize to the codebase contract: score is always higher-is-better.
+  // get()/scroll() have no query, so they carry no meaningful score.
+  const hasScore = 'score' in point && typeof point.score === 'number';
+  const raw = hasScore ? point.score : 0;
+  const score = !hasScore ? 0 : metric === 'cosine' || metric === 'dot' ? raw : -raw;
+  const distance = !hasScore ? 0 : metric === 'cosine' ? 1 - raw : metric === 'dot' ? -raw : raw;
 
   return {
     id: typeof external === 'string' ? external : String(point.id),
     score,
+    distance,
     payload,
     text: typeof text === 'string' ? text : undefined,
   };

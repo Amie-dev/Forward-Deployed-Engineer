@@ -137,7 +137,7 @@ PQ recall@10   = 96.4%    m=8, ksub=64, rescore=40
 | :--- | ---: | ---: | ---: | ---: |
 | flat (exact) | 0 | 0 KB | ~1 ms | 100% |
 | IVF (`nprobe=1`) | ~300 | 22 KB | ~0.3 ms | ~74% |
-| HNSW (`efSearch=12`) | ~3,000 | 387 KB | ~0.07 ms | ~83% |
+| HNSW (`efSearch=12`) | ~3,900 | 387 KB | ~0.07 ms | ~83% |
 | PQ + rescore 20 | ~660 | 59 KB | ~0.3 ms | ~77% |
 
 Exact numbers vary by machine. The point is the **shape**: ANN trades measurable recall for latency, and PQ trades precision for memory.
