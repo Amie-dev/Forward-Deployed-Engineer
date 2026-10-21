@@ -8,6 +8,10 @@ separately from generation.
 It is deliberately basic — one class per stage, no framework — but every decision
 that decides whether RAG works in production is present and configurable.
 
+> **Guided tour:** [`implementations guide/`](./implementations%20guide/README.md)
+> walks this codebase in 15 chapters (00 → 14), with the full source of every file
+> and a block-by-block explanation of what it does and why.
+
 > `index.js` is the lecture's original single-file sample (OpenAI + Pinecone +
 > `pdf-parse`). It is kept for reference. Everything below lives in `src/` and
 > also runs offline.

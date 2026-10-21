@@ -244,6 +244,32 @@ Welcome to the **Forward Deployed Engineer (FDE) & Generative AI Systems** repos
 
 ---
 
+## [Lecture 11: Retrieval-Augmented Generation (RAG)](./Lecture%2011/notes/README.md)
+
+- **Source Materials:**
+  - Excalidraw Diagrams: [`Lecture 11/notes/Excalidraw-Notes.svg`](./Lecture%2011/notes/Excalidraw-Notes.svg)
+  - Lecture sample code: [`Lecture 11/code/index.js`](./Lecture%2011/code/index.js)
+- **Hands-on Production Codebase:**
+  - 💻 **[Lecture 11 RAG Codebase (Node.js + Express + TypeScript)](./Lecture%2011/code/README.md)** — structure-aware chunking, embeddings (OpenAI + deterministic offline), memory and Pinecone stores, hybrid retrieval with a score floor, grounded prompt with `[n]` citations, citation verification, conversation state with query rewriting, golden-set evaluation, and an HTTP API with a full request trace
+  - 🛠️ **[Step-by-Step Implementation Guide](./Lecture%2011/code/implementations%20guide/README.md)** (00 → 14 chapters, full source + block-by-block explanations)
+- **Complete Consolidated Notes:** [`Lecture_11_Complete_Notes.md`](./Lecture%2011/notes/Lecture_11_Complete_Notes.md) — 9 chapters synthesised with cheat sheet, decision tables, misconceptions, glossary and 25 self-check questions
+
+#### 📖 Chapter Notes Breakdown
+
+| Chapter | Module Title | Core Topics & Key Concepts |
+| :--- | :--- | :--- |
+| **[Chapter 01](./Lecture%2011/notes/01_The_Stateless_Model.md)** | **The Stateless Model** | Parametric vs non-parametric memory, the inference loop, why hallucination is a mechanism rather than a bug, knowledge cutoffs, the "capital of India" and "What is my name?" demos, statelessness and history, context-window capacity vs attention, and why bigger windows do not replace retrieval. |
+| **[Chapter 02](./Lecture%2011/notes/02_RAG_The_Open_Book_Architecture.md)** | **RAG — The Open Book Architecture** | The open-book analogy, the two pipelines (offline ingestion, online serving), the seven serving steps, what RAG fixes and what it cannot, the system-prompt-only anti-pattern, retrieve-then-read variants, and the failure modes that survive a correct architecture. |
+| **[Chapter 03](./Lecture%2011/notes/03_Ingestion_Documents_to_Chunks.md)** | **Ingestion — Documents to Chunks** | PDF extraction hazards, cleaning and normalisation, chunking strategies (fixed, recursive, semantic, parent-child), the `1–1000 / 801–1800` overlap trace from the board, chunk-size arithmetic, metadata and context headers, deterministic ids, the orphan-chunk problem, and batching. |
+| **[Chapter 04](./Lecture%2011/notes/04_Embeddings_at_Query_Time.md)** | **Embeddings at Query Time** | The embedding space contract, model selection, Matryoshka dimensions, symmetric vs asymmetric encoding and prefixes, normalisation, truncation, the cost of changing a model, and why the model and dimension belong in the schema. |
+| **[Chapter 05](./Lecture%2011/notes/05_The_Vector_Index.md)** | **The Vector Index** | The record model, namespaces (`policies`), query anatomy, score calibration, top-K, metadata filters, hybrid search with RRF, MMR, reranking, consistency and freshness, and the Pinecone query from the board traced line by line. |
+| **[Chapter 06](./Lecture%2011/notes/06_Grounded_Generation.md)** | **Grounded Generation** | The four-clause prompt contract, the exact refusal sentence, context ordering and the U-shaped attention curve, citation markers, fabrication guards, and prompt injection as an authority and capability problem. |
+| **[Chapter 07](./Lecture%2011/notes/07_Conversation_State_and_Memory.md)** | **Conversation State and Memory** | Statelessness as an application problem, history as a retrieval problem, query condensation ("And for shoes?"), memory strategies and their costs, quadratic history cost, session ownership and IDOR, TTL, deletion, and history poisoning. |
+| **[Chapter 08](./Lecture%2011/notes/08_Evaluation_and_Debugging.md)** | **Evaluation and Debugging** | Golden sets, recall@K / MRR / nDCG with a worked example, faithfulness and citation validity, refusal correctness, the retrieval-vs-generation 2×2, LLM-as-judge biases, the debug tree, and the trace every request must emit. |
+| **[Chapter 09](./Lecture%2011/notes/09_Production_System_Design.md)** | **Production System Design** | SLOs, the `/api/query` contract, security model, degradation paths, caching keyed by `corpusVersion`, the cost model, blue/green re-indexing, the failure runbook, build-vs-buy, and the capstone acceptance test. |
+
+---
+
 ## 🏗 Repository Structure
 
 ```text
@@ -375,7 +401,7 @@ Forward-Deployed-Engineer/
 │       ├── Excalidraw-Notes.svg # Handwritten Conceptual Diagrams
 │       ├── Lecture_09_Complete_Notes.md # Consolidated Master Document
 │       └── [01 - 08 Chapters].md # Individual Modular Chapters
-└── Lecture 10/
+├── Lecture 10/
     ├── code/                 # Lecture 10 Vector Database & ANN Codebase
     │   ├── package.json      # Express, Zod, OpenAI SDK, Qdrant client, pg, tsx
     │   ├── tsconfig.json     # Strict TypeScript (ES2022 / NodeNext)
@@ -402,6 +428,38 @@ Forward-Deployed-Engineer/
         ├── Notes.pdf         # Original Slide Presentation
         ├── Excalidraw-Notes.svg # Handwritten Conceptual Diagrams
         ├── Lecture_10_Complete_Notes.md # Consolidated Master Document
+        └── [01 - 09 Chapters].md # Individual Modular Chapters
+└── Lecture 11/
+    ├── code/                 # Lecture 11 RAG Codebase
+    │   ├── package.json      # Express, Zod, OpenAI SDK, Pinecone, tiktoken, unpdf
+    │   ├── tsconfig.json     # Strict TypeScript (ES2022 / NodeNext)
+    │   ├── .env.example      # Providers, chunking, retrieval, sessions, store
+    │   ├── README.md         # Architecture, quick start, API and measured results
+    │   ├── test-requests.http # Every endpoint with example bodies
+    │   ├── index.js          # The lecture's original single-file sample
+    │   ├── implementations guide/ # 00 - 14 chapters (full source + explanations)
+    │   ├── eval/             # golden.json — 12 questions, 10 answerable
+    │   ├── knowledge/        # refund, shipping and warranty policy corpus
+    │   └── src/
+    │       ├── app.ts        # Express app, routes, validation, error mapping
+    │       ├── server.ts     # Boot, auto-ingest, graceful shutdown
+    │       ├── container.ts  # Composition root (the only wiring file)
+    │       ├── rag.service.ts # ingest() + ask() + trace
+    │       ├── config/       # Zod environment validation
+    │       ├── types/        # Chunk, record, match, citation, trace contracts
+    │       ├── lib/          # Text, vectors, retry, errors
+    │       ├── ingest/       # Document loader and token chunker
+    │       ├── embeddings/   # Provider factory, mock, OpenAI
+    │       ├── store/        # Vector-store interface, memory, Pinecone
+    │       ├── retrieval/    # Retriever and hybrid lexical scoring
+    │       ├── grounding/    # Context assembly and citation verification
+    │       ├── generation/   # Prompt builder, OpenAI, extractive
+    │       ├── session/      # Conversation store and query rewriter
+    │       └── scripts/      # ingest, ask, demo, eval
+    └── notes/                # Lecture 11 Notes & Visual Artifacts
+        ├── README.md         # Lecture 11 Index & Navigation
+        ├── Excalidraw-Notes.svg # Handwritten Conceptual Diagrams
+        ├── Lecture_11_Complete_Notes.md # Consolidated Master Document
         └── [01 - 09 Chapters].md # Individual Modular Chapters
 
 ```
@@ -450,3 +508,12 @@ Forward-Deployed-Engineer/
 38. **Approximation Must Be Measured, Not Assumed:** IVF, HNSW, PQ, and LSH all trade recall for speed. The correct production contract is an explicit recall@K target validated on a versioned golden set, plus p95 latency and freshness budgets.
 39. **Retrieve Cheaply, Rescore Exactly:** Use the ANN index for candidate generation, then recompute full-precision similarity on a few hundred candidates and apply business ranking. Final recall can never exceed candidate-stage recall.
 40. **The Index Is a Derived Artifact:** Design it to be rebuilt from the source of truth, versioned by embedding model, migrated through a new collection plus alias swap, and filtered by tenant/ACL inside the query. Operability is part of correctness.
+41. **Statelessness Is the Architecture, Not a Limitation:** The model holds no conversation. Every turn is a fresh forward pass over whatever the application serialises — which is why memory, history and citations are application data structures, not model features.
+42. **Retrieval Sets the Ceiling:** Chunking decides what can ever be found, the index decides what is reachable, and the prompt can only use what arrived. No amount of prompt engineering recovers a chunk that was never retrieved.
+43. **A Vector Is Meaningless Without Its Model:** Model name, dimension and normalisation are part of the schema. Mixing them produces numbers that look plausible and are quietly wrong — so they belong in the index snapshot and in every trace.
+44. **Similarity Is Not Relevance, and Relevance Is Not Confidence:** A cosine score is geometry, not probability. Score floors must be calibrated per model and per corpus against a golden set, and a chunk that is *about* the question may still not answer it.
+45. **Refusal Is a Feature With a Test:** One exact sentence, emitted when the evidence is missing, before the model is called. A refusal you can measure is a safety property; "I'm sorry, I can't help with that" is a mood.
+46. **Citations Must Be Verified, Not Trusted:** Assign `[n]` before generation, resolve them against the prompt afterwards, count the invented ones and strip them. Fabricated sources are detectable with a `Map`, not with a judge.
+47. **Evidence Is Data; Rules Are Authority:** Retrieved text belongs in a delimited user turn, never in the system instructions. Prompt injection cannot be fully solved inside the prompt — the durable control is capability, and a read-only assistant has a small blast radius.
+48. **Follow-ups Are a Retrieval Bug:** "And for shoes?" embeds to noise. Condense the question into a standalone query *before* retrieval, or the failure will look like the model ignoring the conversation.
+49. **Measure Retrieval and Generation Separately:** Recall@K tells you whether the evidence arrived; faithfulness and citation validity tell you whether it was used. A single quality score cannot distinguish the two, so debugging degenerates into opinion.
