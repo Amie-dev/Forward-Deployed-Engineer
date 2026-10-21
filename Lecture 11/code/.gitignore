@@ -1,0 +1,7 @@
+node_modules/
+dist/
+.env
+.env.local
+
+# Generated vector index (rebuild with `npm run ingest`)
+data/index.json

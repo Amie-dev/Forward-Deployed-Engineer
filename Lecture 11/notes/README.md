@@ -76,6 +76,7 @@ flowchart TD
 
 - 🖼️ [`Excalidraw-Notes.svg`](./Excalidraw-Notes.svg) — the lecture board: the RAG title, the "capital of India" and "What is my name?" demos, the Tomato system prompt, the client/server/LLM query path, `refund policy.pdf` / `payment.pdf` / `orders.pdf`, the `v1`/`v2` chunk overlap, the Pinecone namespace `policies`, and the API-key boxes.
 - 💻 [`../code/index.js`](../code/index.js) — reference implementation: PDF loading, 300-token chunking, SHA-256 chunk ids, batched embeddings, Pinecone upsert/query, and a grounded prompt with an exact refusal sentence.
+- 🧪 [`../code/README.md`](../code/README.md) — a runnable TypeScript version of the same pipeline (`npm run demo`, `npm run eval`): structure-aware chunking, hybrid retrieval, citation verification, sessions and the HTTP API.
 - 📚 Prior lectures — [Lecture 08](../../Lecture%2008/notes/Lecture_08_Complete_Notes.md) (semantic search), [Lecture 09](../../Lecture%2009/notes/Lecture_09_Complete_Notes.md) (why exact search breaks), [Lecture 10](../../Lecture%2010/notes/Lecture_10_Complete_Notes.md) (ANN indexes, vector databases, production retrieval).
 
 > **Note on `Notes.pdf`:** this folder does not contain a `Notes.pdf`. These chapters were written from the board, the companion script, and the RAG foundations established in Lectures 08–10. If a PDF is added later, the chapters are structured so its sections can be folded in without restructuring.

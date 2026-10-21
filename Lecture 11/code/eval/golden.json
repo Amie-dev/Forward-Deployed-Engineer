@@ -1,0 +1,84 @@
+[
+  {
+    "id": "refund-apparel",
+    "question": "What is the refund window for apparel?",
+    "expectedSources": ["refund-policy.md"],
+    "answerable": true,
+    "mustContain": ["3 days"]
+  },
+  {
+    "id": "refund-footwear",
+    "question": "How many days do I have to return shoes?",
+    "expectedSources": ["refund-policy.md"],
+    "answerable": true,
+    "mustContain": ["7 days"]
+  },
+  {
+    "id": "refund-electronics",
+    "question": "What is the refund period for electronics?",
+    "expectedSources": ["refund-policy.md"],
+    "answerable": true,
+    "mustContain": ["14 days"]
+  },
+  {
+    "id": "refund-timing",
+    "question": "How long does a refund take to reach my account?",
+    "expectedSources": ["refund-policy.md"],
+    "answerable": true,
+    "mustContain": ["5 to 7 business days"]
+  },
+  {
+    "id": "refund-gift-cards",
+    "question": "Are gift cards refundable?",
+    "expectedSources": ["refund-policy.md"],
+    "answerable": true,
+    "mustContain": ["gift cards"]
+  },
+  {
+    "id": "shipping-express",
+    "question": "How much does express delivery cost?",
+    "expectedSources": ["shipping-policy.md"],
+    "answerable": true,
+    "mustContain": ["12.99"]
+  },
+  {
+    "id": "shipping-free",
+    "question": "When is standard shipping free?",
+    "expectedSources": ["shipping-policy.md"],
+    "answerable": true,
+    "mustContain": ["75"]
+  },
+  {
+    "id": "shipping-lost",
+    "question": "When is a parcel considered lost?",
+    "expectedSources": ["shipping-policy.md"],
+    "answerable": true,
+    "mustContain": ["7 business days"]
+  },
+  {
+    "id": "warranty-electronics",
+    "question": "How long is the warranty on electronics?",
+    "expectedSources": ["warranty-policy.md"],
+    "answerable": true,
+    "mustContain": ["12 months"]
+  },
+  {
+    "id": "warranty-assessment",
+    "question": "How long does a warranty assessment take?",
+    "expectedSources": ["warranty-policy.md"],
+    "answerable": true,
+    "mustContain": ["10 business days"]
+  },
+  {
+    "id": "unanswerable-student-discount",
+    "question": "Do you offer a student discount?",
+    "expectedSources": [],
+    "answerable": false
+  },
+  {
+    "id": "unanswerable-bitcoin",
+    "question": "Can I pay with Bitcoin?",
+    "expectedSources": [],
+    "answerable": false
+  }
+]

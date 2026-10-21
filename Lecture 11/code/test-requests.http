@@ -1,0 +1,59 @@
+@host = http://localhost:3000
+@json = application/json
+
+### Health — providers, dimensions, chunk count
+GET {{host}}/health
+
+### Ask an answerable question
+POST {{host}}/api/query
+Content-Type: {{json}}
+
+{
+  "question": "What is the refund window for apparel?"
+}
+
+### The response carries the full trace:
+#   answer          grounded text with [n] markers
+#   citations[]     label -> source/section, valid=true only when it was in the prompt
+#   refused         true when retrieval found nothing above the score floor
+#   trace.matches[] what was retrieved and at which score
+
+### Ask for something the documents do not contain (expect the refusal sentence)
+POST {{host}}/api/query
+Content-Type: {{json}}
+
+{
+  "question": "Can I pay with Bitcoin?"
+}
+
+### Multi-turn: send the same sessionId, then a follow-up
+POST {{host}}/api/query
+Content-Type: {{json}}
+
+{
+  "question": "What is the refund window for apparel?",
+  "sessionId": "demo-session"
+}
+
+###
+POST {{host}}/api/query
+Content-Type: {{json}}
+
+{
+  "question": "And for shoes?",
+  "sessionId": "demo-session"
+}
+
+### Re-index after the documents change (idempotent)
+POST {{host}}/api/ingest
+
+### Delete a conversation (history, memory, caches)
+DELETE {{host}}/api/sessions/demo-session
+
+### Validation: question too short -> 400 ValidationError
+POST {{host}}/api/query
+Content-Type: {{json}}
+
+{
+  "question": ""
+}
