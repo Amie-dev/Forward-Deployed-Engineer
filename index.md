@@ -248,10 +248,11 @@ Welcome to the **Forward Deployed Engineer (FDE) & Generative AI Systems** repos
 
 - **Source Materials:**
   - Excalidraw Diagrams: [`Lecture 11/notes/Excalidraw-Notes.svg`](./Lecture%2011/notes/Excalidraw-Notes.svg)
-  - Lecture sample code: [`Lecture 11/code/index.js`](./Lecture%2011/code/index.js)
-- **Hands-on Production Codebase:**
-  - 💻 **[Lecture 11 RAG Codebase (Node.js + Express + TypeScript)](./Lecture%2011/code/README.md)** — structure-aware chunking, embeddings (OpenAI + deterministic offline), memory and Pinecone stores, hybrid retrieval with a score floor, grounded prompt with `[n]` citations, citation verification, conversation state with query rewriting, golden-set evaluation, and an HTTP API with a full request trace
-  - 🛠️ **[Step-by-Step Implementation Guide](./Lecture%2011/code/implementations%20guide/README.md)** (00 → 14 chapters, full source + block-by-block explanations)
+- **Hands-on Codebases:**
+  - 🏭 **[Productions RAG (Node.js + Express + TypeScript)](./Lecture%2011/code/Productions%20RAG/README.md)** — structure-aware chunking, embeddings (OpenAI + deterministic offline), memory and Pinecone stores, hybrid retrieval with a score floor, grounded prompt with `[n]` citations, citation verification, conversation state with query rewriting, golden-set evaluation, and an HTTP API with a full request trace
+  - 🛠️ **[Productions RAG — Step-by-Step Implementation Guide](./Lecture%2011/code/Productions%20RAG/implementations%20guide/README.md)** (00 → 14 chapters, full source + block-by-block explanations)
+  - 🧪 **[Eassy RAG (plain JavaScript + PDF + OpenAI + Qdrant)](./Lecture%2011/code/Eassy%20RAG/src/queryPdf.js)** — the lecture's minimal end-to-end pipeline: `pdf-parse` → 1,000-character chunks with 150 overlap → `text-embedding-3-small` at 1,024 dimensions → one Qdrant point per chunk with deterministic UUID ids → top-5 cosine retrieval → `[Source n]` grounded answer. Six ES modules, four dependencies, no framework
+  - 🛠️ **[Eassy RAG — Step-by-Step Implementation Guide](./Lecture%2011/code/Eassy%20RAG/implementations%20guide/README.md)** (01 → 08 chapters: overview & provider map, config, chunking, embeddings, Qdrant, indexing, querying, verification — full source + block-by-block explanations + verified failure modes)
 - **Complete Consolidated Notes:** [`Lecture_11_Complete_Notes.md`](./Lecture%2011/notes/Lecture_11_Complete_Notes.md) — 9 chapters synthesised with cheat sheet, decision tables, misconceptions, glossary and 25 self-check questions
 
 #### 📖 Chapter Notes Breakdown
@@ -430,32 +431,47 @@ Forward-Deployed-Engineer/
         ├── Lecture_10_Complete_Notes.md # Consolidated Master Document
         └── [01 - 09 Chapters].md # Individual Modular Chapters
 └── Lecture 11/
-    ├── code/                 # Lecture 11 RAG Codebase
-    │   ├── package.json      # Express, Zod, OpenAI SDK, Pinecone, tiktoken, unpdf
-    │   ├── tsconfig.json     # Strict TypeScript (ES2022 / NodeNext)
-    │   ├── .env.example      # Providers, chunking, retrieval, sessions, store
-    │   ├── README.md         # Architecture, quick start, API and measured results
-    │   ├── test-requests.http # Every endpoint with example bodies
-    │   ├── index.js          # The lecture's original single-file sample
-    │   ├── implementations guide/ # 00 - 14 chapters (full source + explanations)
-    │   ├── eval/             # golden.json — 12 questions, 10 answerable
-    │   ├── knowledge/        # refund, shipping and warranty policy corpus
-    │   └── src/
-    │       ├── app.ts        # Express app, routes, validation, error mapping
-    │       ├── server.ts     # Boot, auto-ingest, graceful shutdown
-    │       ├── container.ts  # Composition root (the only wiring file)
-    │       ├── rag.service.ts # ingest() + ask() + trace
-    │       ├── config/       # Zod environment validation
-    │       ├── types/        # Chunk, record, match, citation, trace contracts
-    │       ├── lib/          # Text, vectors, retry, errors
-    │       ├── ingest/       # Document loader and token chunker
-    │       ├── embeddings/   # Provider factory, mock, OpenAI
-    │       ├── store/        # Vector-store interface, memory, Pinecone
-    │       ├── retrieval/    # Retriever and hybrid lexical scoring
-    │       ├── grounding/    # Context assembly and citation verification
-    │       ├── generation/   # Prompt builder, OpenAI, extractive
-    │       ├── session/      # Conversation store and query rewriter
-    │       └── scripts/      # ingest, ask, demo, eval
+    ├── code/
+    │   ├── Productions RAG/  # Full production-shaped RAG service (TypeScript)
+    │   │   ├── package.json  # Express, Zod, OpenAI SDK, Pinecone, tiktoken, unpdf
+    │   │   ├── tsconfig.json # Strict TypeScript (ES2022 / NodeNext)
+    │   │   ├── .env.example  # Providers, chunking, retrieval, sessions, store
+    │   │   ├── README.md     # Architecture, quick start, API and measured results
+    │   │   ├── test-requests.http # Every endpoint with example bodies
+    │   │   ├── index.js      # The lecture's original single-file sample
+    │   │   ├── implementations guide/ # 00 - 14 chapters (full source + explanations)
+    │   │   ├── eval/         # golden.json — 12 questions, 10 answerable
+    │   │   ├── knowledge/    # refund, shipping and warranty policy corpus
+    │   │   └── src/
+    │   │       ├── app.ts    # Express app, routes, validation, error mapping
+    │   │       ├── server.ts # Boot, auto-ingest, graceful shutdown
+    │   │       ├── container.ts # Composition root (the only wiring file)
+    │   │       ├── rag.service.ts # ingest() + ask() + trace
+    │   │       ├── config/   # Zod environment validation
+    │   │       ├── types/    # Chunk, record, match, citation, trace contracts
+    │   │       ├── lib/      # Text, vectors, retry, errors
+    │   │       ├── ingest/   # Document loader and token chunker
+    │   │       ├── embeddings/ # Provider factory, mock, OpenAI
+    │   │       ├── store/    # Vector-store interface, memory, Pinecone
+    │   │       ├── retrieval/ # Retriever and hybrid lexical scoring
+    │   │       ├── grounding/ # Context assembly and citation verification
+    │   │       ├── generation/ # Prompt builder, OpenAI, extractive
+    │   │       ├── session/  # Conversation store and query rewriter
+    │   │       └── scripts/  # ingest, ask, demo, eval
+    │   └── Eassy RAG/        # Minimal PDF → Qdrant → answer pipeline (JavaScript)
+    │       ├── package.json  # openai, @qdrant/js-client-rest, pdf-parse@1.1.1, dotenv
+    │       ├── .env          # 11 settings: models, dimensions, chunking, Qdrant, top-K
+    │       ├── .gitignore    # ignores .env and node_modules/
+    │       ├── guide.md      # 778-line article the code was written for
+    │       ├── documents/    # Input folder — drop your PDF here
+    │       ├── implementations guide/ # 01 - 08 chapters (full source + explanations)
+    │       └── src/
+    │           ├── config.js     # Validated env → one config object
+    │           ├── chunking.js   # 1,000-char windows, 150 overlap, word snap
+    │           ├── embeddings.js # Batched embeddings, index-aligned, validated
+    │           ├── qdrant.js     # Client, collection lifecycle, dimension guard
+    │           ├── indexPdf.js   # PDF → chunks → points → upsert (offline)
+    │           └── queryPdf.js   # Question → top-5 → [Source n] → answer (online)
     └── notes/                # Lecture 11 Notes & Visual Artifacts
         ├── README.md         # Lecture 11 Index & Navigation
         ├── Excalidraw-Notes.svg # Handwritten Conceptual Diagrams
