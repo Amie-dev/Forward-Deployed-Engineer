@@ -1,0 +1,117 @@
+{
+  "$comment": "Golden set for Lecture 12. expectedSources drive retrieval metrics; mustInclude is a deterministic stand-in for answer correctness; answerable=false drives refusal metrics. asOf is the policy date the question is asked against.",
+  "cases": [
+    {
+      "id": "q01",
+      "question": "What is the return window for your headphones?",
+      "asOf": "2026-06-01",
+      "answerable": true,
+      "expectedSources": ["returns-electronics.md"],
+      "mustInclude": ["7 days"]
+    },
+    {
+      "id": "q02",
+      "question": "My headphones arrived 10 days ago and the left earpiece is silent. Can I get a refund?",
+      "asOf": "2026-06-01",
+      "answerable": true,
+      "expectedSources": ["damaged-goods.md", "warranty.md"],
+      "mustInclude": ["48 hours"]
+    },
+    {
+      "id": "q03",
+      "question": "Is the AX-204 still covered after 18 months?",
+      "asOf": "2026-06-01",
+      "answerable": true,
+      "expectedSources": ["warranty.md"],
+      "mustInclude": ["12-month"]
+    },
+    {
+      "id": "q04",
+      "question": "How long does a refund take after the warehouse inspects the item?",
+      "asOf": "2026-06-01",
+      "answerable": true,
+      "expectedSources": ["refund-timing.md"],
+      "mustInclude": ["5 to 7"]
+    },
+    {
+      "id": "q05",
+      "question": "Can I exchange earbuds that I have already opened?",
+      "asOf": "2026-06-01",
+      "answerable": true,
+      "expectedSources": ["exchanges.md"],
+      "mustInclude": ["unopened"]
+    },
+    {
+      "id": "q06",
+      "question": "What was the electronics return window for an order delivered in June 2025?",
+      "asOf": "2025-06-01",
+      "answerable": true,
+      "expectedSources": ["returns-electronics-2025.md"],
+      "mustInclude": ["14 days"]
+    },
+    {
+      "id": "q07",
+      "question": "Do you charge a restocking fee when the item arrived damaged?",
+      "asOf": "2026-06-01",
+      "answerable": true,
+      "expectedSources": ["damaged-goods.md"],
+      "mustInclude": ["restocking fee"]
+    },
+    {
+      "id": "q08",
+      "question": "How much does return shipping cost if I simply changed my mind?",
+      "asOf": "2026-06-01",
+      "answerable": true,
+      "expectedSources": ["shipping.md"],
+      "mustInclude": ["4.95"]
+    },
+    {
+      "id": "q09",
+      "question": "What is the warranty on the BX-900 earbuds?",
+      "asOf": "2026-06-01",
+      "answerable": true,
+      "expectedSources": ["warranty.md"],
+      "mustInclude": ["24 months"]
+    },
+    {
+      "id": "q10",
+      "question": "The courier delivered my parcel 10 days ago and the box was crushed. Can I still claim transit damage?",
+      "asOf": "2026-06-01",
+      "answerable": true,
+      "expectedSources": ["damaged-goods.md"],
+      "mustInclude": ["48 hours"]
+    },
+    {
+      "id": "q11",
+      "question": "Can I change the delivery address after the parcel has shipped?",
+      "asOf": "2026-06-01",
+      "answerable": true,
+      "expectedSources": ["shipping.md"],
+      "mustInclude": ["redirect"]
+    },
+    {
+      "id": "q12",
+      "question": "Can I pay with Bitcoin?",
+      "asOf": "2026-06-01",
+      "answerable": false,
+      "expectedSources": [],
+      "mustInclude": []
+    },
+    {
+      "id": "q13",
+      "question": "Do you offer a student discount on turntables?",
+      "asOf": "2026-06-01",
+      "answerable": false,
+      "expectedSources": [],
+      "mustInclude": []
+    },
+    {
+      "id": "q14",
+      "question": "What is the return window for an unopened speaker delivered last week?",
+      "asOf": "2026-06-01",
+      "answerable": true,
+      "expectedSources": ["returns-electronics.md"],
+      "mustInclude": ["7 days"]
+    }
+  ]
+}

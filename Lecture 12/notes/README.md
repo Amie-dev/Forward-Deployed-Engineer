@@ -25,6 +25,35 @@
 
 ---
 
+## 💻 Companion Code
+
+Every claim in these notes is implemented and measured in a runnable TypeScript codebase — no
+framework, five dependencies, and **no API key required**:
+
+| Artefact | What it is |
+| :--- | :--- |
+| 🏭 **[Advanced RAG codebase](../code/advanced-rag/README.md)** | fixed/structural/semantic chunkers, offline + OpenAI embeddings, pre-filtering store with ACL and `asOf` rules, BM25 + RRF, joint reranker with a calibrated gate, context assembly, ablation matrix, HTTP API |
+| 🛠️ **[Implementation guide (00 → 10)](../code/implementations%20guide/README.md)** | the same code, chapter by chapter: full source, block-by-block explanation, and the real command output that proves each chapter |
+
+The measured headline from `npm run cli -- ablation` (14 golden cases, offline):
+
+```text
+preset      chunks  recall  mrr    ndcg   refusal  falseRef  ctx tok  p50
+naive       31      0.571   0.399  0.442  0.000    0.000     725      4ms
+structural  27      0.643   0.488  0.528  1.000    0.167     348      2ms
+hybrid      27      0.750   0.548  0.595  0.000    0.000     756      4ms
+rerank      27      0.821   0.586  0.640  1.000    0.000     566      7ms
+full        27      0.821   0.586  0.640  1.000    0.000     865      10ms
+full-wide   27      0.821   0.586  0.640  1.000    0.000     918      13ms
+```
+
+Chunking raises recall and halves the context; hybrid search buys recall and *stops refusing*;
+the reranker restores refusal and adds the rest of the recall at a lower token cost. Chapter 10
+of the guide reads the table line by line.
+
+
+---
+
 ## The Big Idea in One Diagram
 
 ```mermaid

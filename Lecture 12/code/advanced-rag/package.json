@@ -1,0 +1,53 @@
+{
+  "name": "lecture-12-advanced-rag",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Lecture 12 — Advanced RAG: fixed vs structural chunking, overlap arithmetic, parent-child expansion, contextual prefixes, top-K and calibrated score floors, metadata/ACL/temporal filters, hybrid search with RRF, two-stage reranking, context engineering, evaluation and an ablation matrix. Learning-focused, production-shaped TypeScript — runs offline with no API key.",
+  "type": "module",
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "scripts": {
+    "cli": "tsx src/cli.ts",
+    "baseline": "tsx src/cli.ts baseline",
+    "chunks": "tsx src/cli.ts chunks",
+    "search": "tsx src/cli.ts search",
+    "ask": "tsx src/cli.ts ask",
+    "calibrate": "tsx src/cli.ts calibrate",
+    "filters": "tsx src/cli.ts filters",
+    "ablation": "tsx src/cli.ts ablation",
+    "eval": "tsx src/cli.ts eval",
+    "dev": "tsx watch src/server.ts",
+    "build": "tsc",
+    "start": "node dist/server.js",
+    "typecheck": "tsc --noEmit"
+  },
+  "keywords": [
+    "fde",
+    "genai",
+    "rag",
+    "advanced-rag",
+    "chunking",
+    "hybrid-search",
+    "rrf",
+    "reranking",
+    "context-engineering",
+    "typescript"
+  ],
+  "author": "Forward Deployed Engineering Team",
+  "license": "MIT",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "express": "^4.22.3",
+    "js-tiktoken": "^1.0.21",
+    "zod": "^3.25.76"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.17",
+    "@types/express": "^4.17.25",
+    "@types/node": "^22.13.8",
+    "tsx": "^4.23.15",
+    "typescript": "^5.9.3"
+  }
+}

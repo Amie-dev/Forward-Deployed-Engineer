@@ -1,0 +1,8 @@
+node_modules/
+dist/
+.env
+.env.local
+*.log
+.DS_Store
+# Generated index snapshots (rebuilt by `npm run cli -- rebuild`)
+data/index/

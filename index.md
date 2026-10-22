@@ -533,3 +533,30 @@ Forward-Deployed-Engineer/
 47. **Evidence Is Data; Rules Are Authority:** Retrieved text belongs in a delimited user turn, never in the system instructions. Prompt injection cannot be fully solved inside the prompt — the durable control is capability, and a read-only assistant has a small blast radius.
 48. **Follow-ups Are a Retrieval Bug:** "And for shoes?" embeds to noise. Condense the question into a standalone query *before* retrieval, or the failure will look like the model ignoring the conversation.
 49. **Measure Retrieval and Generation Separately:** Recall@K tells you whether the evidence arrived; faithfulness and citation validity tell you whether it was used. A single quality score cannot distinguish the two, so debugging degenerates into opinion.
+
+---
+
+## [Lecture 12: Advanced RAG — Chunking, Hybrid Retrieval, Reranking and Context Engineering](./Lecture%2012/notes/README.md)
+
+- **Source Materials:**
+  - PDF Slides: [`Lecture 12/notes/Notes.pdf`](./Lecture%2012/notes/Notes.pdf)
+  - Excalidraw Diagrams: [`Lecture 12/notes/Excalidraw-Notes.svg`](./Lecture%2012/notes/Excalidraw-Notes.svg)
+- **Hands-on Codebase:**
+  - 🏭 **[Advanced RAG (Node.js + Express + TypeScript)](./Lecture%2012/code/advanced-rag/README.md)** — fixed/structural/semantic chunking with overlap arithmetic, parent-child (small-to-big) retrieval, contextual prefixes, top-K and **calibrated** score floors, MMR, metadata + ACL + temporal filters, BM25 + RRF hybrid search, two-stage reranking with a two-sided gate, context assembly (dedupe, precedence, budget, bookending), an ablation matrix and an HTTP API — all offline with no API key
+  - 🛠️ **[Advanced RAG — Step-by-Step Implementation Guide](./Lecture%2012/code/implementations%20guide/README.md)** (00 → 10 chapters, full source + block-by-block explanations)
+- **Complete Consolidated Notes:** [`Lecture_12_Complete_Notes.md`](./Lecture%2012/notes/Lecture_12_Complete_Notes.md) — 9 chapters synthesised with an executive summary, the eight-control cheat sheet, a formula card, decision tables, misconceptions, glossary and 12 self-check questions
+
+#### 📖 Chapter Notes Breakdown
+
+| Chapter | Module Title | Core Topics & Key Concepts |
+| :--- | :--- | :--- |
+| **[Chapter 01](./Lecture%2012/notes/01_Why_Basic_RAG_Breaks.md)** | **Why Basic RAG Breaks — The Two Failure Classes** | The working pipeline that returns the wrong policy, the two halves of the retrieval assumption (coverage and selection), retrieval failures versus generation failures, a seven-symptom taxonomy, the four-step failure tree, and why a baseline trace is the first artefact to build. |
+| **[Chapter 02](./Lecture%2012/notes/02_Fixed_Size_Chunking_and_Overlap.md)** | **Fixed-Size Chunking and Overlap Arithmetic** | Why chunking is the ceiling rather than a tuning knob, sliding-window arithmetic (`stride = size − overlap`, storage `≈ S/(S−O)`), characters versus tokens, the `overlap ≥ size` bug that never advances, orphan chunks, and what overlap actually buys. |
+| **[Chapter 03](./Lecture%2012/notes/03_Structural_Semantic_and_Contextual_Chunking.md)** | **Structural, Semantic and Contextual Chunking** | Heading-aware chunking and breadcrumbs, the two-pass rule for long sections and tables, minimum chunk size and sibling merging, semantic breakpoints and why they are not the default, parent-child (small-to-big) retrieval, contextual retrieval (template vs LLM), and late chunking. |
+| **[Chapter 04](./Lecture%2012/notes/04_Top_K_and_Similarity_Thresholds.md)** | **Top-K and Similarity Thresholds** | The anatomy of a retrieval request, `K_retrieve` as the recall ceiling versus `K_context` as the token bill, why a similarity score is not a confidence, threshold calibration against a golden set, MMR for redundancy, and empty-result handling. |
+| **[Chapter 05](./Lecture%2012/notes/05_Metadata_Filtering.md)** | **Metadata Filtering** | The third control: eligibility before scoring. Schema design, pre- versus post-filtering and the restrictiveness trap, tenant isolation and group ACLs that fail closed, temporal validity (`effectiveFrom`/`effectiveTo`/`asOf`), and metadata written at ingest. |
+| **[Chapter 06](./Lecture%2012/notes/06_Hybrid_Search_and_RRF.md)** | **Hybrid Search — Dense, Lexical and RRF** | Why dense retrieval loses exact strings (SKUs, error codes, dates), BM25 from first principles (`idf`, `k1`, `b`), reciprocal rank fusion and the `1/(k+rank)` damping, why fusion must use ranks and not scores, per-class routing, and evaluating each arm separately. |
+| **[Chapter 07](./Lecture%2012/notes/07_Reranking_Two_Stage_Retrieval.md)** | **Reranking — Two-Stage Retrieval** | Why a bi-encoder cannot see the query-document pair, what a cross-encoder computes, N→K budgeting and the recall ceiling, the 512-token truncation trap, the two-sided gate (`minBest` and `maxDrop`), the score-reuse bug, and graceful degradation. |
+| **[Chapter 08](./Lecture%2012/notes/08_Context_Engineering.md)** | **Context Engineering** | Context as a budget rather than a bucket: explicit precedence when documents disagree, lost-in-the-middle ordering and bookending, evidence labels and citations, token budgeting, prompt-injection framing as an authority problem, and ablation tests for each assembly decision. |
+| **[Chapter 09](./Lecture%2012/notes/09_Evaluation_and_Production_Playbook.md)** | **Evaluation and the Production Playbook** | Recall@K, MRR and nDCG as retrieval metrics; faithfulness, citation validity and refusal correctness as generation metrics; building a golden set; the ablation matrix; pinning the seven versions that change an index; blue/green re-indexing; the failure runbook and the go-live checklist. |
+
