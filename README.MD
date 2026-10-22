@@ -1,89 +1,520 @@
-# Forward Deployed Engineer (FDE) & Generative AI Systems
+<div align="center">
 
-> **Master Curriculum & Engineering Reference for Building Production-Grade Enterprise AI Systems.**
+# 🚀 Forward Deployed Engineer (FDE) &amp; Generative AI Systems
 
-This repository contains structured lecture notes, system architectures, mathematical foundations, paper deep-dives, and production blueprints for **Forward Deployed Engineers (FDEs)** and **Generative AI Systems Architects**.
+### 🧠 Master Curriculum &amp; Engineering Reference for Building Production-Grade Enterprise AI
+
+*Lecture notes · System architectures · Mathematical foundations · Paper deep-dives · Production blueprints*
+
+[![Lectures](https://img.shields.io/badge/Lectures-12-blueviolet?style=for-the-badge)](#-curriculum-navigation)
+[![Chapter Notes](https://img.shields.io/badge/Chapter_Notes-88-2ea44f?style=for-the-badge)](#-curriculum-navigation)
+[![Notes Volume](https://img.shields.io/badge/Notes-112k%2B_lines-informational?style=for-the-badge)](#-repository-at-a-glance)
+[![Code](https://img.shields.io/badge/Code-TypeScript_%7C_Node.js-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](#-technology-stack)
+
+[![Paper Deep-Dives](https://img.shields.io/badge/Paper_Deep--Dives-Transformers_%7C_RAG_%7C_Vector_DB-orange?style=for-the-badge)](#-lecture-highlights)
+[![Runnable Code](https://img.shields.io/badge/Hands--on-Runnable_Codebases-ff69b4?style=for-the-badge)](#-quick-start)
+[![Status](https://img.shields.io/badge/Status-Active-success?style=for-the-badge)](#-roadmap)
+[![PRs Welcome](https://img.shields.io/badge/PRs-Welcome-brightgreen?style=for-the-badge)](#-contributing)
+
+**[📖 Start the Curriculum](#-curriculum-navigation)** · **[🗺️ Learning Path](#-learning-path)** · **[🚀 Quick Start](#-quick-start)** · **[📑 Master Index](./index.md)**
+
+</div>
+
+---
+
+## 🧭 Table of Contents
+
+| | Section | What's inside |
+| :---: | :--- | :--- |
+| 🎯 | **[Repository Overview](#-repository-overview)** | What this repository is and who it is for |
+| 📊 | **[Repository at a Glance](#-repository-at-a-glance)** | Hard numbers: lectures, chapters, lines of notes, lines of code |
+| 🗺️ | **[Learning Path](#-learning-path)** | The five-phase route through the curriculum |
+| 📚 | **[Curriculum Navigation](#-curriculum-navigation)** | Every lecture, note set, codebase and implementation guide |
+| 📖 | **[Lecture Highlights](#-lecture-highlights)** | Deep-dive summaries of all 12 lectures |
+| 🧰 | **[Technology Stack](#-technology-stack)** | Languages, frameworks, services and SDKs used |
+| 🚀 | **[Quick Start](#-quick-start)** | How to read the notes and run the code |
+| 🗂️ | **[Repository Structure](#-repository-structure)** | Directory map |
+| 📐 | **[Conventions](#-conventions)** | How every note set, codebase and guide is organised |
+| 🛣️ | **[Roadmap](#-roadmap)** | Where the curriculum is heading |
+| 🤝 | **[Contributing](#-contributing)** | How to add or improve a lecture |
+| 📄 | **[License &amp; Attribution](#-license--attribution)** | Usage terms |
 
 ---
 
 ## 🎯 Repository Overview
 
-* **Role & Mindset:** Moving from client-requested *"chatbots"* (proposed solutions) to true enterprise business problem discovery and resolution.
-* **Mathematical & Theoretical Depth:** Step-by-step proofs (e.g., Attention variance scaling factor $\frac{1}{\sqrt{d_k}}$, sinusoidal positional relative offsets, $O(1)$ path length complexity).
-* **Paper Deep-Dives:** Comprehensive breakdown of seminal research papers including *"Attention Is All You Need"* (Vaswani et al., 2017).
-* **Production Architecture:** Design criteria for Grounded, Observable, Secure, and Actionable enterprise AI systems.
-* **Hands-on Implementation:** Production microservices built with Node.js, Express, TypeScript, and modern AI SDKs.
+> **The thesis of this repository:** a Forward Deployed Engineer is not the person who ships the *requested* chatbot — it is the person who discovers the *real* business problem and then proves the fix with a measurable system.
+
+This repository contains structured lecture notes, system architectures, mathematical foundations, paper deep-dives, and production blueprints for **Forward Deployed Engineers (FDEs)** and **Generative AI Systems Architects**.
+
+| Theme | What it covers |
+| :--- | :--- |
+| 🧭 **Role & Mindset** | Moving from client-requested *"chatbots"* (proposed solutions) to true enterprise business problem discovery and resolution. |
+| 📐 **Mathematical &amp; Theoretical Depth** | Step-by-step proofs — e.g. the Attention variance scaling factor $\frac{1}{\sqrt{d_k}}$, sinusoidal positional relative offsets, $O(1)$ path length complexity. |
+| 📑 **Paper Deep-Dives** | Comprehensive breakdowns of seminal research, including *"Attention Is All You Need"* (Vaswani et al., 2017). |
+| 🏭 **Production Architecture** | Design criteria for **Grounded**, **Observable**, **Secure** and **Actionable** enterprise AI systems. |
+| 💻 **Hands-on Implementation** | Production microservices built with Node.js, Express, TypeScript and modern AI SDKs. |
+
+---
+
+## 📊 Repository at a Glance
+
+| Metric | Value |
+| :--- | ---: |
+| 🎓 Lectures | **12** |
+| 📓 Chapter note files | **88** |
+| 📄 Consolidated note documents | **12** |
+| 🗂️ Tracked markdown files | **260** |
+| ✍️ Lines of notes &amp; guides | **112,000+** |
+| 💻 TypeScript / JavaScript files | **198** |
+| 🧾 Lines of code | **22,600+** |
+| 🏭 Lectures shipping runnable code | **8** (03 · 04 · 05 · 06 · 08 · 10 · 11 · 12) |
+| 🧩 Runnable codebases | **9** |
+| 🎞️ Source slide decks &amp; Excalidraw diagrams | **12 PDF · 11 SVG** |
+
+> 💡 Every number above is derived from the repository contents — notes are Markdown, code is strict TypeScript or plain JavaScript, and each codebase ships with a chapter-by-chapter implementation guide.
+
+---
+
+## 🗺️ Learning Path
+
+Follow the phases in order — each one assumes only the phase before it.
+
+| Phase | Lectures | Colour | You leave able to… |
+| :---: | :--- | :---: | :--- |
+| **1 · Foundations** | 01 · 02 | 🟦 | Explain how an LLM actually produces a token, and why rules → ML → Transformers happened |
+| **2 · Application Layer** | 03 · 04 | 🟩 | Call a model from a real service, budget tokens, and fix statelessness, memory and streaming |
+| **3 · Agency &amp; Streaming** | 05 · 06 | 🟨 | Give a model tools, sandbox it, add human-in-the-loop, and stream tokens to a browser correctly |
+| **4 · Embeddings &amp; Retrieval** | 07 · 08 · 09 · 10 | 🟧 | Represent meaning as vectors, then store and search billions of them with ANN indexes |
+| **5 · RAG &amp; Advanced RAG** | 11 · 12 | 🟥 | Build a grounded answering system end to end — then prove which control fixes a wrong answer |
 
 ---
 
 ## 📚 Curriculum Navigation
 
-- 📖 **[Main Repository Index & Curriculum Roadmap](./index.md)**
-- 📂 **[Lecture 01 Index & Notes](./Lecture%2001/notes/README.md)** | 📄 **[Complete Document](./Lecture%2001/notes/Lecture_01_Complete_Notes.md)**
-- 📂 **[Lecture 02 Index & Notes](./Lecture%2002/notes/README.md)** | 📄 **[Complete Document](./Lecture%2002/notes/Lecture_02_Complete_Notes.md)**
-- 📂 **[Lecture 03 Index & Notes](./Lecture%2003/notes/README.md)** | 📄 **[Complete Document](./Lecture%2003/notes/Lecture_03_Complete_Notes.md)** | 💻 **[Codebase](./Lecture%2003/code/README.md)** | 🛠️ **[Implementation Guide](./Lecture%2003/code/implementations%20guide/README.md)**
-- 📂 **[Lecture 04 Index & Notes](./Lecture%2004/notes/README.md)** | 📄 **[Complete Document](./Lecture%2004/notes/Lecture_04_Complete_Notes.md)** | 💻 **[Codebase](./Lecture%2004/code/README.md)** | 🛠️ **[Implementation Guide](./Lecture%2004/code/implementations%20guide/README.md)**
-- 📂 **[Lecture 05 Index & Notes](./Lecture%2005/notes/README.md)** | 📄 **[Complete Document](./Lecture%2005/notes/Lecture_05_Complete_Notes.md)** | 💻 **[Codebase](./Lecture%2005/code/README.md)** | 🛠️ **[Implementation Guide](./Lecture%2005/code/implementations%20guide/README.md)**
-- 📂 **[Lecture 06 Index & Notes](./Lecture%2006/notes/README.md)** | 📄 **[Complete Document](./Lecture%2006/notes/Lecture_06_Complete_Notes.md)** | 💻 **[Codebase](./Lecture%2006/code/README.md)** | 🛠️ **[Implementation Guide](./Lecture%2006/code/implementations%20guide/README.md)**
-- 📂 **[Lecture 07 Index & Notes](./Lecture%2007/notes/README.md)** | 📄 **[Complete Document](./Lecture%2007/notes/Lecture_07_Complete_Notes.md)**
-- 📂 **[Lecture 08 Index & Notes](./Lecture%2008/notes/README.md)** | 📄 **[Complete Document](./Lecture%2008/notes/Lecture_08_Complete_Notes.md)** | 💻 **[Codebase](./Lecture%2008/code/README.md)** | 🛠️ **[Implementation Guide](./Lecture%2008/code/implementations%20guide/README.md)**
-- 📂 **[Lecture 09 Index & Notes](./Lecture%2009/notes/README.md)** | 📄 **[Complete Document](./Lecture%2009/notes/Lecture_09_Complete_Notes.md)**
-- 📂 **[Lecture 10 Index & Notes](./Lecture%2010/notes/README.md)** | 📄 **[Complete Document](./Lecture%2010/notes/Lecture_10_Complete_Notes.md)** | 💻 **[Codebase](./Lecture%2010/code/README.md)** | 🛠️ **[Implementation Guide](./Lecture%2010/code/implementations%20guide/README.md)**
-- 📂 **[Lecture 11 Index & Notes](./Lecture%2011/notes/README.md)** | 📄 **[Complete Document](./Lecture%2011/notes/Lecture_11_Complete_Notes.md)** | 💻 **[Productions RAG Codebase](./Lecture%2011/code/Productions%20RAG/README.md)** · 🛠️ **[Guide (00 → 14)](./Lecture%2011/code/Productions%20RAG/implementations%20guide/README.md)** | 🧪 **[Eassy RAG Codebase](./Lecture%2011/code/Eassy%20RAG/src/queryPdf.js)** · 🛠️ **[Guide (01 → 08)](./Lecture%2011/code/Eassy%20RAG/implementations%20guide/README.md)**
-- 📂 **[Lecture 12 Index & Notes](./Lecture%2012/notes/README.md)** | 📄 **[Complete Document](./Lecture%2012/notes/Lecture_12_Complete_Notes.md)** | 💻 **[Advanced RAG Codebase](./Lecture%2012/code/advanced-rag/README.md)** · 🛠️ **[Guide (00 → 10)](./Lecture%2012/code/implementations%20guide/README.md)**
+> **Legend** — 📂 **Notes index** (chapter-by-chapter) · 📄 **Complete document** (single consolidated file) · 💻 **Codebase** · 🛠️ **Implementation guide** (full source, block-by-block)
+
+| # | Lecture | 📂 Notes | 📄 Complete | 💻 Codebase | 🛠️ Guide |
+| :---: | :--- | :---: | :---: | :--- | :--- |
+| **01** | 🟦 Introduction to FDE & Generative AI Foundations | [📂](./Lecture%2001/notes/README.md) | [📄](./Lecture%2001/notes/Lecture_01_Complete_Notes.md) | ➖ | ➖ |
+| **02** | 🟦 How LLMs Work (From Tokens to Transformers) | [📂](./Lecture%2002/notes/README.md) | [📄](./Lecture%2002/notes/Lecture_02_Complete_Notes.md) | ➖ | ➖ |
+| **03** | 🟩 Talking to an LLM from Your Application | [📂](./Lecture%2003/notes/README.md) | [📄](./Lecture%2003/notes/Lecture_03_Complete_Notes.md) | [💻](./Lecture%2003/code/README.md) | [🛠️](./Lecture%2003/code/implementations%20guide/README.md) |
+| **04** | 🟩 Building a Chatbot: Context, Memory, Streaming & Hallucinations | [📂](./Lecture%2004/notes/README.md) | [📄](./Lecture%2004/notes/Lecture_04_Complete_Notes.md) | [💻](./Lecture%2004/code/README.md) | [🛠️](./Lecture%2004/code/implementations%20guide/README.md) |
+| **05** | 🟨 Autonomous AI Agents, Tool Calling & Human-in-the-Loop | [📂](./Lecture%2005/notes/README.md) | [📄](./Lecture%2005/notes/Lecture_05_Complete_Notes.md) | [💻](./Lecture%2005/code/README.md) | [🛠️](./Lecture%2005/code/implementations%20guide/README.md) |
+| **06** | 🟨 AI Streaming — From LLM Tokens to a Live Chat Experience | [📂](./Lecture%2006/notes/README.md) | [📄](./Lecture%2006/notes/Lecture_06_Complete_Notes.md) | [💻](./Lecture%2006/code/README.md) | [🛠️](./Lecture%2006/code/implementations%20guide/README.md) |
+| **07** | 🟧 Vector Embeddings — From First Principles | [📂](./Lecture%2007/notes/README.md) | [📄](./Lecture%2007/notes/Lecture_07_Complete_Notes.md) | ➖ | ➖ |
+| **08** | 🟧 Vector Embeddings Project — Movie Recommendation System | [📂](./Lecture%2008/notes/README.md) | [📄](./Lecture%2008/notes/Lecture_08_Complete_Notes.md) | [💻](./Lecture%2008/code/README.md) | [🛠️](./Lecture%2008/code/implementations%20guide/README.md) |
+| **09** | 🟧 Vector Embedding Search & Storage | [📂](./Lecture%2009/notes/README.md) | [📄](./Lecture%2009/notes/Lecture_09_Complete_Notes.md) | ➖ | ➖ |
+| **10** | 🟧 Deep Dive into Vector Databases & ANN Algorithms | [📂](./Lecture%2010/notes/README.md) | [📄](./Lecture%2010/notes/Lecture_10_Complete_Notes.md) | [💻](./Lecture%2010/code/README.md) | [🛠️](./Lecture%2010/code/implementations%20guide/README.md) |
+| **11** | 🟥 Retrieval-Augmented Generation (RAG) | [📂](./Lecture%2011/notes/README.md) | [📄](./Lecture%2011/notes/Lecture_11_Complete_Notes.md) | [💻 Productions RAG](./Lecture%2011/code/Productions%20RAG/README.md)<br/>[🧪 Eassy RAG](./Lecture%2011/code/Eassy%20RAG/src/queryPdf.js) | [🛠️ Productions RAG (00 → 14)](./Lecture%2011/code/Productions%20RAG/implementations%20guide/README.md)<br/>[🛠️ Eassy RAG (01 → 08)](./Lecture%2011/code/Eassy%20RAG/implementations%20guide/README.md) |
+| **12** | 🟥 Advanced RAG — Chunking, Hybrid Retrieval, Reranking & Context Engineering | [📂](./Lecture%2012/notes/README.md) | [📄](./Lecture%2012/notes/Lecture_12_Complete_Notes.md) | [💻 Advanced RAG](./Lecture%2012/code/advanced-rag/README.md) | [🛠️ (00 → 10)](./Lecture%2012/code/implementations%20guide/README.md) |
+
+> 🧭 **Want the full chapter-level roadmap with per-chapter topic tables?** Open the **[Main Repository Index & Curriculum Roadmap](./index.md)**.
 
 ---
 
+
 ## 📖 Lecture Highlights
 
-### [Lecture 01: Introduction to FDE & Generative AI Foundations](./Lecture%2001/notes/README.md)
+Each lecture below is summarised twice: a one-line thesis and a topic chip list for scanning, plus a collapsible **full breakdown** with the complete subject coverage. Colour squares match the **[Learning Path](#-learning-path)** phases.
+
+---
+
+### 🟦 [Lecture 01: Introduction to FDE & Generative AI Foundations](./Lecture%2001/notes/README.md)
+
+> **Thesis** — The job is not to build the chatbot the client asked for; it is to find the business problem underneath it, and the history of AI explains why the current tools look the way they do.
+
+`E-commerce case study (50k daily queries)` · `Problem vs Solution discovery` · `Symbolic AI` · `Expert Systems` · `ML paradigm shift` · `Statistical N-grams` · `RNN hidden-state decay` · `Transformer attention` · `Production AI stack`
+
+<details>
+<summary><b>🔎 Full breakdown</b></summary>
+
+<br>
+
 E-commerce case study (50k daily queries), Problem vs Solution discovery, Symbolic AI & Expert Systems, Machine Learning paradigm shifts, Statistical N-grams, RNN hidden state decay, Transformer Attention mechanism, and Enterprise Production AI Stack topology.
 
-### [Lecture 02: How LLMs Work (From Tokens to Transformers)](./Lecture%2002/notes/README.md)
+</details>
+
+**[📂 Notes index](./Lecture%2001/notes/README.md)** · **[📄 Complete document](./Lecture%2001/notes/Lecture_01_Complete_Notes.md)**
+
+---
+
+### 🟦 [Lecture 02: How LLMs Work (From Tokens to Transformers)](./Lecture%2002/notes/README.md)
+
+> **Thesis** — An LLM is a next-token probability machine: text → tokens → vectors → attention → logits → softmax → one token, appended and repeated.
+
+`Autoregressive next-token prediction` · `Subword tokenization (BPE/WordPiece)` · `Dense embeddings ℝ^d_model` · `Positional encodings` · `Scaled dot-product attention (Q, K, V)` · `Multi-block state propagation` · `Logits head` · `Softmax` · `Temperature` · `Streaming`
+
+<details>
+<summary><b>🔎 Full breakdown</b></summary>
+
+<br>
+
 Autoregressive next-token prediction, Subword tokenization (BPE/WordPiece), Dense Vector Embeddings $\mathbb{R}^{d_{\text{model}}}$, Positional Encodings, Scaled Dot-Product Self-Attention ($Q, K, V$), Transformer multi-block state propagation, Logits projection head, Softmax, Temperature scaling, and autoregressive streaming.
 
-### [Lecture 03: Talking to an LLM from Your Application](./Lecture%2003/notes/README.md)
+</details>
+
+**[📂 Notes index](./Lecture%2002/notes/README.md)** · **[📄 Complete document](./Lecture%2002/notes/Lecture_02_Complete_Notes.md)**
+
+---
+
+### 🟩 [Lecture 03: Talking to an LLM from Your Application](./Lecture%2003/notes/README.md)
+
+> **Thesis** — A raw model is an engine, not a car: your application supplies the keys, the dashboard, the fuel budget and the guardrails.
+
+`ChatGPT vs raw LLM` · `Deterministic tools` · `Knowledge cutoff` · `4 invariant request components` · `Prefill vs decode economics` · `Node.js + Express + TypeScript` · `Zod validation` · `Client singletons` · `Telemetry audit` · `Prompt-injection defense`
+
+<details>
+<summary><b>🔎 Full breakdown</b></summary>
+
+<br>
+
 ChatGPT vs Raw LLM (Car vs Engine analogy), Deterministic tools (Calculator, DB, Weather), Knowledge cutoff limits, The 4 Invariant Request Components (Where, Who, Which Model, What), Token economics (Prefill vs Decode, cost & latency), Node.js + Express + TypeScript microservice setup, Zod validation, OpenAI client singletons, response telemetry audit, and prompt injection defense via multi-role architecture.
 
-### [Lecture 04: Building a Chatbot: Context, Memory, Streaming & Hallucinations](./Lecture%2004/notes/README.md)
+</details>
+
+**[📂 Notes index](./Lecture%2003/notes/README.md)** · **[📄 Complete document](./Lecture%2003/notes/Lecture_03_Complete_Notes.md)** · **[💻 Codebase](./Lecture%2003/code/README.md)** · **[🛠️ Implementation guide](./Lecture%2003/code/implementations%20guide/README.md)**
+
+---
+
+### 🟩 [Lecture 04: Building a Chatbot: Context, Memory, Streaming & Hallucinations](./Lecture%2004/notes/README.md)
+
+> **Thesis** — There is no conversation in the model — only the array your server sends. Memory, streaming and hallucination are therefore application design problems, not model properties.
+
+`HTTP statelessness` · `Coreference binding` · `system / user / assistant roles` · `4 pillars of system prompts` · `Context-window budget` · `O(N²) token bloat` · `Lost-in-the-middle` · `Sliding window & rolling summaries` · `Parametric vs in-context knowledge` · `SSE streaming` · `Fluency ≠ truth` · `Sycophancy` · `7-layer defense in depth`
+
+<details>
+<summary><b>🔎 Full breakdown</b></summary>
+
+<br>
+
 Statelessness of HTTP LLM endpoints, the illusion of conversational continuity, coreference and pronoun binding failure, message roles (`system`, `user`, `assistant`), prompt contamination anti-patterns, the 4 Pillars of system prompts, context window budget constraints, quadratic token accumulation problem ($O(N^2)$ bloat), lost-in-the-middle phenomenon, sliding window and rolling summarization in TypeScript, Parametric Knowledge ($\Theta$) vs In-Context Working Memory ($X_{\text{prompt}}$), autoregressive token streaming via Server-Sent Events (SSE), fluency vs truth orthogonality, coherent fabrication vs benign nonsense, model sycophancy (Aditya Tandon sorting law experiment), and the 7-layer defense-in-depth architecture.
 
-### [Lecture 05: Autonomous AI Agents, Tool Calling & Human-in-the-Loop Architecture](./Lecture%2005/notes/README.md)
+</details>
+
+**[📂 Notes index](./Lecture%2004/notes/README.md)** · **[📄 Complete document](./Lecture%2004/notes/Lecture_04_Complete_Notes.md)** · **[💻 Codebase](./Lecture%2004/code/README.md)** · **[🛠️ Implementation guide](./Lecture%2004/code/implementations%20guide/README.md)**
+
+---
+
+
+### 🟨 [Lecture 05: Autonomous AI Agents, Tool Calling & Human-in-the-Loop Architecture](./Lecture%2005/notes/README.md)
+
+> **Thesis** — Agency is a spectrum, and every step up it costs context budget, latency and blast radius — so sandbox the workspace and keep a human on the irreversible actions.
+
+`Tool delegation` · `5-step tool-calling wire protocol` · `JSON Schema + Zod validation` · `ReAct loop (Thought ➔ Action ➔ Observation)` · `O(N²) context economics` · `Agency spectrum` · `safePath sandboxing` · `BrewLab case study` · `3-tier HITL` · `Durable pause/resume webhooks`
+
+<details>
+<summary><b>🔎 Full breakdown</b></summary>
+
+<br>
+
 From token prediction to deterministic tool delegation (Safe Calculator, Weather, Currency Exchange), the 5-step tool calling wire protocol, JSON Schema parameter validation via Zod, multi-step ReAct closed loop (Thought ➔ Action ➔ Observation), $O(N^2)$ quadratic context economics, agency spectrum (Fixed Code ➔ Dynamic Router ➔ Plan & Execute ➔ Autonomous ReAct), workspace filesystem sandboxing (`safePath` jail, symlink containment), autonomous website builder case study (BrewLab coffee landing page), and 3-tier Human-in-the-Loop (HITL) authorization with durable pause/resume webhooks.
 
-### [Lecture 06: AI Streaming — From LLM Tokens to a Live Chat Experience](./Lecture%2006/notes/README.md)
+</details>
+
+**[📂 Notes index](./Lecture%2005/notes/README.md)** · **[📄 Complete document](./Lecture%2005/notes/Lecture_05_Complete_Notes.md)** · **[💻 Codebase](./Lecture%2005/code/README.md)** · **[🛠️ Implementation guide](./Lecture%2005/code/implementations%20guide/README.md)**
+
+---
+
+### 🟨 [Lecture 06: AI Streaming — From LLM Tokens to a Live Chat Experience](./Lecture%2006/notes/README.md)
+
+> **Thesis** — Generation and delivery are two independent processes. Streaming is what you build in the gap between them, and TTFT — not total latency — is the number users feel.
+
+`Prefill vs decode` · `TTFT vs total latency` · `4-layer granularity model` · `UTF-8 multi-byte splits` · `Chunked transfer encoding` · `SSE wire grammar` · `7 pipeline invariants` · `.call() → .stream()` · `Dual-write pattern` · `status: "interrupted"` · `ReadableStream + TextDecoder` · `AbortController` · `Three watchdogs` · `Backpressure` · `p95(clientTTFT − serverTTFT) alert`
+
+<details>
+<summary><b>🔎 Full breakdown</b></summary>
+
+<br>
+
 Autoregressive token generation and the prefill-vs-decode latency duality, generation vs. delivery as two independent processes, **TTFT vs. total latency** and human reading speed as the throughput threshold, the four-layer granularity model (LLM token ≠ provider chunk ≠ network chunk ≠ decoded piece) with UTF-8 multi-byte split discipline, chunked transfer encoding and the exact SSE wire grammar (`data`/`event`/`id`/`retry`, `\n\n` framing, heartbeats), the **7 pipeline invariants**, the `.call()` → `.stream()` return-type change (`String` → `Flux<String>`/`AsyncIterable`), the **dual-write pattern** (stream out, buffer in) with one reconstructed assistant message per turn and `status: "interrupted"` for partial answers, the browser half (`fetch` resolves on headers, `ReadableStream.getReader()`, one `TextDecoder({stream:true})`, one growing bubble, sticky auto-scroll, `AbortController`), and production hardening: three watchdogs, backpressure that stalls instead of overflowing, cancellation propagation to the provider, in-band error protocols after `200 OK`, and the `p95(clientTTFT − serverTTFT)` alert that detects buffering regressions. Companion codebase ships a three-transport streaming microservice (raw `text/plain`, NDJSON, SSE) plus a browser client with a telemetry HUD, chaos injection and an executable `await response.text()` anti-pattern demo.
 
-### [Lecture 07: Vector Embeddings — From First Principles](./Lecture%2007/notes/README.md)
+</details>
+
+**[📂 Notes index](./Lecture%2006/notes/README.md)** · **[📄 Complete document](./Lecture%2006/notes/Lecture_06_Complete_Notes.md)** · **[💻 Codebase](./Lecture%2006/code/README.md)** · **[🛠️ Implementation guide](./Lecture%2006/code/implementations%20guide/README.md)**
+
+---
+
+
+### 🟧 [Lecture 07: Vector Embeddings — From First Principles](./Lecture%2007/notes/README.md)
+
+> **Thesis** — Computers cannot do mathematics on symbols, so meaning has to become geometry — and learned embeddings beat hand-crafted features because context, not a human, chose the axes.
+
+`Symbol vs meaning` · `Feature vectors` · `Euclidean vs dot vs cosine` · `Feature-engineering failure` · `Learned representations` · `Embedding lookup table` · `Gradient descent` · `king − man + woman ≈ queen` · `Feature vector ≠ embedding` · `CLIP multi-modal spaces` · `Embedding application taxonomy`
+
+<details>
+<summary><b>🔎 Full breakdown</b></summary>
+
+<br>
+
 The symbol-vs-meaning gap, why computers need numbers to perform mathematics, one-number representations and their failure, multi-dimensional feature vectors and vector spaces, Euclidean distance vs. dot product vs. cosine similarity, the failure of hand-crafted feature engineering (dimensionality explosion, task specificity, language ambiguity), learned representations through context prediction, the embedding lookup table and gradient-descent training loop, vector arithmetic (`king − man + woman ≈ queen`), the critical distinction between a feature vector and a learned embedding, multi-modal shared spaces (CLIP), and the application taxonomy unlocked by embeddings: semantic search, nearest-neighbour retrieval, clustering, classification, ranking, recommendation, and RAG.
 
-### [Lecture 08: Vector Embeddings Project — Building a Movie Recommendation System](./Lecture%2008/notes/README.md)
+</details>
+
+**[📂 Notes index](./Lecture%2007/notes/README.md)** · **[📄 Complete document](./Lecture%2007/notes/Lecture_07_Complete_Notes.md)**
+
+---
+
+### 🟧 [Lecture 08: Vector Embeddings Project — Building a Movie Recommendation System](./Lecture%2008/notes/README.md)
+
+> **Thesis** — `REPRESENT → STORE → COMPARE → RANK`: embed stable content once, embed the changing query per request, and rank with cosine similarity.
+
+`REPRESENT → STORE → COMPARE → RANK` · `Why not prompt the whole catalog` · `Precomputation insight` · `Offline/online architecture` · `Semantic search vs similar-item` · `Content-based vs collaborative` · `Cosine from first principles` · `Zero-vector guards` · `O(N × D) scoring` · `Optional LLM explanation layer`
+
+<details>
+<summary><b>🔎 Full breakdown</b></summary>
+
+<br>
+
 A complete, working movie recommendation engine built on **REPRESENT → STORE → COMPARE → RANK**. Covers why not to prompt an LLM with the entire catalog (context limits, repeated work, unnecessary generation, cost/latency), the precomputation insight (stable movie descriptions embedded once; changing user queries embedded per request), the two-phase offline/online architecture, semantic search vs. similar-movie recommendation sharing one ranking engine, content-based vs. collaborative filtering, cosine similarity from first principles (`(A · B) / (‖A‖ × ‖B‖)`), zero-vector and dimension guards, `O(N × D)` scoring, and the full system design with an optional LLM explanation layer that leads into RAG. Companion codebase ships an Express + TypeScript API with Zod validation, batch startup embeddings, OpenAI live mode plus deterministic mock mode, an 18-movie catalog, and a chapter-wise implementation guide (00 → 08) with block-by-block explanations.
 
-### [Lecture 09: Vector Embedding Search & Storage](./Lecture%2009/notes/README.md)
+</details>
+
+**[📂 Notes index](./Lecture%2008/notes/README.md)** · **[📄 Complete document](./Lecture%2008/notes/Lecture_08_Complete_Notes.md)** · **[💻 Codebase](./Lecture%2008/code/README.md)** · **[🛠️ Implementation guide](./Lecture%2008/code/implementations%20guide/README.md)**
+
+---
+
+
+### 🟧 [Lecture 09: Vector Embedding Search & Storage](./Lecture%2009/notes/README.md)
+
+> **Thesis** — At scale, "store the vectors" and "search the vectors" are two different engineering problems — and brute-force KNN is the baseline you must beat on purpose, not by accident.
+
+`Store vs search` · `Vector DB anatomy` · `Pre- vs post-filtering` · `Hybrid search + RRF` · `Brute-force KNN baseline` · `15.36B dimension ops @ 10M×1536` · `6 KB/vector · 600 GB/100M` · `k-d tree branch-and-bound` · `Curse of dimensionality` · `IVF · HNSW · PQ · LSH · DiskANN` · `Two-stage rescoring` · `Capacity planning & CDC` · `Zero-downtime re-embedding` · `recall@K / MRR / nDCG` · `ACL security`
+
+<details>
+<summary><b>🔎 Full breakdown</b></summary>
+
+<br>
+
 Why the 30-movie recommender from Lecture 08 cannot survive scale, and what replaces it. Covers the two separate engineering problems — **storing** hundreds of millions of vectors and **searching** them efficiently — the myth that relational databases cannot store vectors (they can; they simply cannot index similarity with a B-tree), the anatomy of a vector database (ID + vector + payload, fixed dimensions and metrics, write/read pipelines, pre- vs post-filtering, hybrid search with RRF), and brute-force KNN as the correct baseline: `O(N × D)` per query, 10M × 1536 = **15.36 billion dimension operations**, 1536 `float32` ≈ **6 KB** per vector, **6 GB per million**, **600 GB per 100 million**. Then the indexing story: why sorted scalar indexes work, why a k-d tree partitions space one axis at a time, the exact branch-and-bound pruning rule (`planeDist < bestDist`), and why pruning collapses as dimensions grow — boundary proliferation, volume concentration, and distance concentration. Finally, **ANN indexes** in practice: IVF (`nlist`/`nprobe`), HNSW (`M`/`efConstruction`/`efSearch`), product quantization (32× compression, ADC), scalar/binary quantization, LSH bands and rows, DiskANN, two-stage retrieval with exact rescoring, and production design: capacity planning, CDC ingestion, deletes and orphan chunks, zero-downtime model re-embedding with alias swaps, sharding and tail latency, multi-tenancy, recall@K / MRR / nDCG evaluation, caching, ACL security, vendor selection, runbooks, and a production checklist.
 
-### [Lecture 10: Deep Dive into Vector Databases and ANN Algorithms](./Lecture%2010/notes/README.md)
+</details>
+
+**[📂 Notes index](./Lecture%2009/notes/README.md)** · **[📄 Complete document](./Lecture%2009/notes/Lecture_09_Complete_Notes.md)**
+
+---
+
+
+### 🟧 [Lecture 10: Deep Dive into Vector Databases & ANN Algorithms](./Lecture%2010/notes/README.md)
+
+> **Thesis** — The lecture that turns the retrieval half of RAG into working code: implement IVF, HNSW and PQ yourself, then put Qdrant or pgvector behind the same interface.
+
+`Irreversible model/dimension choices` · `Cosine vs dot vs L2/L1` · `Exact KNN as ground truth` · `Speed–recall contract` · `IVF (nlist/nprobe)` · `HNSW (M/efConstruction/efSearch)` · `Product quantization + ADC` · `5-layer vector DB anatomy` · `Qdrant vs pgvector` · `Chunking · hybrid + RRF · reranking` · `Latency budgets` · `Failure runbook`
+
+<details>
+<summary><b>🔎 Full breakdown</b></summary>
+
+<br>
 
 The lecture that turns the retrieval half of RAG into working code. Notes cover embeddings and irreversible model/dimension choices, cosine vs dot vs L2/L1 and metric consistency, exact KNN as the ground truth (`O(N × D)`, 15.36 billion dimension operations at 10M × 1536), the speed–recall contract, IVF (`nlist`/`nprobe`, k-means, boundary vectors), HNSW (level sampling, greedy descent, `efConstruction`/`efSearch`, neighbour diversity, tombstones, filter weakness), product quantization (codebooks, ADC, rescoring, 64× compression), the five-layer anatomy of a vector database, the Qdrant vs pgvector decision, and production retrieval: chunking, hybrid search + RRF, reranking, evaluation, latency budgets, security and a failure runbook. The companion codebase implements every algorithm from scratch in strict TypeScript — IVF, HNSW and PQ included — plus a CRUD vector store with payload filters, BM25/RRF hybrid search, official Qdrant and pgvector adapters tested against Docker, and a chapter-wise implementation guide (00 → 10) with the full source and block-by-block explanations. **No RAG generation:** the LLM answer layer belongs to Lecture 11.
 
-### [Lecture 11: Retrieval-Augmented Generation (RAG)](./Lecture%2011/notes/README.md)
+</details>
+
+**[📂 Notes index](./Lecture%2010/notes/README.md)** · **[📄 Complete document](./Lecture%2010/notes/Lecture_10_Complete_Notes.md)** · **[💻 Codebase](./Lecture%2010/code/README.md)** · **[🛠️ Implementation guide](./Lecture%2010/code/implementations%20guide/README.md)**
+
+---
+
+
+### 🟥 [Lecture 11: Retrieval-Augmented Generation (RAG)](./Lecture%2011/notes/README.md)
+
+> **Thesis** — Hallucination is a mechanism, not a bug: the model is a stateless next-token predictor, so grounding means putting verified evidence in the prompt and refusing when it is missing.
+
+`Parametric vs non-parametric memory` · `Two pipelines / seven serving steps` · `Extraction & chunking hazards` · `Orphan chunks` · `Embedding-space contract` · `Namespaces & score calibration` · `Hybrid search + RRF · MMR · reranking` · `Four-clause prompt contract` · `Exact refusal sentence` · `Verified [n] citations` · `Prompt injection as authority` · `Query condensation` · `Sessions & IDOR` · `recall@K · MRR · nDCG` · `SLOs · degradation · blue/green re-index`
+
+<details>
+<summary><b>🔎 Full breakdown</b></summary>
+
+<br>
 
 The generation half of RAG, built end to end. Notes start from the stateless model — parametric vs non-parametric memory, why hallucination is a mechanism rather than a bug, and why a larger context window is capacity rather than attention — then build the open-book architecture: two pipelines, seven serving steps, and the failure modes that survive a correct design. Ingestion covers extraction hazards, cleaning, chunking strategies and overlap arithmetic, metadata and deterministic ids, and the orphan-chunk problem. Retrieval covers the embedding-space contract, dimensions and prefixes, namespaces, score calibration, top-K, metadata filters, hybrid search with RRF, MMR and reranking. Grounding covers the four-clause prompt contract, the exact refusal sentence the script uses, citation markers, fabrication guards, and prompt injection as an authority and capability problem. Conversation state covers query condensation ("And for shoes?"), memory strategies and their quadratic cost, session ownership and IDOR, and history poisoning. Evaluation separates retrieval from generation with recall@K, MRR and nDCG, citation validity, refusal correctness, a debug tree and a per-request trace; production design adds SLOs, degradation paths, caching keyed by `corpusVersion`, blue/green re-indexing, a failure runbook and build-vs-buy. The companion codebase is a working, framework-free system in strict TypeScript — structure-aware token chunking, OpenAI plus deterministic offline embeddings, an in-memory store and a Pinecone adapter behind one interface, hybrid retrieval with a calibrated score floor, a grounded prompt with verified `[n]` citations, TTL-bounded sessions with query rewriting, a 12-case golden set (**recall@4 1.00**, citations 12/12, refusals 12/12, expected facts 12/12 offline), and an Express API that returns the full trace with every answer — plus a chapter-wise implementation guide (00 → 14) with the full source and block-by-block explanations.
 
-Two codebases ship with this lecture, and they answer different questions:
+</details>
 
-- **Productions RAG** (TypeScript, 30 files, chapter-wise guide 00 → 14) — *how do you build the real thing?* Every stage behind an interface, hybrid retrieval, citation verification, sessions, evaluation and an HTTP API.
-- **Eassy RAG** (plain JavaScript, 6 modules, 477 lines, chapter-wise guide 01 → 08) — *what is the smallest honest pipeline?* `pdf-parse` → 1,000-character chunks with a 150-character overlap → `text-embedding-3-small` truncated to 1,024 dimensions → one Qdrant point per chunk with a deterministic UUID id → top-5 cosine retrieval → a six-clause grounded prompt that returns `[Source n]` citations and the exact chunks used, or a refusal when retrieval returns nothing. Its guide documents the real failure modes found while verifying it: the `pdf-parse@1.1.1` ESM crash (and the `createRequire` fix), the chunker's `850`-character whitespace-free limit (`Chunking failed to advance`), and the collection dimension guard that stops silent space mismatches.
+**🧩 Two codebases ship with this lecture — they answer different questions:**
 
-### [Lecture 12: Advanced RAG — Chunking, Hybrid Retrieval, Reranking and Context Engineering](./Lecture%2012/notes/README.md)
+| Codebase | Language &amp; size | The question it answers | What's inside |
+| :--- | :--- | :--- | :--- |
+| 🏭 **[Productions RAG](./Lecture%2011/code/Productions%20RAG/README.md)** | TypeScript · 30 files · guide **00 → 14** | *How do you build the real thing?* | Every stage behind an interface, hybrid retrieval, citation verification, sessions, evaluation and an HTTP API. |
+| 🧪 **[Eassy RAG](./Lecture%2011/code/Eassy%20RAG/src/queryPdf.js)** | Plain JavaScript · 6 modules · 477 lines · guide **01 → 08** | *What is the smallest honest pipeline?* | `pdf-parse` → 1,000-character chunks with a 150-character overlap → `text-embedding-3-small` truncated to 1,024 dimensions → one Qdrant point per chunk with a deterministic UUID id → top-5 cosine retrieval → a six-clause grounded prompt returning `[Source n]` citations and the exact chunks used, or a refusal when retrieval returns nothing. |
+
+> ⚠️ **Real failure modes documented in the Eassy RAG guide, not hidden:** the `pdf-parse@1.1.1` ESM crash (and the `createRequire` fix), the chunker's `850`-character whitespace-free limit (`Chunking failed to advance`), and the collection dimension guard that stops silent space mismatches.
+
+**[📂 Notes index](./Lecture%2011/notes/README.md)** · **[📄 Complete document](./Lecture%2011/notes/Lecture_11_Complete_Notes.md)** · **[🛠️ Productions RAG guide (00 → 14)](./Lecture%2011/code/Productions%20RAG/implementations%20guide/README.md)** · **[🛠️ Eassy RAG guide (01 → 08)](./Lecture%2011/code/Eassy%20RAG/implementations%20guide/README.md)**
+
+---
+
+
+### 🟥 [Lecture 12: Advanced RAG — Chunking, Hybrid Retrieval, Reranking and Context Engineering](./Lecture%2012/notes/README.md)
+
+> **Thesis** — Basic RAG makes one heroic assumption: *the retrieved chunks contain everything needed*. This lecture makes that true, then proves the model used the result honestly.
+
+`Coverage vs selection failures` · `Retrieval-or-generation decision tree` · `stride = size − overlap` · `Structural chunking + breadcrumbs` · `Semantic breakpoints` · `Parent-child (small-to-big)` · `Contextual retrieval + late chunking` · `K_retrieve vs K_context` · `Calibrated score floors + MMR` · `Fail-closed ACL + temporal filters` · `BM25 from first principles` · `RRF` · `Two-stage reranking + two-sided gate` · `Precedence + bookending + token budget` · `Ablation matrix` · `Blue/green re-indexing`
+
+<details>
+<summary><b>🔎 Full breakdown</b></summary>
+
+<br>
 
 The engineering discipline of making basic RAG's one heroic assumption true — *the retrieved chunks contain everything needed to answer correctly* — and then proving that the model used the result honestly. Notes start by separating the two failure classes (coverage and selection) and give a four-step tree for deciding whether a wrong answer is a retrieval problem or a generation problem. Chunking covers fixed-size arithmetic (`stride = size − overlap`, storage `≈ S/(S−O)`, the `overlap ≥ size` bug, orphan chunks), then structural chunking with breadcrumbs and the two-pass rule for tables, semantic breakpoints and why they are not the default, parent-child (small-to-big) retrieval, contextual retrieval and late chunking. Retrieval covers `K_retrieve` as a recall ceiling versus `K_context` as a token bill, calibrated score floors, MMR, metadata filtering with fail-closed tenant/ACL rules and temporal validity, BM25 from first principles, reciprocal rank fusion and why scores cannot be added across two rankings, and two-stage reranking with a two-sided gate that decides when *nothing* was relevant. Context engineering covers precedence when documents disagree, lost-in-the-middle bookending, evidence labels, token budgets and prompt injection as an authority problem. Evaluation and production cover recall@K, MRR, nDCG, faithfulness, citation validity, refusal correctness, the ablation matrix, the seven pinned versions, blue/green re-indexing and a failure runbook. The companion codebase is a framework-free system in strict TypeScript — fixed/structural/semantic chunkers, an offline hash embedder plus OpenAI behind one interface, an in-memory store with pre- and post-filtering, a filter DSL with ACL and `asOf` rules, BM25 + RRF, a joint reranker with a calibrated gate, context assembly with parents, dedupe, precedence, budget and bookending, a 14-case golden set and a six-row ablation matrix (**recall 0.571 → 0.821, refusal 0.000 → 1.000, context tokens 725 → 566**) — plus a chapter-wise implementation guide (00 → 10) with the full source and block-by-block explanations. **Runs with no API key:** every number in the guide is reproducible offline.
 
-Two codebases ship with this lecture, and they answer different questions:
+</details>
 
-- **Advanced RAG** (TypeScript, 26 files, ~4,200 lines, chapter-wise guide 00 → 10) — *which control actually fixes a wrong answer?* Every stage behind an interface, an ablation matrix that changes one control at a time, calibrated score floors, pre-filtering with fail-closed access rules, and a trace returned with every answer.
-- **The Lecture 11 codebases** (Productions RAG and Eassy RAG) answer the adjacent question — *how do you build a grounded answering system at all?* Lecture 12 assumes that system exists and asks what to change when it is wrong.
 
-The honest limits are documented rather than hidden: the offline embedder is lexical (hashes, stems and character 4-grams) so it handles morphology but not paraphrase; the reranker is a joint lexical scorer rather than a neural cross-encoder; and the extractive generator quotes sentences without reasoning, which is why `facts` sits at 0.583 while `refusal` is 1.000 — a retrieval-vs-generation distinction the guide's failure tree names explicitly.
+**🧩 Two codebases ship with this lecture — they answer different questions:**
+
+| Codebase | Language &amp; size | The question it answers | What's inside |
+| :--- | :--- | :--- | :--- |
+| 🏭 **[Advanced RAG](./Lecture%2012/code/advanced-rag/README.md)** | TypeScript · 26 files · ~4,200 lines · guide **00 → 10** | *Which control actually fixes a wrong answer?* | Every stage behind an interface, an ablation matrix that changes one control at a time, calibrated score floors, pre-filtering with fail-closed access rules, and a trace returned with every answer. |
+| 🔗 **The Lecture 11 codebases** ([Productions RAG](./Lecture%2011/code/Productions%20RAG/README.md) · [Eassy RAG](./Lecture%2011/code/Eassy%20RAG/src/queryPdf.js)) | TypeScript &amp; JavaScript | *How do you build a grounded answering system at all?* | Lecture 12 assumes that system exists and asks what to change when it is wrong. |
+
+> ⚖️ **Honest limits — documented rather than hidden:** the offline embedder is lexical (hashes, stems and character 4-grams) so it handles morphology but not paraphrase; the reranker is a joint lexical scorer rather than a neural cross-encoder; and the extractive generator quotes sentences without reasoning, which is why `facts` sits at **0.583** while `refusal` is **1.000** — a retrieval-vs-generation distinction the guide's failure tree names explicitly.
+
+**[📂 Notes index](./Lecture%2012/notes/README.md)** · **[📄 Complete document](./Lecture%2012/notes/Lecture_12_Complete_Notes.md)** · **[💻 Codebase](./Lecture%2012/code/advanced-rag/README.md)** · **[🛠️ Implementation guide (00 → 10)](./Lecture%2012/code/implementations%20guide/README.md)**
+
+---
+
+## 🧰 Technology Stack
+
+| Layer | What the curriculum uses |
+| :--- | :--- |
+| **Languages** | ![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=flat-square&logo=typescript&logoColor=white) ![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?style=flat-square&logo=javascript&logoColor=black) ![SQL](https://img.shields.io/badge/SQL-4479A1?style=flat-square&logo=postgresql&logoColor=white) |
+| **Runtime &amp; server** | ![Node.js](https://img.shields.io/badge/Node.js-5FA04E?style=flat-square&logo=nodedotjs&logoColor=white) ![Express](https://img.shields.io/badge/Express-000000?style=flat-square&logo=express&logoColor=white) ![SSE](https://img.shields.io/badge/SSE%20%2F%20NDJSON%20%2F%20chunked-FF6F00?style=flat-square) |
+| **Validation &amp; typing** | ![Zod](https://img.shields.io/badge/Zod-3E67B1?style=flat-square&logo=zod&logoColor=white) ![tsx](https://img.shields.io/badge/tsx-2D3748?style=flat-square) |
+| **Model providers** | ![OpenAI](https://img.shields.io/badge/OpenAI-412991?style=flat-square&logo=openai&logoColor=white) ![Spring AI](https://img.shields.io/badge/Spring%20AI-6DB33F?style=flat-square&logo=spring&logoColor=white) |
+| **Vector stores** | ![Qdrant](https://img.shields.io/badge/Qdrant-DC244C?style=flat-square&logo=qdrant&logoColor=white) ![Pinecone](https://img.shields.io/badge/Pinecone-000000?style=flat-square) ![pgvector](https://img.shields.io/badge/pgvector-4169E1?style=flat-square&logo=postgresql&logoColor=white) |
+| **Infrastructure** | ![Docker](https://img.shields.io/badge/Docker-2496ED?style=flat-square&logo=docker&logoColor=white) ![Mermaid](https://img.shields.io/badge/Mermaid-FF3670?style=flat-square&logo=mermaid&logoColor=white) ![Markdown](https://img.shields.io/badge/Markdown-000000?style=flat-square&logo=markdown&logoColor=white) |
+
+---
+
+
+## 🚀 Quick Start
+
+### 1 · Reading the notes (no setup required)
+
+```text
+1. Open  index.md                      → full chapter-level roadmap
+2. Open  Lecture NN/notes/README.md    → chapter index for that lecture
+3. Open  Lecture NN/notes/NN_*.md      → one chapter at a time
+   ...or Lecture NN/notes/Lecture_NN_Complete_Notes.md for the single-document version
+```
+
+Every note set also ships the original **`Notes.pdf`** slides and an **`Excalidraw-Notes.svg`** diagram file in the same folder.
+
+### 2 · Running the code
+
+Each codebase is self-contained with its own `package.json`. Pick a lecture folder and install:
+
+```bash
+# Lecture 12 — Advanced RAG (runs with NO API key)
+cd "Lecture 12/code/advanced-rag"
+npm install
+npm run baseline     # naive pipeline: 8 of 14 golden cases fail, each with a named stage
+npm run ablation     # one control at a time: recall 0.571 → 0.821
+npm run ask -- "Is the AX-204 still covered after 18 months?"
+npm run dev          # HTTP API on :3100
+```
+
+```bash
+# Lecture 11 — Productions RAG (set OPENAI_API_KEY for live embeddings)
+cd "Lecture 11/code/Productions RAG"
+npm install
+npm run ingest && npm run ask && npm run eval
+```
+
+```bash
+# Lecture 11 — Eassy RAG (smallest honest pipeline, needs Qdrant + OpenAI key)
+cd "Lecture 11/code/Eassy RAG"
+npm install
+npm run index        # PDF → chunks → embeddings → Qdrant
+npm run query        # question → retrieval → grounded answer with [Source n]
+```
+
+> 🔑 **Keys are optional where it matters.** The Lecture 12 codebase and the Eassy RAG guide are built so their numbers reproduce offline; set `OPENAI_API_KEY` (and optionally `COHERE_API_KEY`) to swap in real embeddings and a real cross-encoder without changing a line of logic.
+
+### 3 · Following an implementation guide
+
+Each codebase ships an `implementations guide/` folder that walks the same source **chapter by chapter**: file details → complete source → block-by-block explanation → commands and verification output.
+
+---
+
+## 🗂️ Repository Structure
+
+```text
+Forward-Deployed-Engineer/
+├── README.MD                       # ← you are here
+├── index.md                        # Master roadmap: every lecture + per-chapter topic tables
+├── prompt.md                       # Note-generation brief used across lectures
+│
+├── Lecture 01/ … Lecture 12/       # 12 lectures
+│   ├── notes/
+│   │   ├── README.md               # Chapter index for the lecture
+│   │   ├── Notes.pdf               # Original source slides
+│   │   ├── Excalidraw-Notes.svg    # Hand-drawn diagram source
+│   │   ├── 01_*.md … NN_*.md       # Chapter-by-chapter notes
+│   │   └── Lecture_NN_Complete_Notes.md   # Single consolidated document
+│   └── code/                       # Present for lectures 03 · 04 · 05 · 06 · 08 · 10 · 11 · 12
+│       ├── README.md               # What the codebase does + how to run it
+│       ├── src/ · package.json · tsconfig.json
+│       └── implementations guide/  # Chapter-wise build guide (full source, block by block)
+│
+└── (Lecture 11 additionally ships two codebases: Productions RAG and Eassy RAG)
+```
+
+---
+
+## 📐 Conventions
+
+Every artefact in this repository follows the same four-part contract, so you can jump between lectures without relearning the layout:
+
+| # | Convention | What it means |
+| :---: | :--- | :--- |
+| 1 | **Notes are chapter-wise** | 6–10 chapter files per lecture, each answering one question, numbered in reading order. |
+| 2 | **A consolidated document always exists** | `Lecture_NN_Complete_Notes.md` condenses the chapters and links back to them — it is not a blind concatenation. |
+| 3 | **Guides are block-by-block** | Each implementation guide states the file's details, prints the **complete** source (never an excerpt), then explains every block and the command that proves it. |
+| 4 | **Claims are measured** | Retrieval, refusal, citation and latency numbers in the notes come from a runnable golden set, and honest limits are written down rather than hidden. |
+
+---
+
+
+## 🗺️ Roadmap
+
+| Status | Item |
+| :---: | :--- |
+| ✅ | Lectures **01 → 12** published with chapter-wise notes and consolidated documents |
+| ✅ | Codebases + implementation guides for lectures **03 · 04 · 05 · 06 · 08 · 10 · 11 · 12** |
+| ✅ | Master roadmap maintained in [`index.md`](./index.md) |
+| 🔜 | Additional chapters where the source slides are thinner than the engineering reality |
+| 🔜 | More evaluation golden sets so every quantitative claim stays reproducible |
+
+> 🟢 The repository is under **active development** — new lecture material lands as the curriculum progresses.
+
+---
+
+## 🤝 Contributing
+
+1. **Read the conventions** in [`prompt.md`](./prompt.md) and the [Conventions](#-conventions) table above.
+2. **Keep the four-part contract:** chapter-wise notes → consolidated document → runnable code → block-by-block implementation guide.
+3. **Update the indexes:** if you add a lecture or a codebase, update [`index.md`](./index.md) **and** this README's [Curriculum Navigation](#-curriculum-navigation) table.
+4. **Prove your numbers:** any metric you quote (recall, refusal, latency, token counts) should be reproducible from a command in the codebase.
+5. **Encode links correctly:** paths contain spaces, so use `%20` (e.g. `./Lecture%2012/code/implementations%20guide/README.md`).
+
+Pull requests that improve depth, fix a wrong claim, or add a missing failure mode are especially welcome. 🎉
+
+---
+
+## 📄 License &amp; Attribution
+
+This repository is an **educational curriculum**. Lecture content, notes and diagrams are derived from the referenced source materials and papers — notably *"Attention Is All You Need"* (Vaswani et al., 2017) — which remain the property of their respective authors. Code samples are provided for learning and reference; verify against your own security, licensing and compliance requirements before production use.
+
+---
+
+<div align="center">
+
+### ⭐ If this curriculum helps you, star the repository — it makes the next lecture easier to find.
+
+**[📑 Master Index](./index.md)** · **[📖 Curriculum Navigation](#-curriculum-navigation)** · **[🚀 Quick Start](#-quick-start)**
+
+*Built for Forward Deployed Engineers who measure what they ship.*
+
+</div>
 
