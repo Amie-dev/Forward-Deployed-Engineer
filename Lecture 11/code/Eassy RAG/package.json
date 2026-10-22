@@ -1,0 +1,17 @@
+{
+  "name": "pdf-rag",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "PDF RAG system using OpenAI embeddings and Qdrant",
+  "main": "src/indexPdf.js",
+  "scripts": {
+    "index": "node --input-type=module -e 'import { indexPdf } from \"./src/indexPdf.js\"; const result = await indexPdf({ filePath: \"./documents/backend-guide.pdf\", documentId: \"backend-guide-v1\" }); console.log(result);'",
+    "query": "node src/queryPdf.js"
+  },
+  "dependencies": {
+    "@qdrant/js-client-rest": "^1.13.0",
+    "dotenv": "^16.0.0",
+    "openai": "^4.0.0",
+    "pdf-parse": "1.1.1"
+  }
+}
