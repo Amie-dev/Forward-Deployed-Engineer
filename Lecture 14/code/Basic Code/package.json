@@ -1,0 +1,38 @@
+{
+  "name": "lecture-14-mcp-server-basics",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Lecture 14 — MCP Server from First Principles: the minimal, runnable code behind the notes. One MCP server exposing Tools (do), Resources (know) and Prompts (reuse), plus the Host/Client that discovers and invokes them.",
+  "type": "module",
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "scripts": {
+    "server": "tsx src/index.ts",
+    "client": "tsx src/client/client.ts",
+    "dev": "tsx watch src/index.ts",
+    "typecheck": "tsc --noEmit"
+  },
+  "keywords": [
+    "fde",
+    "mcp",
+    "model-context-protocol",
+    "tools",
+    "resources",
+    "prompts",
+    "typescript"
+  ],
+  "author": "Forward Deployed Engineering Team",
+  "license": "MIT",
+  "dependencies": {
+    "@modelcontextprotocol/client": "^2.3.1",
+    "@modelcontextprotocol/server": "^2.3.1",
+    "dotenv": "^16.4.7",
+    "zod": "^4.2.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.13.8",
+    "tsx": "^4.23.15",
+    "typescript": "^5.9.3"
+  }
+}
