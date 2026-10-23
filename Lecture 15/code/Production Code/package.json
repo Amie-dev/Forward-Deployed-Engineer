@@ -1,0 +1,47 @@
+{
+  "name": "lecture-15-mcp-resources-and-prompts-production",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Lecture 15 — MCP Server: Resources and Prompts (Production Code). A production-shaped MCP server exposing Tools (model-controlled), Resources (application-controlled) and Prompts (user-controlled) — with validated config, structured logging, metrics, an error taxonomy, execution guards, a five-strategy resource selection engine, context budgets, caching, an audit trail, and a layered host (controllers / middleware / routes) that serves GET /plan?hours=4.",
+  "type": "module",
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "scripts": {
+    "server": "tsx src/index.ts",
+    "host": "tsx src/routes/index.ts",
+    "lifecycle": "tsx src/host/lifecycle.ts",
+    "dev": "tsx watch src/index.ts",
+    "typecheck": "tsc --noEmit"
+  },
+  "keywords": [
+    "fde",
+    "mcp",
+    "model-context-protocol",
+    "resources",
+    "resource-templates",
+    "prompts",
+    "tools",
+    "context-engineering",
+    "production",
+    "observability",
+    "typescript"
+  ],
+  "author": "Forward Deployed Engineering Team",
+  "license": "MIT",
+  "dependencies": {
+    "@hono/node-server": "^1.19.17",
+    "@modelcontextprotocol/client": "^2.3.1",
+    "@modelcontextprotocol/node": "^2.1.1",
+    "@modelcontextprotocol/server": "^2.3.1",
+    "dotenv": "^16.4.7",
+    "hono": "^4.13.13",
+    "openai": "^6.0.0",
+    "zod": "^4.2.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.13.8",
+    "tsx": "^4.23.15",
+    "typescript": "^5.9.3"
+  }
+}
