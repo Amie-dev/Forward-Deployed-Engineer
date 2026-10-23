@@ -1,0 +1,41 @@
+{
+  "name": "lecture-14-mcp-server-production",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Lecture 14 — MCP Server from First Principles (Production Code): the same three primitives as Basic Code, hardened with the concerns Chapter 08 makes non-optional — validated config, structured logging, audit, rate limits, timeouts, idempotency, a real error taxonomy, resource templates, and a host that enforces consent and tool filtering.",
+  "type": "module",
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "scripts": {
+    "server": "tsx src/index.ts",
+    "host": "tsx src/host/client.ts",
+    "dev": "tsx watch src/index.ts",
+    "typecheck": "tsc --noEmit"
+  },
+  "keywords": [
+    "fde",
+    "mcp",
+    "model-context-protocol",
+    "tools",
+    "resources",
+    "prompts",
+    "production",
+    "observability",
+    "idempotency",
+    "typescript"
+  ],
+  "author": "Forward Deployed Engineering Team",
+  "license": "MIT",
+  "dependencies": {
+    "@modelcontextprotocol/client": "^2.3.1",
+    "@modelcontextprotocol/server": "^2.3.1",
+    "dotenv": "^16.4.7",
+    "zod": "^4.2.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.13.8",
+    "tsx": "^4.23.15",
+    "typescript": "^5.9.3"
+  }
+}
