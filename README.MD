@@ -30,7 +30,7 @@
 | 📊 | **[Repository at a Glance](#-repository-at-a-glance)** | Hard numbers: lectures, chapters, lines of notes, lines of code |
 | 🗺️ | **[Learning Path](#-learning-path)** | The five-phase route through the curriculum |
 | 📚 | **[Curriculum Navigation](#-curriculum-navigation)** | Every lecture, note set, codebase and implementation guide |
-| 📖 | **[Lecture Highlights](#-lecture-highlights)** | Deep-dive summaries of all 12 lectures |
+| 📖 | **[Lecture Highlights](#-lecture-highlights)** | Deep-dive summaries of all 14 lectures |
 | 🧰 | **[Technology Stack](#-technology-stack)** | Languages, frameworks, services and SDKs used |
 | 🚀 | **[Quick Start](#-quick-start)** | How to read the notes and run the code |
 | 🗂️ | **[Repository Structure](#-repository-structure)** | Directory map |
@@ -61,16 +61,16 @@ This repository contains structured lecture notes, system architectures, mathema
 
 | Metric | Value |
 | :--- | ---: |
-| 🎓 Lectures | **12** |
-| 📓 Chapter note files | **88** |
-| 📄 Consolidated note documents | **12** |
-| 🗂️ Tracked markdown files | **260** |
-| ✍️ Lines of notes &amp; guides | **112,000+** |
-| 💻 TypeScript / JavaScript files | **198** |
-| 🧾 Lines of code | **22,600+** |
-| 🏭 Lectures shipping runnable code | **8** (03 · 04 · 05 · 06 · 08 · 10 · 11 · 12) |
-| 🧩 Runnable codebases | **9** |
-| 🎞️ Source slide decks &amp; Excalidraw diagrams | **12 PDF · 11 SVG** |
+| 🎓 Lectures | **14** |
+| 📓 Chapter note files | **110** |
+| 📄 Consolidated note documents | **14** |
+| 🗂️ Tracked markdown files | **311** |
+| ✍️ Lines of notes &amp; guides | **136,000+** |
+| 💻 TypeScript / JavaScript files | **244** |
+| 🧾 Lines of code | **29,400+** |
+| 🏭 Lectures shipping runnable code | **10** (03 · 04 · 05 · 06 · 08 · 10 · 11 · 12 · 13 · 14) |
+| 🧩 Runnable codebases | **12** |
+| 🎞️ Source slide decks &amp; Excalidraw diagrams | **14 PDF · 13 SVG** |
 
 > 💡 Every number above is derived from the repository contents — notes are Markdown, code is strict TypeScript or plain JavaScript, and each codebase ships with a chapter-by-chapter implementation guide.
 
@@ -87,6 +87,7 @@ Follow the phases in order — each one assumes only the phase before it.
 | **3 · Agency &amp; Streaming** | 05 · 06 | 🟨 | Give a model tools, sandbox it, add human-in-the-loop, and stream tokens to a browser correctly |
 | **4 · Embeddings &amp; Retrieval** | 07 · 08 · 09 · 10 | 🟧 | Represent meaning as vectors, then store and search billions of them with ANN indexes |
 | **5 · RAG &amp; Advanced RAG** | 11 · 12 | 🟥 | Build a grounded answering system end to end — then prove which control fixes a wrong answer |
+| **6 · Output Contracts &amp; Integration** | 13 · 14 | 🟪 | Make a model's output something a program can trust — then give that program standard access to the outside world |
 
 ---
 
@@ -108,6 +109,7 @@ Follow the phases in order — each one assumes only the phase before it.
 | **10** | 🟧 Deep Dive into Vector Databases & ANN Algorithms | [📂](./Lecture%2010/notes/README.md) | [📄](./Lecture%2010/notes/Lecture_10_Complete_Notes.md) | [💻](./Lecture%2010/code/README.md) | [🛠️](./Lecture%2010/code/implementations%20guide/README.md) |
 | **11** | 🟥 Retrieval-Augmented Generation (RAG) | [📂](./Lecture%2011/notes/README.md) | [📄](./Lecture%2011/notes/Lecture_11_Complete_Notes.md) | [💻 Productions RAG](./Lecture%2011/code/Productions%20RAG/README.md)<br/>[🧪 Eassy RAG](./Lecture%2011/code/Eassy%20RAG/src/queryPdf.js) | [🛠️ Productions RAG (00 → 14)](./Lecture%2011/code/Productions%20RAG/implementations%20guide/README.md)<br/>[🛠️ Eassy RAG (01 → 08)](./Lecture%2011/code/Eassy%20RAG/implementations%20guide/README.md) |
 | **12** | 🟥 Advanced RAG — Chunking, Hybrid Retrieval, Reranking & Context Engineering | [📂](./Lecture%2012/notes/README.md) | [📄](./Lecture%2012/notes/Lecture_12_Complete_Notes.md) | [💻 Advanced RAG](./Lecture%2012/code/advanced-rag/README.md) | [🛠️ (00 → 10)](./Lecture%2012/code/advanced-rag/implementations%20guide/README.md) |
+| **13** | 🟪 Structured Outputs in GenAI — Schema, Enforcement, Validation & Action | [📂](./Lecture%2013/notes/README.md) | [📄](./Lecture%2013/notes/Lecture_13_Complete_Notes.md) | [🏭 Structured Outputs](./Lecture%2013/code/Production%20Code/README.md) | ➖ |
 | **14** | 🟪 MCP Server from First Principles — Host, Client, Server, Tools, Resources & Prompts | [📂](./Lecture%2014/notes/README.md) | [📄](./Lecture%2014/notes/Lecture_14_Complete_Notes.md) | [🧱 Basic Code](./Lecture%2014/code/Basic%20Code/README.md)<br/>[🏭 Production Code](./Lecture%2014/code/Production%20Code/README.md) | [🛠️ Basic Code (01 → 09)](./Lecture%2014/code/Basic%20Code/implementations%20guide/README.md)<br/>[🛠️ Production Code (01 → 17)](./Lecture%2014/code/Production%20Code/implementations%20guide/README.md) |
 
 > 🧭 **Want the full chapter-level roadmap with per-chapter topic tables?** Open the **[Main Repository Index & Curriculum Roadmap](./index.md)**.
@@ -375,6 +377,41 @@ The engineering discipline of making basic RAG's one heroic assumption true — 
 ---
 
 
+### 🟪 [Lecture 13: Structured Outputs in GenAI — Schema, Enforcement, Validation and Action](./Lecture%2013/notes/README.md)
+
+> **Thesis** — Every GenAI application starts as *prompt → LLM → text*. That is complete for a human and unusable for a program. This lecture builds the bridge: **define the contract, enforce it at the decoder, verify it at the boundary — and never let unverified model output touch the outside world.**
+
+`The integration gap` · `Schema as contract` · `One declaration → type + validator + wire schema` · `Enum the closed sets` · `Required-or-nullify` · `The strict-mode subset` · `Instruction vs guarantee` · `Constrained decoding + logit masking` · `The four-rung enforcement ladder` · `Structural vs semantic validation` · `block vs review severity` · `The strong repair prompt` · `Bounded repair + fallback ladder` · `Degraded objects` · `Typed outcomes` · `Structured output vs tool calling` · `Approval tiers` · `Idempotency keys from semantics` · `Typed domain errors` · `MCP: tools · resources · prompts` · `Discovery is not permission` · `First-pass validity + issue distribution` · `The release gate`
+
+<details>
+<summary><b>🔎 Full breakdown</b></summary>
+
+<br>
+
+The engineering discipline of turning a probabilistic model into a deterministic system's collaborator. Notes start with the **integration gap** — humans read meaning, software reads fields — and the board's `MeetingDetails` form, then define structured output properly: *a schema is a form the application writes and the model fills*, and the target is a typed object, never "JSON". A single declaration produces three artefacts (the TypeScript type, the runtime validator and the wire contract), which is what makes a rename break the build instead of production.
+
+Chapter 03 is the pivot: an instruction is a **preference over a token distribution**, not a guarantee, so "return JSON" fails in documented ways — chatty preamble, markdown fence, trailing comma, unbalanced braces, truncation — and every regex added to rescue them is a latent bug. Chapter 04 is schema craft: enum the closed sets, require-or-nullify every field, flatten by default, put units in the name, order the reasoning field first, and treat `description` as the highest-value keyword in the vocabulary — then respect the **strict-mode subset**, because a grammar enforces structure and silently ignores value predicates like `pattern` and `minimum`. Chapter 05 goes inside the decoder: logit masking, grammar compilation and caching, the capability ladder from prompt-only → JSON mode → strict schema, the tool-use workaround where schemas are unsupported, and the honest boundary — *a decoder can make malformed output impossible and says nothing about whether the output is right*.
+
+Chapter 06 is the deliverable: **structural** validation (types, enums, bounds) plus **semantic** validation (is it *true*?), separated into `block` and `review` severities so the system neither over-rejects good data nor under-rejects bad data; a **strong repair prompt** carrying the machine-readable issues, the previous output, a scoping instruction and a format instruction; a bounded loop; and a fallback ladder that ends in a **degraded object** rather than a silent default. Chapter 07 separates the *result* from the *request* — structured output versus tool calling — and places approval tiers on the boundary. Chapter 08 turns data into action: adapters that absorb vendor payload differences, vendor errors mapped to **typed domain errors**, **idempotency keys derived from semantics** so a retry cannot duplicate an action, and MCP as host/client/server with the **tools** (*do*) · **resources** (*know*) · **prompts** (*reuse*) primitives, under the rule that *discovery is not permission*. Chapter 09 is the production playbook: first-pass validity, repair rate, per-field accuracy and the **issue distribution** that turns "the model is unreliable" into "`durationMinutes` is a string 4% of the time" — plus versioning, observability, a release gate and a go-live checklist.
+
+The companion codebase makes the whole ladder measurable in one table. On the same ten golden cases: **first-pass validity is 100% at `schema` and `validate`, and 0% at `instruction` and `json_mode`** — where the bounded repair loop rescues every clean case, at double the call cost. Field accuracy is 100% everywhere, because the *content* was never the problem; the envelope was. The golden set deliberately includes six cases that must **not** return `ok` (a missing time, an injected instruction, an out-of-scope request, an unknown colleague, an out-of-range duration, a policy violation), and the harness asserts each one — including the distinction that separates the fallback rung from a bug: a *missing* duration may be defaulted and flagged, while a *stated* duration that breaches policy must be escalated, never silently changed.
+
+</details>
+
+**🧩 One codebase ships with this lecture — plus the lecture's own three-file demo:**
+
+| Codebase | Language &amp; size | The question it answers | What's inside |
+| :--- | :--- | :--- | :--- |
+| 🏭 **[Structured Outputs](./Lecture%2013/code/Production%20Code/README.md)** | TypeScript · 18 files · ~4,500 lines | *How does a probabilistic model feed a deterministic system — safely?* | One Zod contract generating the TS type, the JSON Schema and the runtime validator; the strict-mode subset with the unenforceable predicates stripped; a four-rung enforcement ladder with a per-rung prompt; structural + semantic validation with `block`/`review` severities; a bounded repair loop with a `(path, code)`-keyed fallback; an idempotent action pipeline behind a calendar adapter; an **MCP-shaped** capability server with session-scoped identity and tier gating; a 10-case golden set, a metric card and a release gate; a 10-subcommand CLI and an Express API. |
+| 🧱 **[The lecture's original demo](./Lecture%2013/code/Production%20Code/DemoApplication.js)** (`npm run demo`) | JavaScript · 3 files | *What does the happy path look like?* | `MeetingDetails.js` (the Zod schema), `MeetingService.js` (one `openai.responses.parse` call with `zodTextFormat`) and `DemoApplication.js` — kept verbatim as the starting point the rest of the codebase argues with. |
+
+> ⚖️ **Honest limits — documented rather than hidden:** the offline model is a **deterministic simulator, not a language model** — it reproduces each rung's *documented* failure modes (chatty preamble, numeric-as-string drift, enum casing drift, extra keys, missing nullable key, truncation) so every chapter reproduces with no API key, and it honours repair instructions by making only the mechanical edits a model legitimately could; the calendar adapter is in-process; and the MCP layer reproduces the **shape** (primitives, tier gating, session-scoped identity) rather than a JSON-RPC transport.
+
+**[📂 Notes index](./Lecture%2013/notes/README.md)** · **[📄 Complete document](./Lecture%2013/notes/Lecture_13_Complete_Notes.md)** · **[🏭 Codebase](./Lecture%2013/code/Production%20Code/README.md)**
+
+---
+
+
 ### 🟪 [Lecture 14: MCP Server from First Principles — Host, Client, Server, Tools, Resources and Prompts](./Lecture%2014/notes/README.md)
 
 > **Thesis** — Tool calling solved *how a model asks for an action*; it never solved *how an application gets access to that action at all*. MCP turns an N × M integration problem into an N + M one — without adding a single new capability to the model. It standardises the doorway, not the intelligence behind it.
@@ -452,6 +489,17 @@ npm run dev          # HTTP API on :3100
 ```
 
 ```bash
+# Lecture 13 — Structured Outputs (runs with NO API key)
+cd "Lecture 13/code/Production Code"
+npm install
+npm run naive        # "Sure! Here's the JSON you requested:" — and JSON.parse throws
+npm run layers       # the same sentence through all four enforcement rungs
+npm run extract      # the full reliability loop, with a per-attempt trace
+npm run eval         # 1st-pass validity: 100% at schema/validate, 0% at instruction/json_mode
+npm run dev          # HTTP API on :3200
+```
+
+```bash
 # Lecture 11 — Productions RAG (set OPENAI_API_KEY for live embeddings)
 cd "Lecture 11/code/Productions RAG"
 npm install
@@ -482,19 +530,20 @@ Forward-Deployed-Engineer/
 ├── index.md                        # Master roadmap: every lecture + per-chapter topic tables
 ├── prompt.md                       # Note-generation brief used across lectures
 │
-├── Lecture 01/ … Lecture 12/       # 12 lectures
+├── Lecture 01/ … Lecture 14/       # 14 lectures
 │   ├── notes/
 │   │   ├── README.md               # Chapter index for the lecture
 │   │   ├── Notes.pdf               # Original source slides
 │   │   ├── Excalidraw-Notes.svg    # Hand-drawn diagram source
 │   │   ├── 01_*.md … NN_*.md       # Chapter-by-chapter notes
 │   │   └── Lecture_NN_Complete_Notes.md   # Single consolidated document
-│   └── code/                       # Present for lectures 03 · 04 · 05 · 06 · 08 · 10 · 11 · 12
+│   └── code/                       # Present for lectures 03 · 04 · 05 · 06 · 08 · 10 · 11 · 12 · 13 · 14
 │       ├── README.md               # What the codebase does + how to run it
 │       ├── src/ · package.json · tsconfig.json
 │       └── implementations guide/  # Chapter-wise build guide (full source, block by block)
 │
-└── (Lecture 11 additionally ships two codebases: Productions RAG and Eassy RAG)
+└── (Lecture 11 ships two codebases — Productions RAG and Eassy RAG; Lecture 13 ships
+    the structured-outputs implementation; Lecture 14 ships Basic Code and Production Code)
 ```
 
 ---
@@ -517,8 +566,8 @@ Every artefact in this repository follows the same four-part contract, so you ca
 
 | Status | Item |
 | :---: | :--- |
-| ✅ | Lectures **01 → 12** published with chapter-wise notes and consolidated documents |
-| ✅ | Codebases + implementation guides for lectures **03 · 04 · 05 · 06 · 08 · 10 · 11 · 12** |
+| ✅ | Lectures **01 → 14** published with chapter-wise notes and consolidated documents |
+| ✅ | Codebases for lectures **03 · 04 · 05 · 06 · 08 · 10 · 11 · 12 · 13 · 14**, with implementation guides for **03 · 04 · 05 · 06 · 08 · 10 · 11 · 12 · 14** |
 | ✅ | Master roadmap maintained in [`index.md`](./index.md) |
 | 🔜 | Additional chapters where the source slides are thinner than the engineering reality |
 | 🔜 | More evaluation golden sets so every quantitative claim stays reproducible |
