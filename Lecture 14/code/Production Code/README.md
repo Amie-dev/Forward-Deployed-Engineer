@@ -145,14 +145,14 @@ Production Code/
 
 | Chapter | Where it lives |
 | :--- | :--- |
-| [01 — The integration problem](../../../notes/01_The_Integration_Problem_and_Why_Standards_Win.md) | The host depends on the protocol, not on this server: `src/host/client.ts` |
-| [02 — What MCP is](../../../notes/02_What_MCP_Is_Protocol_Server_and_Standard_Interface.md) | `src/config/env.ts` (identity), `src/mcp/server.ts` (capabilities + instructions, no LLM) |
-| [03 — MCP vs tool calling](../../../notes/03_MCP_vs_Tool_Calling_Complementary_Layers.md) | `callWithPolicy()` in `src/host/client.ts`: selection is a model decision, invocation is MCP |
-| [04 — Host, Client, Server](../../../notes/04_Host_Client_Server_Architecture.md) | `src/index.ts` (transport), `src/host/client.ts` (the host owns the 1:1 client) |
-| [05 — The Tools Primitive](../../../notes/05_The_Tools_Primitive.md) | `src/mcp/tools.ts` — description-as-prompt, schemas, annotations, `isError` |
-| [06 — Resources and Prompts](../../../notes/06_Resources_and_Prompts.md) | `src/mcp/resources.ts` (static + template), `src/mcp/prompts.ts` |
-| [07 — The tool lifecycle](../../../notes/07_Discovery_Invocation_and_Lifecycle.md) | `src/host/client.ts` — the numbered steps; `src/domain/taskStore.ts` is the deterministic middle |
-| [08 — Security and production](../../../notes/08_Security_Production_and_Practical_Architecture.md) | `src/host/policy.ts`, `src/host/audit.ts`, `src/core/guards.ts`, `src/config/env.ts` |
+| [01 — The integration problem](../../notes/01_The_Integration_Problem_and_Why_Standards_Win.md) | The host depends on the protocol, not on this server: `src/host/client.ts` |
+| [02 — What MCP is](../../notes/02_What_MCP_Is_Protocol_Server_and_Standard_Interface.md) | `src/config/env.ts` (identity), `src/mcp/server.ts` (capabilities + instructions, no LLM) |
+| [03 — MCP vs tool calling](../../notes/03_MCP_vs_Tool_Calling_Complementary_Layers.md) | `callWithPolicy()` in `src/host/client.ts`: selection is a model decision, invocation is MCP |
+| [04 — Host, Client, Server](../../notes/04_Host_Client_Server_Architecture.md) | `src/index.ts` (transport), `src/host/client.ts` (the host owns the 1:1 client) |
+| [05 — The Tools Primitive](../../notes/05_The_Tools_Primitive.md) | `src/mcp/tools.ts` — description-as-prompt, schemas, annotations, `isError` |
+| [06 — Resources and Prompts](../../notes/06_Resources_and_Prompts.md) | `src/mcp/resources.ts` (static + template), `src/mcp/prompts.ts` |
+| [07 — The tool lifecycle](../../notes/07_Discovery_Invocation_and_Lifecycle.md) | `src/host/client.ts` — the numbered steps; `src/domain/taskStore.ts` is the deterministic middle |
+| [08 — Security and production](../../notes/08_Security_Production_and_Practical_Architecture.md) | `src/host/policy.ts`, `src/host/audit.ts`, `src/core/guards.ts`, `src/config/env.ts` |
 
 **[🛠️ Implementation guide (01 → 17)](./implementations%20guide/README.md)** — the same
 source, chapter by chapter: file details → full source → block-by-block explanation → verification.

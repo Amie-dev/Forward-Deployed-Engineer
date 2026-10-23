@@ -107,7 +107,8 @@ Follow the phases in order — each one assumes only the phase before it.
 | **09** | 🟧 Vector Embedding Search & Storage | [📂](./Lecture%2009/notes/README.md) | [📄](./Lecture%2009/notes/Lecture_09_Complete_Notes.md) | ➖ | ➖ |
 | **10** | 🟧 Deep Dive into Vector Databases & ANN Algorithms | [📂](./Lecture%2010/notes/README.md) | [📄](./Lecture%2010/notes/Lecture_10_Complete_Notes.md) | [💻](./Lecture%2010/code/README.md) | [🛠️](./Lecture%2010/code/implementations%20guide/README.md) |
 | **11** | 🟥 Retrieval-Augmented Generation (RAG) | [📂](./Lecture%2011/notes/README.md) | [📄](./Lecture%2011/notes/Lecture_11_Complete_Notes.md) | [💻 Productions RAG](./Lecture%2011/code/Productions%20RAG/README.md)<br/>[🧪 Eassy RAG](./Lecture%2011/code/Eassy%20RAG/src/queryPdf.js) | [🛠️ Productions RAG (00 → 14)](./Lecture%2011/code/Productions%20RAG/implementations%20guide/README.md)<br/>[🛠️ Eassy RAG (01 → 08)](./Lecture%2011/code/Eassy%20RAG/implementations%20guide/README.md) |
-| **12** | 🟥 Advanced RAG — Chunking, Hybrid Retrieval, Reranking & Context Engineering | [📂](./Lecture%2012/notes/README.md) | [📄](./Lecture%2012/notes/Lecture_12_Complete_Notes.md) | [💻 Advanced RAG](./Lecture%2012/code/advanced-rag/README.md) | [🛠️ (00 → 10)](./Lecture%2012/code/implementations%20guide/README.md) |
+| **12** | 🟥 Advanced RAG — Chunking, Hybrid Retrieval, Reranking & Context Engineering | [📂](./Lecture%2012/notes/README.md) | [📄](./Lecture%2012/notes/Lecture_12_Complete_Notes.md) | [💻 Advanced RAG](./Lecture%2012/code/advanced-rag/README.md) | [🛠️ (00 → 10)](./Lecture%2012/code/advanced-rag/implementations%20guide/README.md) |
+| **14** | 🟪 MCP Server from First Principles — Host, Client, Server, Tools, Resources & Prompts | [📂](./Lecture%2014/notes/README.md) | [📄](./Lecture%2014/notes/Lecture_14_Complete_Notes.md) | [🧱 Basic Code](./Lecture%2014/code/Basic%20Code/README.md)<br/>[🏭 Production Code](./Lecture%2014/code/Production%20Code/README.md) | [🛠️ Basic Code (01 → 09)](./Lecture%2014/code/Basic%20Code/implementations%20guide/README.md)<br/>[🛠️ Production Code (01 → 17)](./Lecture%2014/code/Production%20Code/implementations%20guide/README.md) |
 
 > 🧭 **Want the full chapter-level roadmap with per-chapter topic tables?** Open the **[Main Repository Index & Curriculum Roadmap](./index.md)**.
 
@@ -369,7 +370,43 @@ The engineering discipline of making basic RAG's one heroic assumption true — 
 
 > ⚖️ **Honest limits — documented rather than hidden:** the offline embedder is lexical (hashes, stems and character 4-grams) so it handles morphology but not paraphrase; the reranker is a joint lexical scorer rather than a neural cross-encoder; and the extractive generator quotes sentences without reasoning, which is why `facts` sits at **0.583** while `refusal` is **1.000** — a retrieval-vs-generation distinction the guide's failure tree names explicitly.
 
-**[📂 Notes index](./Lecture%2012/notes/README.md)** · **[📄 Complete document](./Lecture%2012/notes/Lecture_12_Complete_Notes.md)** · **[💻 Codebase](./Lecture%2012/code/advanced-rag/README.md)** · **[🛠️ Implementation guide (00 → 10)](./Lecture%2012/code/implementations%20guide/README.md)**
+**[📂 Notes index](./Lecture%2012/notes/README.md)** · **[📄 Complete document](./Lecture%2012/notes/Lecture_12_Complete_Notes.md)** · **[💻 Codebase](./Lecture%2012/code/advanced-rag/README.md)** · **[🛠️ Implementation guide (00 → 10)](./Lecture%2012/code/advanced-rag/implementations%20guide/README.md)**
+
+---
+
+
+### 🟪 [Lecture 14: MCP Server from First Principles — Host, Client, Server, Tools, Resources and Prompts](./Lecture%2014/notes/README.md)
+
+> **Thesis** — Tool calling solved *how a model asks for an action*; it never solved *how an application gets access to that action at all*. MCP turns an N × M integration problem into an N + M one — without adding a single new capability to the model. It standardises the doorway, not the intelligence behind it.
+
+`Tool calling recap` · `N × M → N + M` · `A standard provides access, not capability` · `What MCP is` · `An MCP Server needs no LLM` · `Host / Client / Server` · `The 1:1 rule` · `STDIO vs Streamable HTTP` · `Tools (do) · Resources (know) · Prompts (reuse)` · `Tool anatomy + schema craft` · `tools/list → tools/call` · `Protocol error vs tool execution error (isError)` · `Tool annotations` · `Resources vs RAG` · `The control model` · `The eight-step lifecycle` · `Dynamic discovery + caching` · `Discovery is not permission` · `OAuth for remote servers` · `The threat model` · `The build order`
+
+<details>
+<summary><b>🔎 Full breakdown</b></summary>
+
+<br>
+
+The lecture starts from something that already works perfectly — a single `getWeather()` tool wired into one application — and shows where it breaks: at the **second consumer**, and arithmetically by the sixth. The same five capabilities wanted by six AI applications become repeated, drifting, independently-secured integrations: N × M (5 apps × 10 systems = 50) instead of N + M (15) with a standard. Chapter 01 sets the two rules that follow — depend on the protocol rather than the vendor, and adopt the standard that already has a precedent (HTTP, USB, ODBC).
+
+Chapter 02 defines MCP as a standard protocol through which AI applications connect to external tools and data, and pins down what an **MCP Server** is: a capability provider that needs **no LLM** — ordinary business logic behind a standard interface. It also answers *"why not just use REST?"* and separates an MCP server from a microservice. Chapter 03 places MCP beside tool calling as **complementary layers**: tool calling answers *which capability, with what arguments?*, MCP answers *where do those tools come from, and how are they accessed?* — with the handoff point, the structured-output connection from Lecture 13, the four possible combinations and a responsibility matrix. Chapter 04 introduces the three roles and the **1:1 rule** (one client speaks to exactly one server), then isolation, transports and the lifecycle.
+
+Chapters 05–06 are the primitives. **Tools** (*do*): anatomy, `tools/list` discovery, `tools/call` invocation, what a tool returns, the **two error mechanisms** (a protocol error versus a tool-execution error carrying `isError: true`), annotation hints (`readOnlyHint`, `destructiveHint`, `idempotentHint`), the tool-definition rules, and security duties. **Resources** (*know*) and **Prompts** (*reuse*): addressable context by URI, Tool vs Resource, Resources vs RAG, prompt templates with arguments, and the control model — the model drives tools, the application drives resources, the user drives prompts.
+
+Chapter 07 is the machine: the eight-step lifecycle, discovery as a curated act, selection as the fragile step, the host doing the routing, the result becoming context, dynamic discovery, whether `tools/list` runs on every message, the context-budget problem, and a five-step diagnostic order. Chapter 08 is the boundary: the governing sentence (*MCP standardizes communication; it does not remove your responsibility for security*), the threat model, **discovery is not permission**, OAuth for remote servers, the two-application demo architecture, production concerns and the build order.
+
+</details>
+
+
+**🧩 Two codebases ship with this lecture — they answer different questions:**
+
+| Codebase | Language &amp; size | The question it answers | What's inside |
+| :--- | :--- | :--- | :--- |
+| 🧱 **[Basic Code](./Lecture%2014/code/Basic%20Code/README.md)** | TypeScript · 8 files · ~376 lines · guide **01 → 09** | *How do you build an MCP server at all?* | One server exposing all three primitives plus the Host/Client over **STDIO**; `tools/list` → `tools/call` → `resources/read` → `prompts/get`; `isError` messages written as recovery instructions; an honest custom `company://` scheme; an inspector command and a raw JSON-RPC probe. |
+| 🏭 **[Production Code](./Lecture%2014/code/Production%20Code/README.md)** | TypeScript · 16 files · ~1,849 lines · guide **01 → 17** | *What does Chapter 08 make non-optional?* | The same three primitives with validated config, structured stderr logging + redaction, metrics, a four-code error taxonomy, rate limits, timeouts, idempotency keys, **resource templates**, and a host that enforces **trust tiers, consent and tool filtering** with a hashed-argument **audit trail** — plus a raw-JSON-RPC probe and a Streamable-HTTP swap. |
+
+> ⚖️ **Honest limits — documented rather than hidden:** the host stands in for the LLM deterministically so the whole lifecycle is reproducible with **no API key**; the high-level SDK advertises `resources.subscribe` **without a handler** (`Method not found`), which the guide records rather than fakes; dynamic discovery and subscriptions need the low-level `Server`; and the task store and audit trail are in-process, sitting behind interfaces a real deployment would replace.
+
+**[📂 Notes index](./Lecture%2014/notes/README.md)** · **[📄 Complete document](./Lecture%2014/notes/Lecture_14_Complete_Notes.md)** · **[🧱 Basic Code](./Lecture%2014/code/Basic%20Code/README.md)** · **[🏭 Production Code](./Lecture%2014/code/Production%20Code/README.md)** · **[🛠️ Basic guide (01 → 09)](./Lecture%2014/code/Basic%20Code/implementations%20guide/README.md)** · **[🛠️ Production guide (01 → 17)](./Lecture%2014/code/Production%20Code/implementations%20guide/README.md)**
 
 ---
 
