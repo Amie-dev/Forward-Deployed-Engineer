@@ -1,5 +1,5 @@
 import type { Config } from "../config/config.js";
-import type { Hit } from "./search.js";
+import type { AssembledContext, ContextBlock, Hit } from "../models/types.js";
 
 /**
  * Chapter 08 — context engineering.
@@ -11,22 +11,9 @@ import type { Hit } from "./search.js";
  *
  * Ordering is the fix for the running example: most specific and most decisive
  * **first**, most general **last**, and the question at the very **end**.
+ *
+ * `ContextBlock` and `AssembledContext` are contracts (Chapter 02).
  */
-export type ContextBlock = {
-  label: number;
-  chunkId: string;
-  docId: string;
-  heading: string;
-  body: string;
-  meta: string;
-};
-
-export type AssembledContext = {
-  text: string;
-  blocks: ContextBlock[];
-  ids: string[];
-  tokens: number;
-};
 
 /** Chapter 08 — specificity: a category policy outranks the general one. */
 const SPECIFICITY: Record<string, number> = {

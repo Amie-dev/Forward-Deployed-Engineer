@@ -1,5 +1,6 @@
 import type { Config } from "../config/config.js";
-import type { Document } from "./documents.js";
+import type { Chunk, Document } from "../models/types.js";
+import { contentHash } from "../utils/hash.js";
 
 /**
  * Chapters 02 and 03 — chunking.
@@ -12,32 +13,10 @@ import type { Document } from "./documents.js";
  *
  * Both attach a **breadcrumb** (`Title → Section`) to the embedded text, because
  * "Electronic products can be returned within 7 days" is ambiguous without it.
+ *
+ * The `Chunk` contract lives in `models/types.ts` (Chapter 02) and the content
+ * hash in `utils/hash.ts` (Chapter 03); this file owns *where* the cuts happen.
  */
-export type Chunk = {
-  /** Chapter 02 — `source + index + contentHash`: same text → same id. */
-  id: string;
-  docId: string;
-  /** What gets embedded: breadcrumb + body (Chapter 03). */
-  text: string;
-  /** The body alone, for display. */
-  body: string;
-  breadcrumb: string;
-  category: string;
-  tenant: string;
-  acl: string[];
-  effectiveFrom: string;
-  supersededOn?: string;
-};
-
-/** FNV-1a, the tiny content hash that makes a chunk id deterministic. */
-function contentHash(text: string): string {
-  let hash = 0x811c9dc5;
-  for (let i = 0; i < text.length; i++) {
-    hash ^= text.charCodeAt(i);
-    hash = Math.imul(hash, 0x01000193);
-  }
-  return (hash >>> 0).toString(16).padStart(8, "0");
-}
 
 function toChunk(doc: Document, index: number, breadcrumb: string, body: string): Chunk {
   const text = `${breadcrumb}\n${body}`.trim();

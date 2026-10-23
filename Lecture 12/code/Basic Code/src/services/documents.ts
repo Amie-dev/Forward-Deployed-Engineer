@@ -1,3 +1,5 @@
+import type { Document } from "../models/types.js";
+
 /**
  * Chapters 01–05 — the corpus.
  *
@@ -10,19 +12,10 @@
  *   tenant + acl   Chapter 05 — the authorisation boundary
  *   effectiveFrom  Chapter 05 — the `asOf` temporal predicate
  *   supersededOn   Chapter 05 — so a superseded policy cannot win on similarity
+ *
+ * The `Document` contract itself lives in `models/types.ts` (Chapter 02); this
+ * file is only the data.
  */
-export type Category = "general" | "electronics" | "damaged" | "product" | "internal";
-
-export type Document = {
-  id: string;
-  title: string;
-  category: Category;
-  tenant: string;
-  acl: string[];
-  effectiveFrom: string;
-  supersededOn?: string;
-  text: string;
-};
 
 const northwind = "northwind";
 

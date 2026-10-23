@@ -1,10 +1,11 @@
 import { config, type Config } from "../config/config.js";
-import { assembleContext, type AssembledContext } from "./context.js";
+import type { Trace } from "../models/types.js";
+import { assembleContext } from "./context.js";
 import { DOCUMENTS } from "./documents.js";
-import { generateAnswer, type Answer } from "./generate.js";
+import { generateAnswer } from "./generate.js";
 import { rerank } from "./rerank.js";
-import { hybridSearch, type Hit } from "./search.js";
-import { buildIndex, filterFrom, isEligible, type Filter } from "./store.js";
+import { hybridSearch } from "./search.js";
+import { buildIndex, filterFrom, isEligible } from "./store.js";
 
 /**
  * Chapters 01–08 in one function — the orchestrator that produces the **trace**.
@@ -13,22 +14,10 @@ import { buildIndex, filterFrom, isEligible, type Filter } from "./store.js";
  * "which stage owns this failure?" is answered by reading it, not by guessing.
  *
  *   filter → dense + lexical → RRF → threshold → cut at K → rerank → assemble → answer
+ *
+ * `Trace` is a contract (Chapter 02). This file is the composition root: it is
+ * the only module that imports every service.
  */
-export type Trace = {
-  question: string;
-  chunks: number;
-  eligible: number;
-  filter: Filter;
-  dense: Hit[];
-  lexical: Hit[];
-  fused: Hit[];
-  candidates: Hit[];
-  reranked: Hit[];
-  passed: boolean;
-  context: AssembledContext;
-  answer: Answer;
-  timings: Record<string, number>;
-};
 
 const round = (value: number): number => Number(value.toFixed(2));
 

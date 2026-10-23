@@ -1,3 +1,5 @@
+import { fnv1a } from "../utils/hash.js";
+
 /**
  * Chapters 03 and 06 — the embedder and its analyzer.
  *
@@ -31,7 +33,6 @@ export function contentTerms(text: string): string[] {
   return [...new Set(analyze(text))].filter((token) => !STOPWORDS.has(token));
 }
 
-
 /**
  * The analyzer. Chapter 06's warnings, in three lines:
  *   - index the hyphen variant (`ax-204` and `ax204`) so a SKU search hits;
@@ -48,21 +49,11 @@ export function analyze(text: string): string[] {
   return out;
 }
 
-/** FNV-1a again — the same hash the chunk id uses, reused as a bucket. */
-function bucket(token: string): number {
-  let hash = 0x811c9dc5;
-  for (let i = 0; i < token.length; i++) {
-    hash ^= token.charCodeAt(i);
-    hash = Math.imul(hash, 0x01000193);
-  }
-  return hash >>> 0;
-}
-
 /** Signed hashing: the sign bit spreads collisions instead of adding them up. */
 export function embed(text: string): number[] {
   const vector = new Array<number>(DIMENSIONS).fill(0);
   for (const token of analyze(text)) {
-    const h = bucket(token);
+    const h = fnv1a(token);
     vector[h % DIMENSIONS] += (h & 0x100) === 0 ? 1 : -1;
   }
   return normalize(vector);

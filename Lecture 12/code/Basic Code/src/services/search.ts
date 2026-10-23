@@ -1,6 +1,6 @@
 import type { Config } from "../config/config.js";
+import type { Hit, IndexedChunk } from "../models/types.js";
 import { analyze, cosine, embed } from "./embeddings.js";
-import type { IndexedChunk } from "./store.js";
 
 /**
  * Chapters 04 and 06 — the two retrievers and their fusion.
@@ -9,7 +9,6 @@ import type { IndexedChunk } from "./store.js";
  * The caller filters, so both retrievers see exactly the same eligible set —
  * Chapter 05's "same filter on both retrievers".
  */
-export type Hit = { chunk: IndexedChunk; score: number };
 
 /** Chapter 04 — dense retrieval: meaning, with a floor and a K. */
 export function denseSearch(chunks: IndexedChunk[], query: string, cfg: Config): Hit[] {

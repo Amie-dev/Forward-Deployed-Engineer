@@ -1,5 +1,5 @@
+import type { Answer, AssembledContext } from "../models/types.js";
 import { contentTerms } from "./embeddings.js";
-import type { AssembledContext } from "./context.js";
 
 /**
  * Chapter 08 — the grounded answer.
@@ -14,8 +14,6 @@ import type { AssembledContext } from "./context.js";
  * limit of a no-API-key demo, and Chapter 09 calls those cases `generation-miss`.
  */
 export const REFUSAL = "I don't know — no eligible policy in the corpus covers this question.";
-
-export type Answer = { text: string; citations: number[]; refused: boolean };
 
 function sentences(body: string): string[] {
   return body

@@ -1,6 +1,7 @@
 import type { Config } from "../config/config.js";
-import { chunkCorpus, type Chunk } from "./chunking.js";
-import { DOCUMENTS, type Document } from "./documents.js";
+import type { Document, Filter, IndexedChunk } from "../models/types.js";
+import { chunkCorpus } from "./chunking.js";
+import { DOCUMENTS } from "./documents.js";
 import { embed } from "./embeddings.js";
 
 /**
@@ -8,15 +9,10 @@ import { embed } from "./embeddings.js";
  *
  * The store is in memory on purpose: it is big enough to demonstrate
  * pre-filtering, access control and time travel, and small enough to read.
+ *
+ * `IndexedChunk` and `Filter` are contracts (Chapter 02); this file owns the
+ * ingest and the predicate.
  */
-export type IndexedChunk = Chunk & { vector: number[] };
-
-export type Filter = {
-  tenant: string;
-  acl: string[];
-  asOf: string;
-  categories: string[];
-};
 
 /**
  * Chapter 05 — the four production requirements, in one predicate.

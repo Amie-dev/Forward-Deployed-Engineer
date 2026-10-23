@@ -1,4 +1,5 @@
 import { config, type Config } from "../config/config.js";
+import type { CaseResult, GoldenCase, Metrics } from "../models/types.js";
 import { runPipeline } from "./index.js";
 
 /**
@@ -11,12 +12,11 @@ import { runPipeline } from "./index.js";
  * Metrics here are deliberately small: `recall@N` and `MRR` for retrieval,
  * `context precision` for the assembled prompt, `refusal correctness` for
  * generation, plus `contextTokens` for cost.
+ *
+ * `GoldenCase`, `CaseResult` and `Metrics` are contracts (Chapter 02). `Preset`
+ * stays here because it is a `Partial<Config>` — evaluation is the only layer
+ * that rewrites the configuration.
  */
-export type GoldenCase = {
-  question: string;
-  expectedDocs: string[];
-  answerable: boolean;
-};
 
 export const GOLDEN: GoldenCase[] = [
   {
@@ -50,27 +50,6 @@ export const GOLDEN: GoldenCase[] = [
     answerable: false,
   },
 ];
-
-export type CaseResult = {
-  question: string;
-  expected: string[];
-  retrieved: string[];
-  recall: number;
-  precision: number;
-  reciprocal: number;
-  correct: number;
-  tokens: number;
-  refused: boolean;
-};
-
-export type Metrics = {
-  chunks: number;
-  recall: number;
-  precision: number;
-  mrr: number;
-  refusal: number;
-  contextTokens: number;
-};
 
 /** The doc ids behind a list of chunk ids: `return-policy-electronics#2#ab12` → doc id. */
 function docIds(chunkIds: string[]): string[] {

@@ -2,18 +2,20 @@
   "name": "lecture-12-advanced-rag-basics",
   "version": "1.0.0",
   "private": true,
-  "description": "Lecture 12 — Advanced RAG (Basic Code): the minimum runnable code behind the notes. The eight retrieval-quality controls — chunking + overlap, top-K, similarity floor, metadata/ACL/time filters, hybrid search with RRF, reranking, context engineering and a small evaluation. TypeScript, offline, no API key.",
+  "description": "Lecture 12 — Advanced RAG (Basic Code): the minimum runnable code behind the notes. The eight retrieval-quality controls — chunking + overlap, top-K, similarity floor, metadata/ACL/time filters, hybrid search with RRF, reranking, context engineering and a small evaluation — behind a conventional layered structure (config · models · services · controllers · routes · middleware · utils) with an HTTP API and a chapter CLI. Runs offline with no API key.",
   "type": "module",
   "engines": {
     "node": ">=20.0.0"
   },
   "scripts": {
-    "ask": "tsx src/index.ts ask",
-    "chunks": "tsx src/index.ts chunks",
-    "search": "tsx src/index.ts search",
-    "filters": "tsx src/index.ts filters",
-    "eval": "tsx src/index.ts eval",
-    "ablation": "tsx src/index.ts ablation",
+    "dev": "tsx watch src/index.ts",
+    "start": "tsx src/index.ts",
+    "ask": "tsx src/cli.ts ask",
+    "chunks": "tsx src/cli.ts chunks",
+    "search": "tsx src/cli.ts search",
+    "filters": "tsx src/cli.ts filters",
+    "eval": "tsx src/cli.ts eval",
+    "ablation": "tsx src/cli.ts ablation",
     "typecheck": "tsc --noEmit"
   },
   "keywords": [
@@ -26,16 +28,23 @@
     "rrf",
     "reranking",
     "context-engineering",
+    "controllers",
+    "routes",
     "typescript"
   ],
   "author": "Forward Deployed Engineering Team",
   "license": "MIT",
   "dependencies": {
-    "dotenv": "^16.4.7"
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "express": "^4.22.3"
   },
   "devDependencies": {
+    "@types/cors": "^2.8.17",
+    "@types/express": "^4.17.25",
     "@types/node": "^22.13.8",
     "tsx": "^4.23.15",
     "typescript": "^5.9.3"
   }
 }
+

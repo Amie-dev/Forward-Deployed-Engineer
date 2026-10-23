@@ -367,12 +367,13 @@ The engineering discipline of making basic RAG's one heroic assumption true — 
 
 | Codebase | Language &amp; size | The question it answers | What's inside |
 | :--- | :--- | :--- | :--- |
+| 🧱 **[Basic Code](./Lecture%2012/code/Basic%20Code/README.md)** | TypeScript · 20 files · ~950 lines · guide **01 → 19** | *What is the smallest code that shows all eight controls — in a real layered structure?* | A conventional layout (`config` · `models` · `utils` · `services` · `controllers` · `routes` · `middleware`), one file per control, a 6-case golden set, a 5-preset ablation, an HTTP API and a chapter CLI sharing one domain layer — offline, no API key. |
 | 🏭 **[Advanced RAG](./Lecture%2012/code/advanced-rag/README.md)** | TypeScript · 26 files · ~4,200 lines · guide **00 → 10** | *Which control actually fixes a wrong answer?* | Every stage behind an interface, an ablation matrix that changes one control at a time, calibrated score floors, pre-filtering with fail-closed access rules, and a trace returned with every answer. |
 | 🔗 **The Lecture 11 codebases** ([Productions RAG](./Lecture%2011/code/Productions%20RAG/README.md) · [Eassy RAG](./Lecture%2011/code/Eassy%20RAG/src/queryPdf.js)) | TypeScript &amp; JavaScript | *How do you build a grounded answering system at all?* | Lecture 12 assumes that system exists and asks what to change when it is wrong. |
 
 > ⚖️ **Honest limits — documented rather than hidden:** the offline embedder is lexical (hashes, stems and character 4-grams) so it handles morphology but not paraphrase; the reranker is a joint lexical scorer rather than a neural cross-encoder; and the extractive generator quotes sentences without reasoning, which is why `facts` sits at **0.583** while `refusal` is **1.000** — a retrieval-vs-generation distinction the guide's failure tree names explicitly.
 
-**[📂 Notes index](./Lecture%2012/notes/README.md)** · **[📄 Complete document](./Lecture%2012/notes/Lecture_12_Complete_Notes.md)** · **[💻 Codebase](./Lecture%2012/code/advanced-rag/README.md)** · **[🛠️ Implementation guide (00 → 10)](./Lecture%2012/code/advanced-rag/implementations%20guide/README.md)**
+**[📂 Notes index](./Lecture%2012/notes/README.md)** · **[📄 Complete document](./Lecture%2012/notes/Lecture_12_Complete_Notes.md)** · **[🧱 Basic code](./Lecture%2012/code/Basic%20Code/README.md)** (guide **01 → 13**) · **[💻 Advanced codebase](./Lecture%2012/code/advanced-rag/README.md)** · **[🛠️ Advanced guide (00 → 10)](./Lecture%2012/code/advanced-rag/implementations%20guide/README.md)**
 
 ---
 
@@ -477,6 +478,17 @@ Every note set also ships the original **`Notes.pdf`** slides and an **`Excalidr
 ### 2 · Running the code
 
 Each codebase is self-contained with its own `package.json`. Pick a lecture folder and install:
+
+```bash
+# Lecture 12 — Advanced RAG · Basic Code (smallest runnable version, NO API key)
+cd "Lecture 12/code/Basic Code"
+npm install
+npm run dev          # HTTP API on :3100 — /health /search /ask /eval /ablation /filters
+npm run chunks       # Chapters 06–07: fixed vs structural chunking + the overlap maths
+npm run ask          # Chapters 09–12: the full pipeline, ending in an answer + citations
+npm run filters      # Chapter 08: eligibility, ACL and `asOf`
+npm run ablation     # Chapter 14: one control at a time (12 → 19 chunks, ctx 327 → 214 tokens)
+```
 
 ```bash
 # Lecture 12 — Advanced RAG (runs with NO API key)

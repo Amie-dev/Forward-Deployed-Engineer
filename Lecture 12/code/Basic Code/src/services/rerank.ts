@@ -1,6 +1,6 @@
 import type { Config } from "../config/config.js";
+import type { Hit } from "../models/types.js";
 import { contentTerms } from "./embeddings.js";
-import type { Hit } from "./search.js";
 
 /**
  * Chapter 07 — reranking and two-stage retrieval.
