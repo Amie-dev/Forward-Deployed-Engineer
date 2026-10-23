@@ -1,0 +1,40 @@
+{
+  "name": "lecture-15-mcp-resources-and-prompts",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Lecture 15 — MCP Server: Resources and Prompts. The minimal, runnable code behind the notes: one MCP server exposing Tools (model-controlled), Resources (application-controlled) and Prompts (user-controlled), plus the host that reads resources, fetches prompts and serves GET /plan?hours=4.",
+  "type": "module",
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "scripts": {
+    "server": "tsx src/index.ts",
+    "host": "tsx src/routes/index.ts",
+    "lifecycle": "tsx src/client/client.ts",
+    "typecheck": "tsc --noEmit"
+  },
+  "keywords": [
+    "fde",
+    "mcp",
+    "model-context-protocol",
+    "resources",
+    "prompts",
+    "tools",
+    "typescript"
+  ],
+  "author": "Forward Deployed Engineering Team",
+  "license": "MIT",
+  "dependencies": {
+    "@modelcontextprotocol/client": "^2.3.1",
+    "@modelcontextprotocol/node": "^2.1.1",
+    "@modelcontextprotocol/server": "^2.3.1",
+    "dotenv": "^16.4.7",
+    "openai": "^6.0.0",
+    "zod": "^4.2.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.13.8",
+    "tsx": "^4.23.15",
+    "typescript": "^5.9.3"
+  }
+}
