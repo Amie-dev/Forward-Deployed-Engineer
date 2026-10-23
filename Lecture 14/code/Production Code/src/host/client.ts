@@ -1,7 +1,7 @@
 import { performance } from "node:perf_hooks";
 import { fileURLToPath } from "node:url";
 import { Client } from "@modelcontextprotocol/client";
-import { StdioClientTransport } from "@modelcontextprotocol/client/stdio";
+import { getDefaultEnvironment, StdioClientTransport } from "@modelcontextprotocol/client/stdio";
 import { env } from "../config/env.js";
 import { createLogger } from "../core/logger.js";
 import { createAuditLog } from "./audit.js";
@@ -60,6 +60,30 @@ function resourceText(contents: ReadonlyArray<{ text?: string; blob?: string }>)
 
 function clip(value: string, max = 100): string {
   return value.length <= max ? value : `${value.slice(0, max)}…`;
+}
+
+/**
+ * Chapter 08 — least privilege, applied to the process environment.
+ *
+ * The stdio transport does **not** inherit this process's environment. With no
+ * `env` option it passes `getDefaultEnvironment()`: a small whitelist (PATH,
+ * HOME, SHELL, …) that a child process genuinely needs.
+ *
+ * That default is the right one. A host's environment holds its model
+ * credentials, and a capability provider has no business reading them — so the
+ * server's configuration is forwarded **explicitly**, one variable at a time,
+ * and nothing else crosses the process boundary.
+ */
+function serverEnvironment(): Record<string, string> {
+  const forwarded: Record<string, string> = { ...getDefaultEnvironment() };
+
+  for (const [key, value] of Object.entries(process.env)) {
+    if (key.startsWith("MCP_") && value !== undefined) {
+      forwarded[key] = value;
+    }
+  }
+
+  return forwarded;
 }
 
 /**
@@ -170,6 +194,8 @@ async function main(): Promise<void> {
       args: ["--import", "tsx", serverEntry],
       cwd: projectRoot,
       stderr: "inherit",
+      // Chapter 08 — the server gets its own knobs and nothing else.
+      env: serverEnvironment(),
     }),
   );
 
@@ -343,7 +369,3 @@ main().catch((error: unknown) => {
   console.error(error);
   process.exit(1);
 });
-
-
-
-

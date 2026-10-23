@@ -1,0 +1,41 @@
+{
+  "name": "lecture-12-advanced-rag-basics",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Lecture 12 — Advanced RAG (Basic Code): the minimum runnable code behind the notes. The eight retrieval-quality controls — chunking + overlap, top-K, similarity floor, metadata/ACL/time filters, hybrid search with RRF, reranking, context engineering and a small evaluation. TypeScript, offline, no API key.",
+  "type": "module",
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "scripts": {
+    "ask": "tsx src/index.ts ask",
+    "chunks": "tsx src/index.ts chunks",
+    "search": "tsx src/index.ts search",
+    "filters": "tsx src/index.ts filters",
+    "eval": "tsx src/index.ts eval",
+    "ablation": "tsx src/index.ts ablation",
+    "typecheck": "tsc --noEmit"
+  },
+  "keywords": [
+    "fde",
+    "genai",
+    "rag",
+    "advanced-rag",
+    "chunking",
+    "hybrid-search",
+    "rrf",
+    "reranking",
+    "context-engineering",
+    "typescript"
+  ],
+  "author": "Forward Deployed Engineering Team",
+  "license": "MIT",
+  "dependencies": {
+    "dotenv": "^16.4.7"
+  },
+  "devDependencies": {
+    "@types/node": "^22.13.8",
+    "tsx": "^4.23.15",
+    "typescript": "^5.9.3"
+  }
+}
