@@ -28,6 +28,13 @@ export interface Metrics {
    * A wrapper rather than a pair of calls, because a manual `observe` before
    * every early `return` is exactly the kind of bookkeeping that gets forgotten
    * on the error path — and the error path is the one you need measured.
+   *
+   * It handles both shapes of `work`. A **synchronous** call is measured by its
+   * own `return`; a **promise-returning** call is measured to settlement, which
+   * is the only point at which the duration means anything. Measuring a promise
+   * synchronously would record the time taken to *create* it — always
+   * approximately zero for a network call, which is a latency metric that looks
+   * healthy while measuring nothing.
    */
   time<T>(name: string, work: () => T): T;
   /** A flat, sorted snapshot — the thing you print, scrape or assert on. */
@@ -59,15 +66,37 @@ export function createMetrics(): Metrics {
 
     observe,
 
-    time(name, work) {
+    time<T>(name: string, work: () => T): T {
       const startedAt = performance.now();
+      const done = (): void => observe(`${name}.ms`, performance.now() - startedAt);
+
+      let result: T;
 
       try {
-        return work();
-      } finally {
-        // `finally`, not a happy-path call: a failure is a latency sample too.
-        observe(`${name}.ms`, performance.now() - startedAt);
+        result = work();
+      } catch (error) {
+        // A synchronous throw is a latency sample too.
+        done();
+        throw error;
       }
+
+      /**
+       * A promise settles *after* this function returns, so the sample has to be
+       * attached to settlement rather than taken here. `Promise.resolve()`
+       * assimilates any thenable, which is what gives us a real `.finally` even
+       * for a bare `PromiseLike`.
+       *
+       * Both directions are covered: `.finally` runs on fulfilment and on
+       * rejection, so a failed call is measured exactly like a successful one —
+       * which is the case the manual `observe`-before-every-return pattern
+       * always loses.
+       */
+      if (typeof (result as { then?: unknown } | null | undefined)?.then === "function") {
+        return Promise.resolve(result).finally(done) as unknown as T;
+      }
+
+      done();
+      return result;
     },
 
     snapshot() {

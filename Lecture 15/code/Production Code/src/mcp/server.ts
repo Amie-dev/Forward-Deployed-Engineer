@@ -43,20 +43,69 @@ const INSTRUCTIONS = [
   "delete_task is destructive and irreversible, and requires explicit user consent.",
 ].join(" ");
 
+/**
+ * Notes Ch03 §3.1 — the **stateful** half of the server, built once per process.
+ *
+ * This placement is a correctness requirement, not an optimisation, and it is
+ * worth being explicit about why.
+ *
+ * `createMcpHandler(createServer)` in `src/index.ts` serves 2025-era traffic in
+ * its default **stateless** mode, which calls this factory **once per request**.
+ * Anything constructed *inside* the factory is therefore thrown away after every
+ * single request. If the task store lived in there, `create_task` would appear to
+ * succeed and then vanish on the next call; the resource cache would cache
+ * nothing; and the rate limiter would limit one request at a time — that is,
+ * nothing at all.
+ *
+ * So the rule is: **the factory owns the protocol object, the module owns the
+ * state.** Anything that has to outlive a request is built here, once, and closed
+ * over by every per-request instance.
+ */
+const logger = createLogger(env.MCP_LOG_LEVEL, { server: env.MCP_SERVER_NAME });
+const metrics = createMetrics();
+
+// Domain → services, in dependency order. Each layer receives the one below it
+// as an argument, which is what keeps every one of them testable without a
+// transport.
+const catalogue = createResourceCatalogue();
+const tasks = createTaskService(createTaskStore({ maxTasks: env.MCP_MAX_TASKS }));
+const resources = createResourceService({ tasks, catalogue, ttlMs: env.MCP_RESOURCE_CACHE_TTL_MS });
+const prompts = createPromptService();
+
+/** Shared, so the limit is per **process** rather than per request. */
+const limiter = new RateLimiter(env.MCP_RATE_LIMIT_PER_MINUTE);
+
+/**
+ * The wiring contract, assembled once.
+ *
+ * `ServerDeps` is entirely `readonly`, so one instance can be handed to every
+ * per-request server without any risk of two requests racing on it.
+ */
+const deps: ServerDeps = {
+  logger,
+  metrics,
+  tasks,
+  resources,
+  prompts,
+  catalogue,
+  limiter,
+  toolTimeoutMs: env.MCP_TOOL_TIMEOUT_MS,
+  resourceTimeoutMs: env.MCP_RESOURCE_TIMEOUT_MS,
+  // Notes Ch03 §3.5 — the allowlist is configuration, so the set of schemes this
+  // server will resolve is auditable without reading code.
+  allowedSchemes: new Set(env.MCP_ALLOWED_RESOURCE_SCHEMES),
+};
+
+/**
+ * The per-request factory: build the protocol object and register the three
+ * primitives against the shared state above.
+ *
+ * It is deliberately cheap — no I/O, and no allocation beyond the server itself —
+ * because it runs once per request. It stays a factory rather than becoming a
+ * singleton so the same code serves a Streamable HTTP endpoint today and an
+ * in-process test tomorrow, which is the whole point of Chapter 01's split.
+ */
 export function createServer(): McpServer {
-  // Composition root: the only place that knows how the layers fit together.
-  const logger = createLogger(env.MCP_LOG_LEVEL, { server: env.MCP_SERVER_NAME });
-  const metrics = createMetrics();
-
-  // Domain → services. Each layer receives the one below it as an argument,
-  // which is what keeps every one of them testable without a transport.
-  const catalogue = createResourceCatalogue();
-  const tasks = createTaskService(createTaskStore({ maxTasks: env.MCP_MAX_TASKS }));
-  const resources = createResourceService({ tasks, catalogue, ttlMs: env.MCP_RESOURCE_CACHE_TTL_MS });
-  const prompts = createPromptService();
-
-  const limiter = new RateLimiter(env.MCP_RATE_LIMIT_PER_MINUTE);
-
   const server = new McpServer(
     { name: env.MCP_SERVER_NAME, version: env.MCP_SERVER_VERSION },
     {
@@ -85,37 +134,29 @@ export function createServer(): McpServer {
     },
   );
 
-  const deps: ServerDeps = {
-    logger,
-    metrics,
-    tasks,
-    resources,
-    prompts,
-    catalogue,
-    limiter,
-    toolTimeoutMs: env.MCP_TOOL_TIMEOUT_MS,
-    resourceTimeoutMs: env.MCP_RESOURCE_TIMEOUT_MS,
-    // Notes Ch03 §3.5 — the allowlist is configuration, so the set of schemes
-    // this server will resolve is auditable without reading code.
-    allowedSchemes: new Set(env.MCP_ALLOWED_RESOURCE_SCHEMES),
-  };
-
   registerTools(server, deps); // do    — driven by the model
   registerResources(server, deps); // know  — driven by the application
   registerPrompts(server, deps); // reuse — driven by the user
 
-  logger.info("server.ready", {
-    version: env.MCP_SERVER_VERSION,
-    resources: catalogue.descriptors().length,
-    templates: catalogue.templates().length,
-    prompts: prompts.list().length,
-    allowedSchemes: [...deps.allowedSchemes],
-    toolTimeoutMs: deps.toolTimeoutMs,
-    resourceTimeoutMs: deps.resourceTimeoutMs,
-    maxResourcesPerRequest: env.MCP_MAX_RESOURCES_PER_REQUEST,
-    maxContextChars: env.MCP_MAX_CONTEXT_CHARS,
-    resourceCacheTtlMs: env.MCP_RESOURCE_CACHE_TTL_MS,
-  });
-
   return server;
 }
+
+/**
+ * Announced once, when this module loads — that is, when the **state** becomes
+ * ready, rather than once per request.
+ *
+ * The per-request factory above must stay quiet: a busy server would otherwise
+ * write this line thousands of times and drown the log it is supposed to open.
+ */
+logger.info("server.ready", {
+  version: env.MCP_SERVER_VERSION,
+  resources: catalogue.descriptors().length,
+  templates: catalogue.templates().length,
+  prompts: prompts.list().length,
+  allowedSchemes: [...deps.allowedSchemes],
+  toolTimeoutMs: deps.toolTimeoutMs,
+  resourceTimeoutMs: deps.resourceTimeoutMs,
+  maxResourcesPerRequest: env.MCP_MAX_RESOURCES_PER_REQUEST,
+  maxContextChars: env.MCP_MAX_CONTEXT_CHARS,
+  resourceCacheTtlMs: env.MCP_RESOURCE_CACHE_TTL_MS,
+});

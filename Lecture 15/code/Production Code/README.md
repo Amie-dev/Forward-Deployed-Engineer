@@ -349,5 +349,5 @@ That is Chapter 01 in practice: the host depends on the *protocol*, the server o
 ---
 
 **Build it chapter by chapter:** **[`implementations guide/`](./implementations%20guide/README.md)** —
-25 chapters, each with the complete source of every file and a block-by-block explanation
+26 chapters, each with the complete source of every file and a block-by-block explanation
 of how it works.

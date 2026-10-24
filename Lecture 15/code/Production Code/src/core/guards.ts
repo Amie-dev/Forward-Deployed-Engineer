@@ -126,6 +126,15 @@ export interface FitResult {
   blocks: BudgetedBlock[];
   /** URIs that did not fit at all, named rather than silently forgotten. */
   dropped: string[];
+  /**
+   * Content characters charged against `maxContextChars`.
+   *
+   * Truncation markers are **not** charged, and that is deliberate: a marker is
+   * what makes a cut read honest, so it is never itself cut. The assembled text
+   * can therefore exceed the cap by up to `maxResources × marker length` — a few
+   * hundred characters against a default cap of 40,000 — which is the price of
+   * never lying about what was cut.
+   */
   usedChars: number;
 }
 

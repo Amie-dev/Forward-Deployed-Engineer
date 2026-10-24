@@ -6,9 +6,9 @@
 
 *Lecture notes · System architectures · Mathematical foundations · Paper deep-dives · Production blueprints*
 
-[![Lectures](https://img.shields.io/badge/Lectures-12-blueviolet?style=for-the-badge)](#-curriculum-navigation)
-[![Chapter Notes](https://img.shields.io/badge/Chapter_Notes-88-2ea44f?style=for-the-badge)](#-curriculum-navigation)
-[![Notes Volume](https://img.shields.io/badge/Notes-112k%2B_lines-informational?style=for-the-badge)](#-repository-at-a-glance)
+[![Lectures](https://img.shields.io/badge/Lectures-15-blueviolet?style=for-the-badge)](#-curriculum-navigation)
+[![Chapter Notes](https://img.shields.io/badge/Chapter_Notes-118-2ea44f?style=for-the-badge)](#-curriculum-navigation)
+[![Notes Volume](https://img.shields.io/badge/Notes-177k%2B_lines-informational?style=for-the-badge)](#-repository-at-a-glance)
 [![Code](https://img.shields.io/badge/Code-TypeScript_%7C_Node.js-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](#-technology-stack)
 
 [![Paper Deep-Dives](https://img.shields.io/badge/Paper_Deep--Dives-Transformers_%7C_RAG_%7C_Vector_DB-orange?style=for-the-badge)](#-lecture-highlights)
@@ -30,7 +30,7 @@
 | 📊 | **[Repository at a Glance](#-repository-at-a-glance)** | Hard numbers: lectures, chapters, lines of notes, lines of code |
 | 🗺️ | **[Learning Path](#-learning-path)** | The five-phase route through the curriculum |
 | 📚 | **[Curriculum Navigation](#-curriculum-navigation)** | Every lecture, note set, codebase and implementation guide |
-| 📖 | **[Lecture Highlights](#-lecture-highlights)** | Deep-dive summaries of all 14 lectures |
+| 📖 | **[Lecture Highlights](#-lecture-highlights)** | Deep-dive summaries of all 15 lectures |
 | 🧰 | **[Technology Stack](#-technology-stack)** | Languages, frameworks, services and SDKs used |
 | 🚀 | **[Quick Start](#-quick-start)** | How to read the notes and run the code |
 | 🗂️ | **[Repository Structure](#-repository-structure)** | Directory map |
@@ -61,16 +61,16 @@ This repository contains structured lecture notes, system architectures, mathema
 
 | Metric | Value |
 | :--- | ---: |
-| 🎓 Lectures | **14** |
-| 📓 Chapter note files | **110** |
-| 📄 Consolidated note documents | **14** |
-| 🗂️ Tracked markdown files | **311** |
-| ✍️ Lines of notes &amp; guides | **136,000+** |
-| 💻 TypeScript / JavaScript files | **244** |
-| 🧾 Lines of code | **29,400+** |
-| 🏭 Lectures shipping runnable code | **10** (03 · 04 · 05 · 06 · 08 · 10 · 11 · 12 · 13 · 14) |
-| 🧩 Runnable codebases | **12** |
-| 🎞️ Source slide decks &amp; Excalidraw diagrams | **14 PDF · 13 SVG** |
+| 🎓 Lectures | **15** |
+| 📓 Chapter note files | **118** |
+| 📄 Consolidated note documents | **15** |
+| 🗂️ Markdown files | **383** |
+| ✍️ Lines of notes &amp; guides | **177,000+** |
+| 💻 TypeScript / JavaScript files | **310** |
+| 🧾 Lines of code | **38,400+** |
+| 🏭 Lectures shipping runnable code | **11** (03 · 04 · 05 · 06 · 08 · 10 · 11 · 12 · 13 · 14 · 15) |
+| 🧩 Runnable codebases | **14** |
+| 🎞️ Source slide decks &amp; Excalidraw diagrams | **15 PDF · 14 SVG** |
 
 > 💡 Every number above is derived from the repository contents — notes are Markdown, code is strict TypeScript or plain JavaScript, and each codebase ships with a chapter-by-chapter implementation guide.
 
@@ -87,7 +87,7 @@ Follow the phases in order — each one assumes only the phase before it.
 | **3 · Agency &amp; Streaming** | 05 · 06 | 🟨 | Give a model tools, sandbox it, add human-in-the-loop, and stream tokens to a browser correctly |
 | **4 · Embeddings &amp; Retrieval** | 07 · 08 · 09 · 10 | 🟧 | Represent meaning as vectors, then store and search billions of them with ANN indexes |
 | **5 · RAG &amp; Advanced RAG** | 11 · 12 | 🟥 | Build a grounded answering system end to end — then prove which control fixes a wrong answer |
-| **6 · Output Contracts &amp; Integration** | 13 · 14 | 🟪 | Make a model's output something a program can trust — then give that program standard access to the outside world |
+| **6 · Output Contracts &amp; Integration** | 13 · 14 · 15 | 🟪 | Make a model's output something a program can trust — then give that program standard access to the outside world, with all three primitives under the right owner |
 
 ---
 
@@ -111,6 +111,7 @@ Follow the phases in order — each one assumes only the phase before it.
 | **12** | 🟥 Advanced RAG — Chunking, Hybrid Retrieval, Reranking & Context Engineering | [📂](./Lecture%2012/notes/README.md) | [📄](./Lecture%2012/notes/Lecture_12_Complete_Notes.md) | [💻 Advanced RAG](./Lecture%2012/code/advanced-rag/README.md) | [🛠️ (00 → 10)](./Lecture%2012/code/advanced-rag/implementations%20guide/README.md) |
 | **13** | 🟪 Structured Outputs in GenAI — Schema, Enforcement, Validation & Action | [📂](./Lecture%2013/notes/README.md) | [📄](./Lecture%2013/notes/Lecture_13_Complete_Notes.md) | [🏭 Structured Outputs](./Lecture%2013/code/Production%20Code/README.md) | ➖ |
 | **14** | 🟪 MCP Server from First Principles — Host, Client, Server, Tools, Resources & Prompts | [📂](./Lecture%2014/notes/README.md) | [📄](./Lecture%2014/notes/Lecture_14_Complete_Notes.md) | [🧱 Basic Code](./Lecture%2014/code/Basic%20Code/README.md)<br/>[🏭 Production Code](./Lecture%2014/code/Production%20Code/README.md) | [🛠️ Basic Code (01 → 09)](./Lecture%2014/code/Basic%20Code/implementations%20guide/README.md)<br/>[🛠️ Production Code (01 → 17)](./Lecture%2014/code/Production%20Code/implementations%20guide/README.md) |
+| **15** | 🟪 MCP Server — Resources & Prompts | [📂](./Lecture%2015/notes/README.md) | [📄](./Lecture%2015/notes/Lecture_15_Complete_Notes.md) | [🧱 Basic Code](./Lecture%2015/code/Basic%20Code/README.md)<br/>[🏭 Production Code](./Lecture%2015/code/Production%20Code/README.md) | [🛠️ Basic Code (01 → 09)](./Lecture%2015/code/Basic%20Code/implementations%20guide/README.md)<br/>[🛠️ Production Code (01 → 26)](./Lecture%2015/code/Production%20Code/implementations%20guide/README.md) |
 
 > 🧭 **Want the full chapter-level roadmap with per-chapter topic tables?** Open the **[Main Repository Index & Curriculum Roadmap](./index.md)**.
 
@@ -447,6 +448,49 @@ Chapter 07 is the machine: the eight-step lifecycle, discovery as a curated act,
 **[📂 Notes index](./Lecture%2014/notes/README.md)** · **[📄 Complete document](./Lecture%2014/notes/Lecture_14_Complete_Notes.md)** · **[🧱 Basic Code](./Lecture%2014/code/Basic%20Code/README.md)** · **[🏭 Production Code](./Lecture%2014/code/Production%20Code/README.md)** · **[🛠️ Basic guide (01 → 09)](./Lecture%2014/code/Basic%20Code/implementations%20guide/README.md)** · **[🛠️ Production guide (01 → 17)](./Lecture%2014/code/Production%20Code/implementations%20guide/README.md)**
 
 ---
+### 🟦 [Lecture 15: MCP Server — Resources and Prompts](./Lecture%2015/notes/README.md)
+
+> **Thesis** — Lecture 14 built an MCP server from first principles and used exactly one primitive: the **Tool**. This lecture opens the other two thirds. **Tools do, Resources know, Prompts reuse** — and the sentence that tells them apart is not about the bytes but about **who holds the trigger**: *the model drives tools, the application drives resources, the user drives prompts.* The proof is one request — `GET /plan?hours=4` — in which all three primitives fire, owned by three different parties, and a Tool and a Resource return **byte-identical payloads** because they share one renderer.
+
+`Tools do · Resources know · Prompts reuse` · `The control model` · `Why Resources exist at all` · `Agency + addressability` · `Resources vs RAG` · `Discovery is not consumption` · `resources/list → resources/read` · `Resource anatomy` · `Static · dynamic · templated` · `Segment-exact template matching` · `The renderer↔descriptor invariant` · `How the application chooses (5 strategies)` · `Filter before ranking` · `Every choice carries its reason` · `The three-stage context budget` · `MCP Prompt ≠ LLM Response` · `prompts/list → prompts/get` · `Advertised arguments` · `Prompt hygiene` · `The same bytes, two owners` · `Authorise before the read` · `Hashed arguments, no content` · `A capability flag is a promise`
+
+<details>
+<summary><b>🔎 Full breakdown</b></summary>
+
+<br>
+
+The lecture begins where Lecture 14 stopped. That server exposed one primitive — the **Tool** — and the Tool was enough to prove the protocol. But a Tool is the *narrowest* of the three: it answers only questions the **model** thought to ask. Chapter 01 sets out the control model that separates the primitives, and the separation is not cosmetic. A Tool runs because a model decided to call it; a Resource is read because the **application** decided it was relevant; a Prompt is chosen because the **user** picked a workflow. Three primitives, three owners, and *"the prompt is a nudge, not a command"* — a prompt may name a capability, but the model still decides whether to use it.
+
+Chapter 02 asks the question the whole lecture rests on: if a Tool can already return data, why is there a second primitive for information? The answer is **agency plus addressability**. A Tool result arrives because a model asked, so the application cannot put it in context *before* the conversation; a Resource has a **URI**, so it can be referenced, scoped, cached and authorised ahead of time. The chapter then separates Resources from **RAG** — curated, addressable context versus similarity-retrieved chunks — and states the security rule that follows: *do not let Resources become a prompt-injection channel*, because content that lands in a system message acquires system-level authority.
+
+Chapter 03 covers the two verbs, and its organising idea is **discovery is not consumption**. `resources/list` returns metadata; `resources/read` returns content; a client that pays for content to answer *"what exists?"* has already lost. The chapter gives the anatomy of a well-formed Resource — `uri`, `name`, `title`, `description`, `mimeType` — explains why `description` is a **user-facing** field (a checkbox labelled `task://guidelines` is unusable; one labelled *"Task management guidelines"* is not), and names the asymmetry that runs through the whole lecture: **a failed read is a JSON-RPC protocol error, while a failed tool call is an `isError` result.**
+
+
+Chapter 04 is the build. Three shapes through one verb: **static** (a constant document), **dynamic** (rendered from live state) and **templated** (a URI pattern with variables, so thousands of addresses need one definition). It shows how a template is declared, bound and matched — including why matching must be **segment-exact**, so `task://tasks/{id}` cannot swallow `task://tasks/1/notes` — and lands on the invariant that makes a catalogue trustworthy: **every advertised URI has a renderer.**
+
+Chapter 05 is the chapter MCP deliberately does not answer for you. *"MCP does not prescribe how a host selects a Resource"* — so the selection code is the application's own, and the chapter gives five strategies: **attached** (the user said so), **state** (the session's scope), **rule** (a pattern in the message), **retrieval** (similarity against metadata) and **LLM** (a router call). Two rules govern them: selection must **filter before ranking**, so a router is never shown a Resource it may not surface; and every choice must carry its **reason**, so the decision is auditable. The chapter closes with the three-stage context budget — cap the count, cap each body, cap the total — and the requirement that a truncation be *stated*.
+
+Chapters 06–07 cover Prompts, and Chapter 06 delivers the lecture's sharpest distinction: **`MCP Prompt ≠ LLM Response`**. `prompts/get` returns **messages** — a template with arguments substituted — and the model call happens afterwards, elsewhere. That is not a technicality: a caller who confuses the two builds a UI that thinks it has an answer when it only has a question. Chapter 07 makes a prompt's **advertised arguments** the source of truth for both the client's form and the server's validator, covers required versus optional arguments, and explains why the server validating its own contract beats the host duplicating it — *two validators for one contract is two things to keep in sync.*
+
+Chapter 08 is the whole machine in one request. `GET /plan?hours=4` runs three primitives with three owners: the **user** controls the Prompt (`prompts/get plan_day { availableHours: 4 }`), the **application** controls the Resource (select → authorise → read → budget) and the **model** controls the Tool. The demonstration is a strict string comparison — `list_tasks` (a Tool) and `task://backlog` (a Resource) return **the same bytes**, because they share one renderer, and *the difference is who decided to fetch them, not what came back.* The chapter closes on the production checklist: authorise before ranking, budget with a stated marker, hash arguments and never record content, and treat a capability flag as a promise — if the server does not implement it, do not advertise it.
+
+</details>
+
+
+**🧩 Two codebases ship with this lecture — they answer different questions:**
+
+| Codebase | Language | Guide | The question it answers | What it contains |
+| :--- | :--- | :--- | :--- | :--- |
+| 🧱 **[Basic Code](./Lecture%2015/code/Basic%20Code/README.md)** | TypeScript · 10 files · ~897 lines | **01 → 09** | *How do you add the two primitives Lecture 14 left out?* | The same task-management server, now exposing **Resources** (*know*) and **Prompts** (*reuse*) alongside the **Tool** (*do*): `resources/list` → `resources/read` → `prompts/list` → `prompts/get`, static + dynamic + templated resources with an honest `task://` / `user://` scheme, an application-side **selection** step, and `GET /plan?hours=4` as one route in which three primitives fire with three owners. |
+| 🏭 **[Production Code](./Lecture%2015/code/Production%20Code/README.md)** | TypeScript · 33 files · ~6,354 lines | **01 → 26** | *What does production make non-optional once Resources and Prompts exist?* | A **layered host** (`controllers/` · `middleware/` · `routes/`) over an MCP server: a resource **catalogue** with segment-exact template compilation, a **renderer↔descriptor invariant** asserted at boot, a **TTL cache** with `static`/`live`/`cache` provenance, **five selection strategies** ranked with reasons, a **three-stage context budget** that marks what it cut, a **resource ACL and prompt allowlist** enforced before the read, tool **trust tiers** with a consent seam, and an audit trail that hashes arguments and never records content. |
+
+> ⚖️ **Honest limits — documented rather than hidden:** the host runs **offline** (`askModel` echoes the assembled prompt when no key is set, so the whole pipeline is reproducible and inspectable without one); state is **in-process** behind interfaces a real deployment would replace; the session is read from **headers** (`x-actor`, `x-projects`, `x-admin`) as a stated substitution for a real authentication scheme; the **scheme allowlist is defence in depth** the SDK's URI router pre-empts, so it never runs in practice; the **consent gate is wired but never triggered** by the walkthrough (no step calls a `confirm`-tier tool); and the route-level 404 returns a **different body shape** from the error handler. The guide records all six rather than implying otherwise — and four of them were found by *running* the code.
+
+**[📂 Notes index](./Lecture%2015/notes/README.md)** · **[📄 Complete document](./Lecture%2015/notes/Lecture_15_Complete_Notes.md)** · **[🧱 Basic Code](./Lecture%2015/code/Basic%20Code/README.md)** · **[🏭 Production Code](./Lecture%2015/code/Production%20Code/README.md)** · **[🛠️ Basic guide (01 → 09)](./Lecture%2015/code/Basic%20Code/implementations%20guide/README.md)** · **[🛠️ Production guide (01 → 26)](./Lecture%2015/code/Production%20Code/implementations%20guide/README.md)**
+
+---
+
+
 
 ## 🧰 Technology Stack
 
@@ -542,20 +586,21 @@ Forward-Deployed-Engineer/
 ├── index.md                        # Master roadmap: every lecture + per-chapter topic tables
 ├── prompt.md                       # Note-generation brief used across lectures
 │
-├── Lecture 01/ … Lecture 14/       # 14 lectures
+├── Lecture 01/ … Lecture 15/       # 15 lectures
 │   ├── notes/
 │   │   ├── README.md               # Chapter index for the lecture
 │   │   ├── Notes.pdf               # Original source slides
 │   │   ├── Excalidraw-Notes.svg    # Hand-drawn diagram source
 │   │   ├── 01_*.md … NN_*.md       # Chapter-by-chapter notes
 │   │   └── Lecture_NN_Complete_Notes.md   # Single consolidated document
-│   └── code/                       # Present for lectures 03 · 04 · 05 · 06 · 08 · 10 · 11 · 12 · 13 · 14
+│   └── code/                       # Present for lectures 03 · 04 · 05 · 06 · 08 · 10 · 11 · 12 · 13 · 14 · 15
 │       ├── README.md               # What the codebase does + how to run it
 │       ├── src/ · package.json · tsconfig.json
 │       └── implementations guide/  # Chapter-wise build guide (full source, block by block)
 │
 └── (Lecture 11 ships two codebases — Productions RAG and Eassy RAG; Lecture 13 ships
-    the structured-outputs implementation; Lecture 14 ships Basic Code and Production Code)
+    the structured-outputs implementation; Lecture 14 ships Basic Code and Production Code;
+    Lecture 15 ships Basic Code and Production Code)
 ```
 
 ---
@@ -578,8 +623,8 @@ Every artefact in this repository follows the same four-part contract, so you ca
 
 | Status | Item |
 | :---: | :--- |
-| ✅ | Lectures **01 → 14** published with chapter-wise notes and consolidated documents |
-| ✅ | Codebases for lectures **03 · 04 · 05 · 06 · 08 · 10 · 11 · 12 · 13 · 14**, with implementation guides for **03 · 04 · 05 · 06 · 08 · 10 · 11 · 12 · 14** |
+| ✅ | Lectures **01 → 15** published with chapter-wise notes and consolidated documents |
+| ✅ | Codebases for lectures **03 · 04 · 05 · 06 · 08 · 10 · 11 · 12 · 13 · 14 · 15**, with implementation guides for **03 · 04 · 05 · 06 · 08 · 10 · 11 · 12 · 14 · 15** |
 | ✅ | Master roadmap maintained in [`index.md`](./index.md) |
 | 🔜 | Additional chapters where the source slides are thinner than the engineering reality |
 | 🔜 | More evaluation golden sets so every quantitative claim stays reproducible |
