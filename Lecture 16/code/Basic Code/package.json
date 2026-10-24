@@ -1,0 +1,31 @@
+{
+  "name": "lecture-16-multimodal-basics",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Lecture 16 — Multimodal AI: How LLMs Understand Images. The minimal, runnable code behind the notes: the text pipeline, the vision pipeline, alignment, the /chat contract and the image cost guard.",
+  "type": "module",
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "node --watch src/index.js",
+    "demo": "node src/demo.js",
+    "test": "node --test"
+  },
+  "keywords": [
+    "fde",
+    "multimodal",
+    "vision",
+    "patches",
+    "embeddings",
+    "llm"
+  ],
+  "license": "MIT",
+  "dependencies": {
+    "dotenv": "^17.0.0",
+    "express": "^5.0.0",
+    "multer": "^2.0.0",
+    "openai": "^6.0.0"
+  }
+}
