@@ -6,9 +6,9 @@
 
 *Lecture notes · System architectures · Mathematical foundations · Paper deep-dives · Production blueprints*
 
-[![Lectures](https://img.shields.io/badge/Lectures-15-blueviolet?style=for-the-badge)](#-curriculum-navigation)
-[![Chapter Notes](https://img.shields.io/badge/Chapter_Notes-118-2ea44f?style=for-the-badge)](#-curriculum-navigation)
-[![Notes Volume](https://img.shields.io/badge/Notes-177k%2B_lines-informational?style=for-the-badge)](#-repository-at-a-glance)
+[![Lectures](https://img.shields.io/badge/Lectures-18-blueviolet?style=for-the-badge)](#-curriculum-navigation)
+[![Chapter Notes](https://img.shields.io/badge/Chapter_Notes-143-2ea44f?style=for-the-badge)](#-curriculum-navigation)
+[![Notes Volume](https://img.shields.io/badge/Notes-210k%2B_lines-informational?style=for-the-badge)](#-repository-at-a-glance)
 [![Code](https://img.shields.io/badge/Code-TypeScript_%7C_Node.js-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](#-technology-stack)
 
 [![Paper Deep-Dives](https://img.shields.io/badge/Paper_Deep--Dives-Transformers_%7C_RAG_%7C_Vector_DB-orange?style=for-the-badge)](#-lecture-highlights)
@@ -30,7 +30,7 @@
 | 📊 | **[Repository at a Glance](#-repository-at-a-glance)** | Hard numbers: lectures, chapters, lines of notes, lines of code |
 | 🗺️ | **[Learning Path](#-learning-path)** | The five-phase route through the curriculum |
 | 📚 | **[Curriculum Navigation](#-curriculum-navigation)** | Every lecture, note set, codebase and implementation guide |
-| 📖 | **[Lecture Highlights](#-lecture-highlights)** | Deep-dive summaries of all 15 lectures |
+| 📖 | **[Lecture Highlights](#-lecture-highlights)** | Deep-dive summaries of all 18 lectures |
 | 🧰 | **[Technology Stack](#-technology-stack)** | Languages, frameworks, services and SDKs used |
 | 🚀 | **[Quick Start](#-quick-start)** | How to read the notes and run the code |
 | 🗂️ | **[Repository Structure](#-repository-structure)** | Directory map |
@@ -61,16 +61,16 @@ This repository contains structured lecture notes, system architectures, mathema
 
 | Metric | Value |
 | :--- | ---: |
-| 🎓 Lectures | **15** |
-| 📓 Chapter note files | **118** |
-| 📄 Consolidated note documents | **15** |
-| 🗂️ Markdown files | **383** |
-| ✍️ Lines of notes &amp; guides | **177,000+** |
-| 💻 TypeScript / JavaScript files | **310** |
-| 🧾 Lines of code | **38,400+** |
-| 🏭 Lectures shipping runnable code | **11** (03 · 04 · 05 · 06 · 08 · 10 · 11 · 12 · 13 · 14 · 15) |
-| 🧩 Runnable codebases | **14** |
-| 🎞️ Source slide decks &amp; Excalidraw diagrams | **15 PDF · 14 SVG** |
+| 🎓 Lectures | **18** |
+| 📓 Chapter note files | **143** |
+| 📄 Consolidated note documents | **18** |
+| 🗂️ Markdown files | **452** |
+| ✍️ Lines of notes &amp; guides | **210,000+** |
+| 💻 TypeScript / JavaScript files | **628** |
+| 🧾 Lines of code | **62,000+** |
+| 🏭 Lectures shipping runnable code | **14** (03 · 04 · 05 · 06 · 08 · 10 · 11 · 12 · 13 · 14 · 15 · 16 · 17 · 18) |
+| 🧩 Runnable codebases | **17** |
+| 🎞️ Source slide decks &amp; Excalidraw diagrams | **18 PDF · 17 SVG** |
 
 > 💡 Every number above is derived from the repository contents — notes are Markdown, code is strict TypeScript or plain JavaScript, and each codebase ships with a chapter-by-chapter implementation guide.
 
@@ -88,6 +88,7 @@ Follow the phases in order — each one assumes only the phase before it.
 | **4 · Embeddings &amp; Retrieval** | 07 · 08 · 09 · 10 | 🟧 | Represent meaning as vectors, then store and search billions of them with ANN indexes |
 | **5 · RAG &amp; Advanced RAG** | 11 · 12 | 🟥 | Build a grounded answering system end to end — then prove which control fixes a wrong answer |
 | **6 · Output Contracts &amp; Integration** | 13 · 14 · 15 | 🟪 | Make a model's output something a program can trust — then give that program standard access to the outside world, with all three primitives under the right owner |
+| **7 · Multimodality, Evals &amp; Release Gating** | 16 · 17 · 18 | 🟫 | Let a model read an image, then **prove** the system still works: a fixed dataset, code as the judge, an LLM judge for meaning, and a threshold that blocks a release |
 
 ---
 
@@ -112,6 +113,9 @@ Follow the phases in order — each one assumes only the phase before it.
 | **13** | 🟪 Structured Outputs in GenAI — Schema, Enforcement, Validation & Action | [📂](./Lecture%2013/notes/README.md) | [📄](./Lecture%2013/notes/Lecture_13_Complete_Notes.md) | [🏭 Structured Outputs](./Lecture%2013/code/Production%20Code/README.md) | ➖ |
 | **14** | 🟪 MCP Server from First Principles — Host, Client, Server, Tools, Resources & Prompts | [📂](./Lecture%2014/notes/README.md) | [📄](./Lecture%2014/notes/Lecture_14_Complete_Notes.md) | [🧱 Basic Code](./Lecture%2014/code/Basic%20Code/README.md)<br/>[🏭 Production Code](./Lecture%2014/code/Production%20Code/README.md) | [🛠️ Basic Code (01 → 09)](./Lecture%2014/code/Basic%20Code/implementations%20guide/README.md)<br/>[🛠️ Production Code (01 → 17)](./Lecture%2014/code/Production%20Code/implementations%20guide/README.md) |
 | **15** | 🟪 MCP Server — Resources & Prompts | [📂](./Lecture%2015/notes/README.md) | [📄](./Lecture%2015/notes/Lecture_15_Complete_Notes.md) | [🧱 Basic Code](./Lecture%2015/code/Basic%20Code/README.md)<br/>[🏭 Production Code](./Lecture%2015/code/Production%20Code/README.md) | [🛠️ Basic Code (01 → 09)](./Lecture%2015/code/Basic%20Code/implementations%20guide/README.md)<br/>[🛠️ Production Code (01 → 26)](./Lecture%2015/code/Production%20Code/implementations%20guide/README.md) |
+| **16** | 🟦 Multimodal AI — How LLMs Understand Images | [📂](./Lecture%2016/notes/README.md) | [📄](./Lecture%2016/notes/Lecture_16_Complete_Notes.md) | [🧱 Basic Code](./Lecture%2016/code/Basic%20Code/README.md) | [🛠️ Basic Code (01 → 10)](./Lecture%2016/code/Basic%20Code/implementations%20guide/README.md) |
+| **17** | 🟫 GenAI Evals & Testing | [📂](./Lecture%2017/notes/README.md) | [📄](./Lecture%2017/notes/Lecture_17_Complete_Notes.md) | [🧱 Basic Code](./Lecture%2017/code/Basic%20Code/README.md) | [🛠️ Basic Code (01 → 10)](./Lecture%2017/code/Basic%20Code/implementations%20guide/README.md) |
+| **18** | 🟫 AI Application Testing — Deterministic Evals &amp; LLM-as-a-Judge | [📂](./Lecture%2018/notes/README.md) | [📄](./Lecture%2018/notes/Lecture_18_Complete_Notes.md) | [🧱 Basic Code](./Lecture%2018/code/Basic%20Code/README.md) | [🛠️ Basic Code (01 → 10)](./Lecture%2018/code/Basic%20Code/implementations%20guide/README.md) |
 
 > 🧭 **Want the full chapter-level roadmap with per-chapter topic tables?** Open the **[Main Repository Index & Curriculum Roadmap](./index.md)**.
 
@@ -492,6 +496,107 @@ Chapter 08 is the whole machine in one request. `GET /plan?hours=4` runs three p
 
 
 
+### 🟦 [Lecture 16: Multimodal AI — How LLMs Understand Images](./Lecture%2016/notes/README.md)
+
+> **Thesis** — Every lecture before this one obeyed a quiet contract: **text in, text out**. This one breaks the contract itself — the user attaches `payment-error.png` and the information they care about lives *inside the image*. The answer is not a bigger model; it is a pipeline: **pixels → patches → visual embeddings → a projection into language space → attention across both modalities → text**.
+
+`Where "String → LLM → String" breaks` · `Silent drop · filename-only · confident guess` · `Modality vs multi-model` · `The comprehension ladder` · `OCR vs multimodal LLM` · `OCR for truth, MLLM for meaning` · `Tokens → token IDs → vectors` · `Pixels → 16×16 patches` · `The vision encoder` · `Projection / adapter` · `Why position matters` · `Attention over patches` · `CLIP-style alignment` · `Raw image → compress → LLM` · `Images re-sent every turn` · `Image token arithmetic` · `Visual prompt injection` · `Log id + hash + dimensions` · `A golden set from *your* images`
+
+<details>
+<summary><b>🔎 Full breakdown</b></summary>
+
+<br>
+
+Chapter 01 sets the baseline contract and shows exactly where it fails. Three failure modes matter more than the obvious one: the image is **silently dropped**, the model answers from the **filename alone**, or it makes a **confident guess** about a screenshot it never saw — and all three produce fluent output, which is why they survive a demo. The load-bearing conclusion is that *a missing modality is a missing input, not a missing instruction*: no prompt recovers evidence that never arrived.
+
+Chapter 02 draws the line most teams blur: **OCR reads characters; a multimodal model interprets a document**. The comprehension ladder — objects · text · layout · position · relationships · context · meaning — explains why extraction (`Payment Failed ₹7,999 Reason: Insufficient Balance`) and understanding (`…because the account had insufficient balance`) are different capabilities, and why the production pattern is a **hybrid**: OCR for truth, the MLLM for meaning.
+
+Chapters 03–05 are the mechanism, and they are one argument in three steps. The model never sees English, so text becomes **tokens → token IDs → vectors** (03); an image is already a number grid, so it becomes **patches → visual embeddings** (04); and the two only meet because a **projection layer** rewrites vision into the language model's space (05). Position is what makes a picture a picture — `button below text box` ≠ `button above` — and the cross-modal attention flows are how a patch ends up influencing a word.
+
+Chapters 06–08 move from mechanism to production. Alignment is a **learned geometry, not rules**: the model learns *cat* from millions of image–caption pairs, and a confident caption can still be wrong. Chapter 07 assembles the end-to-end flow and answers the questions that decide your architecture — why large images are preprocessed, what the application boundary actually is (*your app packages; the provider interprets*), and what happens to conversation history when every turn re-sends the image. Chapter 08 is the bill: images cost tokens by **area** and are **re-sent per turn**, visual prompt injection is worse than its text equivalent, pixels are PII, and evaluation needs a golden set built from *your* images rather than a provider's benchmark.
+
+</details>
+
+**🧩 One codebase ships with this lecture:**
+
+| Codebase | Language &amp; size | Guide | The question it answers | What it contains |
+| :--- | :--- | :--- | :--- | :--- |
+| 🧱 **[Basic Code](./Lecture%2016/code/Basic%20Code/README.md)** | Node.js + JavaScript · 12 files · ~791 lines | **01 → 10** | *How does a chat application accept a picture and still return text?* | An Express server laid out as the lecture's pipeline, one file per chapter: `textPipeline` (text → tokens → token IDs → vectors), `visionPipeline` (reads a real PNG/JPEG header, cuts the grid into **16 × 16 patches**), `alignmentService` (**position**, **projection**, cosine attention — the board's *"two paths, one word: vectors"*), `costService` (image tokens ≈ `(w/patch) × (h/patch)`, plus a pre-send budget guard), `upload` middleware (the untrusted-image gate), and `chatService` (the `image_url` payload, in-memory history, compaction). `npm run demo` walks Chapters 03 → 08 **offline, with no API key**. |
+
+> ⚖️ **Honest limits — documented rather than hidden:** the demo runs **offline** — the model call is a deterministic stand-in, so the whole pipeline is inspectable without a key; the encoder is a *described* pipeline rather than real ViT weights, because the lecture's subject is the data flow; and `Excalidraw-Notes.svg` is the visual source for every "from the board" passage.
+
+**[📂 Notes index](./Lecture%2016/notes/README.md)** · **[📄 Complete document](./Lecture%2016/notes/Lecture_16_Complete_Notes.md)** · **[🧱 Basic Code](./Lecture%2016/code/Basic%20Code/README.md)** · **[🛠️ Basic guide (01 → 10)](./Lecture%2016/code/Basic%20Code/implementations%20guide/README.md)**
+
+---
+
+### 🟫 [Lecture 17: GenAI Evals & Testing](./Lecture%2017/notes/README.md)
+
+> **Thesis** — Every lecture before this one answered a *capability* question: *how do we make the AI do something?* This one asks the question that arrives right after the first production incident: **how do we know the system is doing its job correctly?** The answer is not "test harder" — traditional testing rests on two properties AI does not have, **determinism** and **exactness**, so `assertEquals` is replaced by a **fixed dataset**, **expected behaviour** instead of expected text, and an **evaluator** that is code, an LLM judge, or a human.
+
+`expected == actual breaks` · `Three ingredients of an eval` · `The whole system, not the model` · `Golden dataset` · `Normal · reworded · edge · out-of-scope · missing-info · adversarial` · `Code decides first` · `The five quality metrics` · `LLM-as-a-judge` · `Rubrics` · `Pointwise gates, pairwise chooses` · `Humans calibrate` · `Retrieval vs generation attribution` · `Offline gates, online discovers` · `The loop is the product`
+
+<details>
+<summary><b>🔎 Full breakdown</b></summary>
+
+<br>
+
+Chapter 01 is the diagnosis. Traditional software is testable because it is deterministic and exact; an LLM is neither, so `Expected Output == Actual Output` stops working the moment an answer has three acceptable phrasings. The replacement question — *did the model exhibit the behaviour we wanted?* — is what an eval measures.
+
+Chapters 02–03 build the instrument. An eval needs exactly three ingredients: a **test input**, an **expected behaviour**, and an **evaluation mechanism** (code → LLM judge → human) — and it is applied to the **entire AI system**: embedding, retrieval, prompt, model, tools. The dataset is the part teams skip and then regret. A golden dataset needs **normal, reworded, edge, out-of-scope, missing-information and adversarial** cases, and *if the dataset has no difficult cases, you know nothing about difficult cases*.
+
+Chapters 04–07 are the split the whole lecture turns on. **Deterministic** evaluation is where code decides — JSON validity, schema, tool choice, refusal, constraints, latency, cost — and it should be used wherever it can be. **Quality** evaluation is where semantics decide, and quality is a **vector, not a scalar**: relevance, correctness, faithfulness, helpfulness, hallucination. **LLM-as-a-judge** scales the semantic half, but it is a **measuring instrument, not ground truth** — which is why rubrics, structured output, calibration and human spot-checks are part of the method rather than optional extras.
+
+Chapters 08–09 close the loop. A RAG or agent failure is never just "the model": **split retrieval from response and attribute the failure**, because a wrong answer caused by a missing chunk is a different bug from a wrong answer caused by a bad prompt. Then the temporal half — **offline evals gate the release, online evals discover what you never imagined**, and production failures become future regression tests. That is what turns *"looks good to me"* into *"we measured it"*.
+
+</details>
+
+**🧩 One codebase ships with this lecture:**
+
+| Codebase | Language &amp; size | Guide | The question it answers | What it contains |
+| :--- | :--- | :--- | :--- | :--- |
+| 🧱 **[Basic Code](./Lecture%2017/code/Basic%20Code/README.md)** | TypeScript · 13 files · ~2,273 lines | **01 → 10** | *What does the eval system look like when you actually write it?* | A support chatbot with a retriever, plus the evaluation system around it: a **versioned dataset file**, a **check catalogue**, an **LLM-as-a-judge with rubrics**, **pointwise and pairwise** scoring, **retrieval metrics** (hit · recall · precision · MRR) with a **failure-attribution classifier**, and the **offline/online loop** that promotes a production failure into a regression test. `npm run eval` gates the build and exits non-zero when it blocks. |
+
+> ⚖️ **Honest limits — documented rather than hidden:** the judge falls back to a **rubric-anchored deterministic stand-in** when `OPENAI_API_KEY` is empty — which is a *feature*, not a shortcut, because Chapter 09 §9.1's offline evaluation (fixed versioned dataset → candidate build → scores → compare with baseline) is only meaningful if the run is **reproducible**, and a stand-in is perfectly reproducible. Every number quoted in the notes was produced with no key, so all of them can be re-derived; and the dataset is nine hand-written cases, which the guide says plainly cannot represent a real support agent.
+
+**[📂 Notes index](./Lecture%2017/notes/README.md)** · **[📄 Complete document](./Lecture%2017/notes/Lecture_17_Complete_Notes.md)** · **[🧱 Basic Code](./Lecture%2017/code/Basic%20Code/README.md)** · **[🛠️ Basic guide (01 → 10)](./Lecture%2017/code/Basic%20Code/implementations%20guide/README.md)**
+
+---
+
+### 🟫 [Lecture 18: AI Application Testing — Deterministic Evals & LLM-as-a-Judge](./Lecture%2018/notes/README.md)
+
+> **Thesis** — Lecture 17 asked *how do we know it works?* in general. This one answers it for **one concrete application** and draws the line precisely: **test deterministic behaviour with deterministic code, and use an LLM judge only where understanding language is actually required.** Of this agent's thirteen testable properties, **eight are deterministic and five are semantic** — and a team that sends all thirteen to a judge is paying for eight checks it could have had for free.
+
+`A pipeline, not a function` · `AgentResponse` · `The trace contract` · `retrievedDocuments · toolsUsed · toolArguments · context` · `A satisfying answer is not evidence` · `Golden dataset` · `null is an assertion, not a gap` · `The eight deterministic checks` · `hallucinationFree — 5 is always good` · `The rubric is the product` · `The four-layer pipeline` · `Per-metric thresholds` · `Failures that name their owner` · `The release gate`
+
+<details>
+<summary><b>🔎 Full breakdown</b></summary>
+
+<br>
+
+Chapter 01 opens with the problem this lecture exists for: an AI application is a **pipeline**, not an input→output function, so testing only the final answer tells you *something* is wrong but never *which stage*. Chapter 02 then builds the thing under test — an e-commerce support agent with three capabilities: **Category A** (policy question → retrieval), **Category B** (order question → tools) and **Category C** (out of scope → refusal).
+
+Chapter 03 is the hinge of the whole lecture. It defines the **`AgentResponse`** — the *second output of every request* — and explains field by field why each piece of internal execution data must be captured. The principle is blunt: **if a behaviour is not recorded, it cannot be evaluated, and a bug in it can never be attributed.** Two identical answers can have completely different trustworthiness, and only the trace distinguishes them.
+
+Chapters 04–05 split the work. The **golden dataset** is the specification: it defines what "correct" means, its `null` expectations are *assertions* ("must NOT retrieve a document") rather than gaps, and it is structured so that half of it is checkable by code. Then the **deterministic catalogue** — response exists · expected tool used · no unexpected tool · expected argument passed · expected source retrieved · no unexpected source · refusal when expected · latency budget — all of it free, all of it on every commit.
+
+Chapters 06–07 add the second instrument. Five quality metrics — **relevance, correctness, faithfulness, helpfulness, `hallucinationFree`** — with the deliberate naming choice that makes *5 = good* for every metric, so no aggregation has to remember which way a number points. The judge receives the question, the golden answer, the RAG evidence, the tool evidence and the generated answer, and returns a score per metric plus a reason. **The rubric is the product**: two judges given different rubrics will disagree about the same answer, and the disagreement will look like a model problem rather than a rubric problem.
+
+Chapter 08 assembles the **four-layer pipeline** — deterministic checks → quality scores → per-metric thresholds → an overall verdict — and the framing is the deliverable: a layer has an owner, so a failure names the team that fixes it. The closing chapter covers what the number *means*: thresholds are product decisions with nothing universal about them, the same pipeline runs **offline to gate a release and online to discover reality**, and a production failure becomes tomorrow's regression test.
+
+</details>
+
+**🧩 One codebase ships with this lecture:**
+
+| Codebase | Language &amp; size | Guide | The question it answers | What it contains |
+| :--- | :--- | :--- | :--- | :--- |
+| 🧱 **[Basic Code](./Lecture%2018/code/Basic%20Code/README.md)** | TypeScript · 18 files · ~1,763 lines | **01 → 10** | *What does the lecture's own application — and its test suite — look like in code?* | An e-commerce support agent (`config` · `domain` · `middleware` · `controllers` · `routes` · `services`) that returns an **answer and a trace**, plus the evaluation system around it: a **nine-case golden dataset**, an **eight-check deterministic catalogue**, an **LLM-as-a-judge with a rubric and five metrics**, the **four-layer pipeline**, **per-metric thresholds** read from the environment, and a **release gate** whose exit code CI reads. `npm run eval` passes at `topK=1` and **blocks at `topK=2`**, with the failure attributed to retrieval. |
+
+> ⚖️ **Honest limits — documented rather than hidden:** the model is a **deterministic stand-in** offline (so every number in the notes is reproducible with no API key); retrieval scores documents by **content-term overlap** rather than embeddings, so the contract is real but the ranking is not semantic; the judge stand-in derives **faithfulness and hallucination-free from one signal**, which the code says out loud — a set-overlap test cannot tell a *missing* fact from an *invented* one; and the **adversarial case cannot fail offline**, because a stand-in that only reads its context cannot be injected. The guide records all four rather than implying otherwise.
+
+**[📂 Notes index](./Lecture%2018/notes/README.md)** · **[📄 Complete document](./Lecture%2018/notes/Lecture_18_Complete_Notes.md)** · **[🧱 Basic Code](./Lecture%2018/code/Basic%20Code/README.md)** · **[🛠️ Basic guide (01 → 10)](./Lecture%2018/code/Basic%20Code/implementations%20guide/README.md)**
+
+---
+
 ## 🧰 Technology Stack
 
 | Layer | What the curriculum uses |
@@ -570,7 +675,33 @@ npm run index        # PDF → chunks → embeddings → Qdrant
 npm run query        # question → retrieval → grounded answer with [Source n]
 ```
 
-> 🔑 **Keys are optional where it matters.** The Lecture 12 codebase and the Eassy RAG guide are built so their numbers reproduce offline; set `OPENAI_API_KEY` (and optionally `COHERE_API_KEY`) to swap in real embeddings and a real cross-encoder without changing a line of logic.
+```bash
+# Lecture 16 — Multimodal AI · Basic Code (runs offline, NO API key)
+cd "Lecture 16/code/Basic Code"
+npm install
+npm run demo         # Chapters 03 → 08: text + image pipelines, patches, alignment, cost
+npm test             # the same pipeline under test
+```
+
+```bash
+# Lecture 17 — GenAI Evals & Testing · Basic Code (runs offline, NO API key)
+cd "Lecture 17/code/Basic Code"
+npm install
+npm run eval         # dataset → deterministic checks → judge → attribution → release gate
+npm run eval -- --topk=1 --baseline=3 --pairwise   # reproduce the retrieval regression
+npm start            # the app under test + the eval API, on :8080
+```
+
+```bash
+# Lecture 18 — AI Application Testing · Basic Code (runs offline, NO API key)
+cd "Lecture 18/code/Basic Code"
+npm install
+npm run eval                    # the four-layer pipeline + the gate → GATE PASSED, 9/9
+RETRIEVAL_TOPK=2 npm run eval   # …and the same suite blocking the build, attributed to retrieval
+npm start                       # POST /chat returns an answer *and* its trace, on :8080
+```
+
+> 🔑 **Keys are optional where it matters.** The Lecture 12, 16, 17 and 18 codebases are built so their numbers reproduce offline — a deterministic stand-in replaces the model call, which is itself the point of Lectures 17–18 (an evaluation you cannot re-run is not a baseline). Set `OPENAI_API_KEY` (and optionally `COHERE_API_KEY`) to swap in real embeddings, a real model and a real judge without changing a line of pipeline logic.
 
 ### 3 · Following an implementation guide
 
@@ -586,21 +717,22 @@ Forward-Deployed-Engineer/
 ├── index.md                        # Master roadmap: every lecture + per-chapter topic tables
 ├── prompt.md                       # Note-generation brief used across lectures
 │
-├── Lecture 01/ … Lecture 15/       # 15 lectures
+├── Lecture 01/ … Lecture 18/       # 18 lectures
 │   ├── notes/
 │   │   ├── README.md               # Chapter index for the lecture
 │   │   ├── Notes.pdf               # Original source slides
 │   │   ├── Excalidraw-Notes.svg    # Hand-drawn diagram source
 │   │   ├── 01_*.md … NN_*.md       # Chapter-by-chapter notes
 │   │   └── Lecture_NN_Complete_Notes.md   # Single consolidated document
-│   └── code/                       # Present for lectures 03 · 04 · 05 · 06 · 08 · 10 · 11 · 12 · 13 · 14 · 15
+│   └── code/                       # Present for lectures 03 · 04 · 05 · 06 · 08 · 10 · 11 · 12 · 13 · 14 · 15 · 16 · 17 · 18
 │       ├── README.md               # What the codebase does + how to run it
 │       ├── src/ · package.json · tsconfig.json
 │       └── implementations guide/  # Chapter-wise build guide (full source, block by block)
 │
 └── (Lecture 11 ships two codebases — Productions RAG and Eassy RAG; Lecture 13 ships
-    the structured-outputs implementation; Lecture 14 ships Basic Code and Production Code;
-    Lecture 15 ships Basic Code and Production Code)
+    the structured-outputs implementation; Lectures 14 and 15 ship Basic Code and
+    Production Code; Lectures 16, 17 and 18 ship a Basic Code each — the multimodal
+    pipeline, the eval system, and the four-layer testing pipeline)
 ```
 
 ---
@@ -623,9 +755,10 @@ Every artefact in this repository follows the same four-part contract, so you ca
 
 | Status | Item |
 | :---: | :--- |
-| ✅ | Lectures **01 → 15** published with chapter-wise notes and consolidated documents |
-| ✅ | Codebases for lectures **03 · 04 · 05 · 06 · 08 · 10 · 11 · 12 · 13 · 14 · 15**, with implementation guides for **03 · 04 · 05 · 06 · 08 · 10 · 11 · 12 · 14 · 15** |
+| ✅ | Lectures **01 → 18** published with chapter-wise notes and consolidated documents |
+| ✅ | Codebases for lectures **03 · 04 · 05 · 06 · 08 · 10 · 11 · 12 · 13 · 14 · 15 · 16 · 17 · 18**, with implementation guides for **03 · 04 · 05 · 06 · 08 · 10 · 11 · 12 · 14 · 15 · 16 · 17 · 18** |
 | ✅ | Master roadmap maintained in [`index.md`](./index.md) |
+| 🔜 | Production-grade codebases alongside the Basic Code for the evaluation lectures (16 · 17 · 18) |
 | 🔜 | Additional chapters where the source slides are thinner than the engineering reality |
 | 🔜 | More evaluation golden sets so every quantitative claim stays reproducible |
 
