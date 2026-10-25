@@ -9,10 +9,10 @@
 
 | | |
 | :--- | :--- |
-| **Files** | `src/middleware/requestContext.ts` (90 lines), `src/middleware/errorHandler.ts` (87 lines) |
+| **Files** | `src/middleware/requestContext.ts` (141 lines), `src/middleware/errorHandler.ts` (100 lines) |
 | **Layer** | `middleware` — the HTTP binding's cross-cutting concerns |
 | **Purpose** | `requestContext.ts`: a request id, a session and an access log. `errorHandler.ts`: map any failure to the right status, the right log level and a body a caller can act on. |
-| **Exports** | `RequestVariables`, `AppEnv`, `requestContext()` · `errorHandler()` |
+| **Exports** | `RequestVariables`, `requestContext()`, `query()` · `errorHandler()` |
 | **Lecture sections** | Ch05 §"Filter *before* ranking" (the session), Ch08 §8.6 (observability), Ch03 §3.9 (error shapes) |
 | **Runs** | Every HTTP request · `GET /metrics` |
 
@@ -53,7 +53,7 @@ worse than none, because the log stream looks correlated and is not.
 ```ts
 import { randomUUID } from "node:crypto";
 import { performance } from "node:perf_hooks";
-import type { Context, Next } from "hono";
+import type { NextFunction, Request, Response } from "express";
 import type { Logger } from "../core/logger.js";
 import type { Metrics } from "../core/metrics.js";
 import type { Session } from "../host/policy.js";
@@ -89,63 +89,90 @@ export interface RequestVariables {
   session: Session;
 }
 
-/** The Hono environment every route in this application shares. */
-export type AppEnv = { Variables: RequestVariables };
+/**
+ * The per-request values, declared onto Express's own `Request`.
+ *
+ * Hono carried these in an `AppEnv` type parameter threaded through every
+ * `Context<AppEnv>`. Express has no equivalent, so the shape is attached by
+ * **module augmentation** — the same technique `@modelcontextprotocol/express`
+ * uses to add `req.auth`. The payoff is that `request.session` type-checks in
+ * every controller with no generic to pass along, and the compiler still refuses
+ * a property that was never declared.
+ */
+declare module "express-serve-static-core" {
+  interface Request extends RequestVariables {}
+}
 
 /** The default actor, so an unauthenticated `curl` still produces a readable run. */
 const DEFAULT_ACTOR = "123";
 
-function sessionFromHeaders(context: Context<AppEnv>): Session {
-  const actor = context.req.header("x-actor")?.trim();
+function sessionFromHeaders(request: Request): Session {
+  const actor = request.header("x-actor")?.trim();
 
   return {
     actor: actor === undefined || actor === "" ? DEFAULT_ACTOR : actor,
     // A comma-separated scope. Absent means "no project scope", which is a
     // deliberate default: the selector should not invent a project the session
     // never named.
-    projects: (context.req.header("x-projects") ?? "")
+    projects: (request.header("x-projects") ?? "")
       .split(",")
       .map((project) => project.trim())
       .filter((project) => project !== ""),
     // An explicit opt-in, never inferred from the actor's name or id.
-    isAdmin: context.req.header("x-admin") === "true",
+    isAdmin: request.header("x-admin") === "true",
   };
 }
 
 export function requestContext(options: { logger: Logger; metrics: Metrics }) {
-  return async (context: Context<AppEnv>, next: Next): Promise<void> => {
+  return (request: Request, response: Response, next: NextFunction): void => {
     // Honour an inbound id when a caller or a proxy supplied one, so a trace
     // started upstream stays one trace.
-    const requestId = context.req.header("x-request-id")?.trim() || randomUUID().slice(0, 8);
+    const requestId = request.header("x-request-id")?.trim() || randomUUID().slice(0, 8);
     const logger = options.logger.child({ requestId });
     const startedAt = performance.now();
 
-    context.set("requestId", requestId);
-    context.set("logger", logger);
-    context.set("startedAt", startedAt);
-    context.set("session", sessionFromHeaders(context));
+    request.requestId = requestId;
+    request.logger = logger;
+    request.startedAt = startedAt;
+    request.session = sessionFromHeaders(request);
 
-    await next();
+    /**
+     * The access log runs on `finish`, not after `next()`.
+     *
+     * This is the one place the Express version has to differ from a Hono one.
+     * Hono's middleware could `await next()` and then read `context.res.status`,
+     * because Hono owns the whole chain. Express middleware calls `next()` and
+     * returns immediately — the controller is still producing the response — so
+     * reading `response.statusCode` there would log the default `200` for every
+     * failure and turn the access log into a lie.
+     *
+     * `finish` fires when the last byte is handed to the socket, which is when
+     * the status is genuinely final. It also covers a streamed response, which a
+     * `.then()` after `next()` would not.
+     */
+    response.on("finish", () => {
+      const milliseconds = performance.now() - startedAt;
 
-    const milliseconds = performance.now() - startedAt;
+      options.metrics.observe("http.latency_ms", milliseconds);
+      options.metrics.count(`http.status.${response.statusCode}`);
 
-    options.metrics.observe("http.latency_ms", milliseconds);
-    options.metrics.count(`http.status.${context.res.status}`);
-
-    logger.info("http.request", {
-      method: context.req.method,
-      path: context.req.path,
-      status: context.res.status,
-      ms: Math.round(milliseconds),
-      actor: context.get("session").actor,
+      logger.info("http.request", {
+        method: request.method,
+        path: request.path,
+        status: response.statusCode,
+        ms: Math.round(milliseconds),
+        actor: request.session.actor,
+      });
     });
+
+    next();
   };
 }
 ```
 
 ### Block-by-block
 
-**Block 1 — `RequestVariables` and `AppEnv` (lines 32–40).**
+**Block 1 — `RequestVariables` and the `Request` augmentation (lines 32–54).**
 
 ```ts
 export interface RequestVariables {
@@ -155,7 +182,9 @@ export interface RequestVariables {
   session: Session;
 }
 
-export type AppEnv = { Variables: RequestVariables };
+declare module "express-serve-static-core" {
+  interface Request extends RequestVariables {}
+}
 ```
 
 Four variables, and each is something a controller needs but must not compute for itself:
@@ -167,10 +196,15 @@ Four variables, and each is something a controller needs but must not compute fo
 | `startedAt` | The start time, so a controller can report a phase duration |
 | `session` | So no controller can invent an identity |
 
-**`AppEnv = { Variables: RequestVariables }`** is Hono's typing mechanism: `Context<AppEnv>` then knows that
-`context.get("session")` returns a `Session` and not `unknown`. That is what makes the middleware's `context.set` calls and
-the controllers' `context.get` calls type-check against each other — a small piece of plumbing that turns an untyped bag
-into a checked contract.
+**`declare module "express-serve-static-core"`** is how the same guarantee is obtained in Express. Hono did it with a
+generic — `Context<AppEnv>` knew that `context.get("session")` returned a `Session` and not `unknown`. Express has no
+generic to thread, so **module augmentation** merges the four properties straight onto Express's own `Request`:
+`request.session` type-checks in every controller, and a property nobody declared is still a compile error. It is the
+same technique `@modelcontextprotocol/express` uses to attach `req.auth`, which is the reassuring part — this is the
+idiom, not a workaround.
+
+The declaration lives in this file rather than a `types/` folder for a reason: this file is what *writes* those
+properties, and keeping the writer and the declaration together is what stops them drifting.
 
 The `logger` variable is the one worth dwelling on, and the header explains why it is a *child* logger rather than the id
 being passed around:
@@ -178,7 +212,7 @@ being passed around:
 > A request id, so every line from every layer can be correlated. It is bound to a **child** logger rather than passed
 > around as a parameter, which is what makes the correlation **automatic instead of optional**.
 
-That is Chapter 03's `child()` doing exactly what it was built for. A controller that logs through `context.get("logger")`
+That is Chapter 03's `child()` doing exactly what it was built for. A controller that logs through `request.logger`
 gets `requestId` on every line without writing it — and a controller cannot forget, because there is no parameter to
 forget to pass.
 
@@ -187,16 +221,16 @@ forget to pass.
 ```ts
 const DEFAULT_ACTOR = "123";
 
-function sessionFromHeaders(context: Context<AppEnv>): Session {
-  const actor = context.req.header("x-actor")?.trim();
+function sessionFromHeaders(request: Request): Session {
+  const actor = request.header("x-actor")?.trim();
 
   return {
     actor: actor === undefined || actor === "" ? DEFAULT_ACTOR : actor,
-    projects: (context.req.header("x-projects") ?? "")
+    projects: (request.header("x-projects") ?? "")
       .split(",")
       .map((project) => project.trim())
       .filter((project) => project !== ""),
-    isAdmin: context.req.header("x-admin") === "true",
+    isAdmin: request.header("x-admin") === "true",
   };
 }
 ```
@@ -226,7 +260,7 @@ The default is deliberately **no project scope**, and the comment says why: *the
 session never named.* So `x-projects` absent means `[]`, and strategy 2 simply contributes nothing. That is the right
 default for a *selection* input: inventing a scope would mean attaching a project brief the user never mentioned.
 
-**`isAdmin: context.req.header("x-admin") === "true"`** — an explicit string comparison, and the comment states the rule:
+**`isAdmin: request.header("x-admin") === "true"`** — an explicit string comparison, and the comment states the rule:
 *an explicit opt-in, never inferred from the actor's name or id.* So `x-admin: 1`, `x-admin: yes` and `x-admin: TRUE` all
 yield `false`. Only the exact string enables it.
 
@@ -238,30 +272,36 @@ refusing anything but `"true"`/`"false"`: **a privilege check should not be a tr
 
 ```ts
 export function requestContext(options: { logger: Logger; metrics: Metrics }) {
-  return async (context: Context<AppEnv>, next: Next): Promise<void> => {
-    const requestId = context.req.header("x-request-id")?.trim() || randomUUID().slice(0, 8);
+  return (request: Request, response: Response, next: NextFunction): void => {
+    const requestId = request.header("x-request-id")?.trim() || randomUUID().slice(0, 8);
     const logger = options.logger.child({ requestId });
     const startedAt = performance.now();
 
-    context.set("requestId", requestId);
-    context.set("logger", logger);
-    context.set("startedAt", startedAt);
-    context.set("session", sessionFromHeaders(context));
+    request.requestId = requestId;
+    request.logger = logger;
+    request.startedAt = startedAt;
+    request.session = sessionFromHeaders(request);
 
-    await next();
+    // The access log runs on `finish`, not after `next()`. Express middleware
+    // returns the moment it calls `next()` — the controller is still producing
+    // the response — so `response.statusCode` is only final once the bytes have
+    // been written. Logging here instead would report `200` for every failure.
+    response.on("finish", () => {
+      const milliseconds = performance.now() - startedAt;
 
-    const milliseconds = performance.now() - startedAt;
+      options.metrics.observe("http.latency_ms", milliseconds);
+      options.metrics.count(`http.status.${response.statusCode}`);
 
-    options.metrics.observe("http.latency_ms", milliseconds);
-    options.metrics.count(`http.status.${context.res.status}`);
-
-    logger.info("http.request", {
-      method: context.req.method,
-      path: context.req.path,
-      status: context.res.status,
-      ms: Math.round(milliseconds),
-      actor: context.get("session").actor,
+      logger.info("http.request", {
+        method: request.method,
+        path: request.path,
+        status: response.statusCode,
+        ms: Math.round(milliseconds),
+        actor: request.session.actor,
+      });
     });
+
+    next();
   };
 }
 ```
@@ -279,20 +319,27 @@ read and to type into a search box. A full UUID would be 36 characters of noise 
 id. With `??`, an empty string would be kept and every such request would share the id `""` — silently collapsing the
 correlation the id exists to provide.
 
-**All four `context.set` calls happen before `await next()`**, so every downstream layer — the controller, the context
-assembler, the client — can read them. That ordering is the middleware contract: set up, then delegate.
+**All four assignments happen before `next()`**, so every downstream layer — the controller, the context assembler, the
+client — can read them. That ordering is the middleware contract: set up, then delegate.
 
-**The metrics and the access log happen after `await next()` returns**, which is what makes them complete: by then
-`context.res.status` is known. And the comment on the header's third point is worth restating:
+**The metrics and the access log hang off `response.on("finish")`, and this is the one place the Express version differs
+structurally from a Hono one.** Hono's middleware could `await next()` and then read the status, because Hono owns the
+whole chain. Express middleware returns the instant it calls `next()` — the controller is still producing the response —
+so reading `response.statusCode` there would log the default `200` for *every* failure and quietly turn the access log
+into a lie. `finish` fires when the last byte reaches the socket, which is when the status is genuinely final, and it
+also covers a streamed response that a `.then()` after `next()` would miss.
+
+And the comment on the header's third point is worth restating:
 
 > **Timing and an access log**, on the way out — including for the requests that threw, because those are the ones whose
 > latency matters.
 
-The "including for the requests that threw" is worth checking against the code. If `next()` throws, does the access log
-still run? It does — because Hono's `onError` handler (registered in `routes/index.ts`) runs *inside* the middleware chain
-and converts the throw into a response, so `next()` resolves normally and this code continues. That is why the access log
-and the error handler are two cooperating middlewares rather than two competing ones: **the error handler is what makes
-the access log complete.**
+The *"including for the requests that threw"* promise is kept here, but by a different mechanism than Hono's. There,
+`onError` ran *inside* the middleware chain and turned a throw into a response, so the code after `await next()` always
+ran. Here the error handler is registered **after** the routes (Chapter 25), so a throw does not return through this
+middleware normally — but `finish` still fires, because Express's error handler writes a response like any other writer
+would. The two middlewares still cooperate: **the error handler is what makes the access log complete**, and `finish` is
+what lets the log say so without depending on the chain unwinding cleanly.
 
 The access log carries `actor` from the session, so the log stream answers *who* as well as *what* — which is the first
 question after an incident.
@@ -302,11 +349,10 @@ question after an incident.
 ## `src/middleware/errorHandler.ts` — the full file
 
 ```ts
-import type { Context } from "hono";
+import type { Request, Response } from "express";
 import { AppError, toAppError } from "../core/errors.js";
 import type { Logger } from "../core/logger.js";
 import type { Metrics } from "../core/metrics.js";
-import type { AppEnv } from "./requestContext.js";
 
 /**
  * The last middleware: turn whatever went wrong into an HTTP answer.
@@ -330,9 +376,9 @@ import type { AppEnv } from "./requestContext.js";
  */
 
 export function errorHandler(options: { logger: Logger; metrics: Metrics }) {
-  return (error: Error, context: Context<AppEnv>): Response => {
-    const logger = context.get("logger") ?? options.logger;
-    const failure = toAppError(originOf(context), error, context.req.path);
+  return (error: Error, request: Request, response: Response, _next: NextFunction): void => {
+    const logger = request.logger ?? options.logger;
+    const failure = toAppError(originOf(request), error, request.path);
 
     options.metrics.count("http.error");
     options.metrics.count(`http.error.${failure.code}`);
@@ -343,8 +389,8 @@ export function errorHandler(options: { logger: Logger; metrics: Metrics }) {
     const log = failure.httpStatus >= 500 ? logger.error : logger.warn;
 
     log("http.failed", {
-      method: context.req.method,
-      path: context.req.path,
+      method: request.method,
+      path: request.path,
       status: failure.httpStatus,
       code: failure.code,
       origin: failure.origin,
@@ -352,20 +398,17 @@ export function errorHandler(options: { logger: Logger; metrics: Metrics }) {
       ...(failure.httpStatus >= 500 ? { stack: error.stack } : {}),
     });
 
-    return context.json(
-      {
-        error: {
-          code: failure.code,
-          message: failure.message,
-          // The recovery sentence is written for the *caller*, so it is exactly
-          // the thing an API consumer needs to see.
-          recovery: failure.recovery,
-          retryable: failure.retryable,
-          requestId: context.get("requestId"),
-        },
+    response.status(failure.httpStatus).json({
+      error: {
+        code: failure.code,
+        message: failure.message,
+        // The recovery sentence is written for the *caller*, so it is exactly
+        // the thing an API consumer needs to see.
+        recovery: failure.recovery,
+        retryable: failure.retryable,
+        requestId: request.requestId,
       },
-      failure.httpStatus as 400,
-    );
+    });
   };
 }
 
@@ -376,8 +419,8 @@ export function errorHandler(options: { logger: Logger; metrics: Metrics }) {
  * bookkeeping inside business logic. The route is the honest place to read it
  * from, because the route is what chose the primitive in the first place.
  */
-function originOf(context: Context<AppEnv>): AppError["origin"] {
-  const path = context.req.path;
+function originOf(request: Request): AppError["origin"] {
+  const path = request.path;
 
   if (path.startsWith("/read") || path.startsWith("/resources")) {
     return "resource";
@@ -424,9 +467,9 @@ makes every dashboard green while the service is broken — and it is a tempting
 
 ```ts
 export function errorHandler(options: { logger: Logger; metrics: Metrics }) {
-  return (error: Error, context: Context<AppEnv>): Response => {
-    const logger = context.get("logger") ?? options.logger;
-    const failure = toAppError(originOf(context), error, context.req.path);
+  return (error: Error, request: Request, response: Response, _next: NextFunction): void => {
+    const logger = request.logger ?? options.logger;
+    const failure = toAppError(originOf(request), error, request.path);
 
     options.metrics.count("http.error");
     options.metrics.count(`http.error.${failure.code}`);
@@ -434,8 +477,8 @@ export function errorHandler(options: { logger: Logger; metrics: Metrics }) {
     const log = failure.httpStatus >= 500 ? logger.error : logger.warn;
 
     log("http.failed", {
-      method: context.req.method,
-      path: context.req.path,
+      method: request.method,
+      path: request.path,
       status: failure.httpStatus,
       code: failure.code,
       origin: failure.origin,
@@ -443,28 +486,27 @@ export function errorHandler(options: { logger: Logger; metrics: Metrics }) {
       ...(failure.httpStatus >= 500 ? { stack: error.stack } : {}),
     });
 
-    return context.json(
-      {
-        error: {
-          code: failure.code,
-          message: failure.message,
-          recovery: failure.recovery,
-          retryable: failure.retryable,
-          requestId: context.get("requestId"),
-        },
+    response.status(failure.httpStatus).json({
+      error: {
+        code: failure.code,
+        message: failure.message,
+        recovery: failure.recovery,
+        retryable: failure.retryable,
+        requestId: request.requestId,
       },
-      failure.httpStatus as 400,
-    );
+    });
   };
 }
 ```
 
-**`context.get("logger") ?? options.logger`** — the request-scoped child logger when the middleware ran, the root logger
-otherwise. The fallback matters because `onError` can fire for a request that failed *before* `requestContext` set
-anything (a malformed request Hono rejected early). So the handler degrades to the root logger rather than throwing on a
-`undefined`.
+**`request.logger ?? options.logger`** — the request-scoped child logger when the middleware ran, the root logger
+otherwise. The fallback matters because this handler can fire for a request that failed *before* `requestContext` set
+anything: `createMcpExpressApp` installs `express.json()`, which parses the body ahead of any application middleware, so
+a malformed body is rejected before a logger exists. The handler degrades to the root logger rather than throwing on an
+`undefined` — and the `: Logger` annotation on the line is there to make that fallback the *declared* contract rather
+than something the reader has to infer.
 
-**`toAppError(originOf(context), error, context.req.path)`** — Chapter 05's reclassifier, given three things: an origin
+**`toAppError(originOf(request), error, request.path)`** — Chapter 05's reclassifier, given three things: an origin
 inferred from the route, the raw error, and the path as a label. The `label` appears in the message
 (`{label} failed: {message}`) for an unclassifiable error, so the path is what makes a generic 500 traceable.
 
@@ -506,16 +548,17 @@ and only when it is the server's fault — which keeps a caller-caused error fro
 the exact request in the log stream — including every line from every layer, because the id is on the child logger. That
 turns a support conversation from "around 3pm" into a lookup.
 
-**The `as 400` cast** is a Hono typing workaround worth naming: `context.json(body, status)` types `status` as a union of
-specific literals rather than `number`, so a runtime-computed status needs an assertion. The cast asserts nothing about
-the *value* — it is the first member of the union, chosen because it is the smallest valid one — it merely satisfies the
-signature. A reader should know this is a library typing gap rather than a claim about the status.
+**The `as 400` cast that used to sit on this line is gone**, and its absence is worth a sentence. Hono's
+`context.json(body, status)` typed `status` as a union of specific literals rather than `number`, so a runtime-computed
+status needed an assertion — a library typing gap, not a claim about the value. Express's `response.status(code)` takes a
+plain `number`, so the taxonomy is now the only thing that decides the status and nothing has to be asserted to say so.
+`response.status(failure.httpStatus).json({ … })` reads as what it is: set the status, send the body.
 
 **Block 6 — `originOf`, inferring the primitive from the route (lines 62–87).**
 
 ```ts
-function originOf(context: Context<AppEnv>): AppError["origin"] {
-  const path = context.req.path;
+function originOf(request: Request): AppError["origin"] {
+  const path = request.path;
 
   if (path.startsWith("/read") || path.startsWith("/resources")) {
     return "resource";
@@ -577,8 +620,9 @@ Compare a request with no id:
 ```
 
 Eight-character generated ids — short enough to read, unique enough to search. And note the second line: **a 404 still gets
-an access log**, because the route-level `notFound` handler converts it into a response inside the middleware chain. That
-is the *"including for the requests that threw"* promise kept — the failing requests are the ones whose latency you want.
+an access log**. The route-level catch-all in `routes/index.ts` writes its response through `response.status(404).json(…)`
+like any other handler, so `finish` fires and the middleware's hook runs. That is the *"including for the requests that
+threw"* promise kept — and the failing requests are the ones whose latency you actually want to see.
 
 ### 2. A thrown error, and the five-field body
 
@@ -622,24 +666,24 @@ curl -s 'http://127.0.0.1:8080/nope'
 ```
 
 **Three fields, not five** — no `retryable` and, more importantly, **no `requestId`**. That is a real inconsistency, and it
-has a specific cause: this response comes from `app.notFound(...)` in `routes/index.ts` (Chapter 25), which is Hono's
-*route-not-found* hook, not from `errorHandler`. It builds its body by hand.
+has a specific cause: this response comes from the two-argument catch-all `app.use(...)` in `routes/index.ts` (Chapter 25),
+not from `errorHandler`. It builds its body by hand.
 
 The consequences are worth stating plainly:
 
 | Path | Body fields | Has `requestId`? |
 | :--- | :--- | :--- |
 | A thrown failure → `errorHandler` | `code`, `message`, `recovery`, `retryable`, `requestId` | **yes** |
-| No matching route → `app.notFound` | `code`, `message`, `recovery` | **no** |
+| No matching route → the catch-all `app.use` | `code`, `message`, `recovery` | **no** |
 
 So the one failure a *new* client is most likely to hit first — a wrong path — is the one whose body cannot be correlated
 to a log line. The access log still has the id (`"path":"/nope","status":404` with its generated `requestId`), so the
 information is not lost; it is simply not in the response.
 
-**The fix is one line**: have `app.notFound` throw an `AppError` instead of returning a body, so `errorHandler` produces
-the response and both shapes become one. It is documented rather than changed here because the guide's job is to describe
-what the code does — and because this is exactly the kind of inconsistency that a "does every response look the same?"
-review is for.
+**The fix is one line**: have the catch-all throw an `AppError` instead of writing a body, so `errorHandler` produces the
+response and both shapes become one. It is documented rather than changed here because the guide's job is to describe what
+the code does — and because this is exactly the kind of inconsistency that a "does every response look the same?" review
+is for.
 
 ### 4. The metrics, split by status
 
@@ -657,15 +701,15 @@ http.status.404 2
 
 Five numbers, and the pair that matters is `latency_ms` and `status.*`:
 
-- **`http.latency_ms`** is observed by the middleware *after* `next()` resolves, so it includes the whole request —
-  including the ones that failed. `avg: 23` with `max: 68` shows the spread across three requests.
+- **`http.latency_ms`** is observed by the middleware from the `finish` hook, so it includes the whole request — including
+  the ones that failed. `avg: 23` with `max: 68` shows the spread across three requests.
 - **`http.status.NNN`** is a *labelled* counter built by appending the status — the same cheap-labels technique as
   Chapter 04. So a dashboard can alert on `http.status.500` without a metric per route.
 
-Note `http.error` is **absent** from this list, because the 404s here came from `notFound` and from the policy — and only
-the second went through `errorHandler`. So `http.error.404` would be 1 while `http.status.404` is 2. **The two counters
-measure different things**, which is worth knowing before building a dashboard on either: `status.*` counts every
-response, `error.*` counts failures that reached the error handler.
+Note `http.error` is **absent** from this list, because the 404s here came from the route-level catch-all and from the
+policy — and only the second went through `errorHandler`. So `http.error.404` would be 1 while `http.status.404` is 2.
+**The two counters measure different things**, which is worth knowing before building a dashboard on either: `status.*`
+counts every response, `error.*` counts failures that reached the error handler.
 
 ### 5. Typecheck
 
@@ -677,7 +721,7 @@ npm run typecheck && echo PASS
 PASS
 ```
 
-The `AppEnv` type is what the typecheck is really enforcing here: `context.get("session")` in `errorHandler` and in every
+The module augmentation is what the typecheck is really enforcing here: `request.session` in `errorHandler` and in every
 controller returns a `Session` because `requestContext` declared it in `RequestVariables`. Change that declaration and the
 compiler finds every reader.
 
@@ -690,7 +734,7 @@ compiler finds every reader.
    Same argument as the shared `guard` (Chapter 14) and the shared `deps` (Chapter 13).
 
 2. **Why is the request id bound to a child logger rather than passed as a parameter?**
-   Because that makes correlation **automatic instead of optional** — a controller logs through `context.get("logger")` and
+   Because that makes correlation **automatic instead of optional** — a controller logs through `request.logger` and
    gets the id without writing it, and cannot forget to pass it.
 
 3. **Why is `isAdmin` an exact `=== "true"` comparison?**
@@ -719,8 +763,8 @@ compiler finds every reader.
    called from two routes.
 
 9. **What inconsistency does this chapter document?**
-   `app.notFound` returns a three-field body with no `requestId`, while `errorHandler` returns five fields. The one-line fix
-   is to have `notFound` throw an `AppError` so `errorHandler` produces both responses.
+   The route-level catch-all returns a three-field body with no `requestId`, while `errorHandler` returns five fields. The
+   one-line fix is to have the catch-all throw an `AppError` so `errorHandler` produces both responses.
 
 10. **Why do `http.status.404` and `http.error.404` differ?**
     Because they measure different things: `status.*` counts every response the middleware saw, while `error.*` counts only

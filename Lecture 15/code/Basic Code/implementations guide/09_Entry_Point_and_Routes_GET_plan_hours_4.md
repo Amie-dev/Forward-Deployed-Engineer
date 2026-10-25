@@ -16,7 +16,7 @@
 | **Purpose** | the MCP **server** process, on Streamable HTTP | the **host** process: HTTP routes a user calls |
 | **Port** | `8081` (`MCP_PORT`) | `8080` (`HOST_PORT`) |
 | **Speaks** | MCP / JSON-RPC | plain HTTP |
-| **Imports** | `node:http`, `@modelcontextprotocol/node`, `@modelcontextprotocol/server`, `server/server`, `config` | `express`, `config`, `client/client` |
+| **Imports** | `@modelcontextprotocol/express`, `@modelcontextprotocol/node`, `@modelcontextprotocol/server`, `server/server`, `config` | `express`, `config`, `client/client` |
 | **Imports the other?** | **no** | **no** — it talks over HTTP, not by import |
 | **Run with** | `npm run server` | `npm run host` |
 
@@ -46,9 +46,8 @@ curl 'http://127.0.0.1:8080/plan?hours=4'
 
 ```ts
 #!/usr/bin/env node
-import { createServer } from "node:http";
-
-import { localhostHostValidation, localhostOriginValidation, toNodeHandler } from "@modelcontextprotocol/node";
+import { createMcpExpressApp } from "@modelcontextprotocol/express";
+import { toNodeHandler } from "@modelcontextprotocol/node";
 import { createMcpHandler } from "@modelcontextprotocol/server";
 
 import { mcpPort, serverInfo } from "./config/config.js";
@@ -61,24 +60,43 @@ import { createServer as createMcpServer } from "./server/server.js";
  * itself (`src/server/server.ts`) knows nothing about it, so swapping this file
  * is the only change a different binding would need.
  *
- * The two validators below are Chapter 08's security point, and they are not
- * optional: a server bound to localhost is still reachable from any web page in
- * the user's browser, so the Host and Origin headers have to be checked.
+ * Express is the binding, and `createMcpExpressApp` is why that costs four lines
+ * instead of forty. Chapter 08's security point is still enforced — DNS-rebinding
+ * (`Host`) and foreign-origin (`Origin`) validation both apply — but it is now
+ * enforced *by the adapter*, because the app is bound to a localhost address and
+ * the adapter turns those checks on automatically. That is not a downgrade: a
+ * server bound to localhost is still reachable from any web page in the user's
+ * browser, so the protection has to be impossible to forget. Hand-wiring
+ * `localhostHostValidation()` and `localhostOriginValidation()` is still
+ * available when you want to see them; the default is to have them.
  */
 const handler = createMcpHandler(createMcpServer);
 const nodeHandler = toNodeHandler(handler);
-const validateHost = localhostHostValidation();
-const validateOrigin = localhostOriginValidation();
 
-const httpServer = createServer((request, response) => {
-  if (!validateHost(request, response) || !validateOrigin(request, response)) {
-    return;
-  }
+const app = createMcpExpressApp({ host: "127.0.0.1" });
 
-  void nodeHandler(request, response);
+/**
+ * Express advertises itself with `X-Powered-By: Express` unless told not to. The
+ * previous hand-wired Node binding sent no such header, and a server that
+ * answers strangers should not volunteer its stack — so it goes off, exactly as
+ * it does in the host (`src/routes/index.ts`) and in Lecture 06's `app.ts`.
+ */
+app.disable("x-powered-by");
+
+/**
+ * `request.body` is passed explicitly, and it is not optional.
+ *
+ * `createMcpExpressApp` installs `express.json()`, which consumes the request
+ * stream to populate `request.body`. `toNodeHandler` would otherwise try to read
+ * that same stream and find it already drained — so the third argument is how the
+ * parsed body is handed across. (Express's `next` callback is ignored if it ever
+ * arrives here; the adapter never mistakes a function for a body.)
+ */
+app.all("/mcp", (request, response) => {
+  void nodeHandler(request, response, request.body);
 });
 
-httpServer.listen(mcpPort, "127.0.0.1", () => {
+const httpServer = app.listen(mcpPort, "127.0.0.1", () => {
   // Diagnostics go to stderr so they never mix with anything a host reads.
   console.error(
     `[${serverInfo.name}] v${serverInfo.version} MCP endpoint on http://127.0.0.1:${mcpPort}/mcp`,
@@ -234,9 +252,8 @@ for (const signal of ["SIGINT", "SIGTERM"] as const) {
 
 ```ts
 #!/usr/bin/env node
-import { createServer } from "node:http";
-
-import { localhostHostValidation, localhostOriginValidation, toNodeHandler } from "@modelcontextprotocol/node";
+import { createMcpExpressApp } from "@modelcontextprotocol/express";
+import { toNodeHandler } from "@modelcontextprotocol/node";
 import { createMcpHandler } from "@modelcontextprotocol/server";
 
 import { mcpPort, serverInfo } from "./config/config.js";
@@ -245,19 +262,18 @@ import { createServer as createMcpServer } from "./server/server.js";
 
 - `#!/usr/bin/env node` makes the file directly executable (`./src/index.ts`). It is optional with
   `tsx`, but it is honest documentation that this file *is* a program.
-- `createServer` comes from `node:http` — **the raw Node HTTP server.** This process stays
-  framework-free on purpose: it has exactly one route (`POST /mcp`) and one job (speak the
-  protocol). The process with an actual route table is the *host*, and that one uses Express —
-  see §9.6.
+- `createMcpExpressApp` comes from **`@modelcontextprotocol/express`** — the SDK's Express adapter.
+  It returns a configured Express app and, because it is told the bind is `127.0.0.1`, it installs
+  the localhost `Host`/`Origin` checks for you. That is Chapter 08's security point, now enforced by
+  the framework instead of by hand — see Block 3.
 - **The alias is the interesting part.** `import { createServer as createMcpServer }` — there are
-  two different "create server" functions in this file, so one is renamed. Without it you would
-  have a name collision, and with a worse name you would lose the reader. `createMcpServer` says
-  exactly which one it is.
+  two different "create server" concepts in this file, so one is renamed. `createMcpServer` says
+  exactly which one it is: the *MCP* server factory from `server/server.ts`, not an HTTP server.
 - `toNodeHandler` is the adapter from the SDK's **web-standard** handler to Node's
-  `(request, response)` signature. The SDK speaks `Request`/`Response`; Node's `http` module does
-  not. That adapter is the bridge.
-- `localhostHostValidation` and `localhostOriginValidation` are **security middleware**. See
-  Block 3.
+  `(request, response)` signature. The SDK speaks `Request`/`Response`; Express sits on Node's
+  `http` module and speaks `IncomingMessage`/`ServerResponse`. That adapter is the bridge.
+- Note what is **not** imported any more: `node:http`. `app.listen()` returns the underlying
+  `http.Server` for you, so the raw module is not needed in this file at all.
 
 ### Block 2 — build the handler
 
@@ -276,55 +292,64 @@ const nodeHandler = toNodeHandler(handler);
   `createServer()`. This file is purely plumbing, which is why swapping transports touches only
   this file.
 
-### Block 3 — the two validators (the security point)
+### Block 3 — the Express app (the security point)
 
 ```ts
-const validateHost = localhostHostValidation();
-const validateOrigin = localhostOriginValidation();
+const app = createMcpExpressApp({ host: "127.0.0.1" });
+app.disable("x-powered-by");
 ```
 
-- Both are **factories**: you call them to get a validator function, then call that function per
-  request. That is why there are parentheses on these lines and none on the one below.
+- **`createMcpExpressApp({ host })` does two jobs.** It builds the app *and* decides whether to
+  install the localhost header checks — the `host` option is what it makes that decision from. Pass
+  a localhost-class host (`127.0.0.1`, `localhost`, `::1`) and both checks are installed; pass
+  anything else and they are not.
 - **Why they matter, and why this is not paranoia.** Binding to `127.0.0.1` stops *other machines*
-  reaching the server — but it does **not** stop a web page in the user's own browser. Any site
-  the user visits can issue a `fetch("http://127.0.0.1:8081/mcp")`, and the browser will happily
-  send it, because localhost is the user's own machine.
-  - `validateHost` rejects requests whose `Host` header is not a localhost name. That defeats
+  reaching the server — but it does **not** stop a web page in the user's own browser. Any site the
+  user visits can issue a `fetch("http://127.0.0.1:8081/mcp")`, and the browser will happily send
+  it, because localhost is the user's own machine.
+  - The **Host** check rejects requests whose `Host` header is not a localhost name. That defeats
     **DNS rebinding**, where an attacker's domain resolves to `127.0.0.1` to impersonate you.
-  - `validateOrigin` rejects requests whose `Origin` header is a foreign website. That is
-    standard CORS-style protection, applied at the server.
-- Without these two lines, a page at `evil.example` could enumerate and read every Resource on
-  this server — including `user://123/profile`. The validators are five words long and they close
-  a real hole.
+  - The **Origin** check rejects requests whose `Origin` header is a foreign website. That is
+    standard CORS-style protection, applied at the server. A request with *no* `Origin` header
+    passes, which is why `curl` and a native MCP client still work.
+- Without them, a page at `evil.example` could enumerate and read every Resource on this server —
+  including `user://123/profile`. The hand-wired form is five words long
+  (`localhostHostValidation()` / `localhostOriginValidation()`, both still exported from
+  `@modelcontextprotocol/node`); the default form is zero words, and that is the improvement. You
+  can no longer *forget* the protection — only *remove* it, deliberately.
+- `app.disable("x-powered-by")` is a one-line correction. Express advertises itself in a response
+  header by default, and a server that answers strangers should not volunteer its stack. The
+  previous `node:http` binding sent no such header, so switching frameworks should not add one.
 
-### Block 4 — the request handler
+### Block 4 — the endpoint
 
 ```ts
-const httpServer = createServer((request, response) => {
-  if (!validateHost(request, response) || !validateOrigin(request, response)) {
-    return;
-  }
-
-  void nodeHandler(request, response);
+app.all("/mcp", (request, response) => {
+  void nodeHandler(request, response, request.body);
 });
 ```
 
-- **The validators write the rejection themselves.** They take `(request, response)`, and on
-  failure they have already sent a `403` and returned `false`. That is why the handler only needs
-  to `return` — there is nothing left to write.
-- `||` short-circuits: if the Host check fails, the Origin check is skipped and the request is
-  dropped. Fail fast, one rejection.
-- `void nodeHandler(request, response)` — the SDK's handler is async, but Node's `createServer`
-  callback is not. `void` marks the deliberate fire-and-forget, the same idiom as Chapter 08's
-  `void main()`. The handler writes to `response` itself when it is done.
-- **Every path is the MCP endpoint.** There is no routing here at all — the host decides *what* to
-  call, and the server only answers the protocol. All five Resources and both Prompts are reached
-  through this one URL.
+- **`app.all("/mcp", …)` is the whole routing story.** One path, every method — the protocol decides
+  what a `POST` means, and a `GET`/`DELETE` on the same path are the Streamable HTTP session verbs.
+  There is no route table here because there is nothing to route: the host decides *what* to call,
+  and the server only answers the protocol. All five Resources and both Prompts are reached through
+  this one URL.
+- **`request.body` is the third argument, and dropping it is the one mistake this file can make.**
+  `createMcpExpressApp` installs `express.json()`, which drains the request stream into
+  `request.body` *before* this handler runs. `toNodeHandler` reads the body from either the third
+  argument or the raw stream — so without it, the adapter reads a stream that is already empty and
+  the request fails as a protocol error. This is the sharpest edge of putting Express in front of a
+  Node adapter, and it is why the line carries a comment.
+- `void nodeHandler(...)` — the SDK's handler is async, and `void` marks the deliberate
+  fire-and-forget, the same idiom as Chapter 08's `void main()`. The handler writes to `response`
+  itself when it is done, so there is nothing to await here.
+- Note what is *absent*: no `try`/`catch`. A rejection inside the handler is the SDK's business —
+  it answers with a JSON-RPC error rather than throwing at this layer.
 
 ### Block 5 — listen, and why stderr
 
 ```ts
-httpServer.listen(mcpPort, "127.0.0.1", () => {
+const httpServer = app.listen(mcpPort, "127.0.0.1", () => {
   // Diagnostics go to stderr so they never mix with anything a host reads.
   console.error(
     `[${serverInfo.name}] v${serverInfo.version} MCP endpoint on http://127.0.0.1:${mcpPort}/mcp`,
@@ -332,9 +357,14 @@ httpServer.listen(mcpPort, "127.0.0.1", () => {
 });
 ```
 
-- `listen(mcpPort, "127.0.0.1", …)` — the address is **explicit**. Omitting it would bind
+- `app.listen(mcpPort, "127.0.0.1", …)` — the address is **explicit**. Omitting it would bind
   `0.0.0.0` and expose the server to the whole network. On a development machine that is a mistake
-  with real consequences.
+  with real consequences. It is stated twice in this file — once to `createMcpExpressApp` (which
+  needs it to decide whether to install the header checks) and once here (which needs it to decide
+  what to bind) — and the two must agree.
+- **`app.listen()` returns the underlying `http.Server`**, which is why the result is still stored
+  in `httpServer`: Block 6 closes it. Express builds a pipeline in front of the server; it does not
+  hide it.
 - The banner uses `serverInfo` from Chapter 02, so it prints the *configured* name and version.
   Change `.env` and the banner changes — a small, useful confirmation that config was loaded.
 - **`console.error`, not `console.log`.** This is not a style preference. On a stdio transport,
@@ -826,7 +856,7 @@ You have now read every file. Here is the entire project compressed.
 | `src/tools/tools.ts` | 57 | the **model's** primitive; `list_tasks` duplicates `task://backlog` on purpose |
 | `src/server/server.ts` | 24 | **three primitives, three owners, one function** |
 | `src/client/client.ts` | 233 | one function per MCP verb; `askModel` is the only model call |
-| `src/index.ts` | 46 | the **transport binding** + the two security validators |
+| `src/index.ts` | 64 | the **transport binding**: the Express app, the `/mcp` endpoint + the security defaults |
 | `src/routes/index.ts` | 126 | the Express host; **`GET /plan?hours=4` is a one-liner** |
 
 **Total: 997 lines** across 13 files, and it demonstrates the whole of Lecture 15: three

@@ -1,9 +1,9 @@
 import { performance } from "node:perf_hooks";
-import type { Context } from "hono";
+import type { Request, Response } from "express";
 import { PromptError } from "../core/errors.js";
 import { textOf } from "../host/client.js";
 import type { HostDeps } from "../host/deps.js";
-import type { AppEnv } from "../middleware/requestContext.js";
+import { query } from "../middleware/requestContext.js";
 
 /**
  * Notes Ch06 §6.7 and Ch07 §7.3 — the **user-controlled** primitive.
@@ -53,11 +53,11 @@ export function promptController(deps: HostDeps) {
      * from the server (`prompts/list`), not from a table here, which is what
      * stops the menu and the validator from drifting apart.
      */
-    list: async (context: Context<AppEnv>): Promise<Response> => {
-      const session = context.get("session");
+    list: async (request: Request, response: Response): Promise<void> => {
+      const session = request.session;
       const prompts = await deps.client.listPrompts();
 
-      return context.json({
+      response.json({
         prompts: prompts.map((prompt) => {
           const decision = deps.policy.mayUsePrompt(prompt.name, session);
 
@@ -94,8 +94,8 @@ export function promptController(deps: HostDeps) {
      * deliberately does not duplicate that check. Two validators for one contract
      * is two things to keep in sync.
      */
-    get: async (context: Context<AppEnv>): Promise<Response> => {
-      const name = context.req.query("name")?.trim();
+    get: async (request: Request, response: Response): Promise<void> => {
+      const name = query(request, "name")?.trim();
 
       if (name === undefined || name === "") {
         throw new PromptError(
@@ -105,7 +105,7 @@ export function promptController(deps: HostDeps) {
         );
       }
 
-      const session = context.get("session");
+      const session = request.session;
 
       // Predict the failure rather than parse it: an unknown name is a 404, and
       // no round trip is needed to know that.
@@ -134,7 +134,7 @@ export function promptController(deps: HostDeps) {
 
       const args: Record<string, string> = {};
 
-      for (const [key, value] of Object.entries(context.req.query())) {
+      for (const [key, value] of Object.entries(request.query)) {
         if (key !== "name" && typeof value === "string") {
           args[key] = value;
         }
@@ -164,7 +164,7 @@ export function promptController(deps: HostDeps) {
         note: `${messages.length} message(s), args: ${Object.keys(args).join(",") || "none"}`,
       });
 
-      return context.json({
+      response.json({
         name,
         description: rendered.description,
         messages,

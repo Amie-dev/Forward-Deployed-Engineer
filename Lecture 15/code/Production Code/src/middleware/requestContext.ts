@@ -1,6 +1,6 @@
 import { randomUUID } from "node:crypto";
 import { performance } from "node:perf_hooks";
-import type { Context, Next } from "hono";
+import type { NextFunction, Request, Response } from "express";
 import type { Logger } from "../core/logger.js";
 import type { Metrics } from "../core/metrics.js";
 import type { Session } from "../host/policy.js";
@@ -36,55 +36,106 @@ export interface RequestVariables {
   session: Session;
 }
 
-/** The Hono environment every route in this application shares. */
-export type AppEnv = { Variables: RequestVariables };
+/**
+ * The per-request values, declared onto Express's own `Request`.
+ *
+ * Hono carried these in an `AppEnv` type parameter threaded through every
+ * `Context<AppEnv>`. Express has no equivalent, so the shape is attached by
+ * **module augmentation** — the same technique `@modelcontextprotocol/express`
+ * uses to add `req.auth`. The payoff is that `request.session` type-checks in
+ * every controller with no generic to pass along, and the compiler still refuses
+ * a property that was never declared.
+ *
+ * The augmentation lives here because this file is what *populates* the values;
+ * putting it next to the writer is what keeps the two from drifting.
+ */
+declare module "express-serve-static-core" {
+  interface Request extends RequestVariables {}
+}
 
 /** The default actor, so an unauthenticated `curl` still produces a readable run. */
 const DEFAULT_ACTOR = "123";
 
-function sessionFromHeaders(context: Context<AppEnv>): Session {
-  const actor = context.req.header("x-actor")?.trim();
+function sessionFromHeaders(request: Request): Session {
+  const actor = request.header("x-actor")?.trim();
 
   return {
     actor: actor === undefined || actor === "" ? DEFAULT_ACTOR : actor,
     // A comma-separated scope. Absent means "no project scope", which is a
     // deliberate default: the selector should not invent a project the session
     // never named.
-    projects: (context.req.header("x-projects") ?? "")
+    projects: (request.header("x-projects") ?? "")
       .split(",")
       .map((project) => project.trim())
       .filter((project) => project !== ""),
     // An explicit opt-in, never inferred from the actor's name or id.
-    isAdmin: context.req.header("x-admin") === "true",
+    isAdmin: request.header("x-admin") === "true",
   };
+}
+
+/**
+ * Read one query parameter as a string — or nothing.
+ *
+ * Express types `request.query[key]` as `string | string[] | ParsedQs`: a
+ * repeated parameter arrives as an array, a bracketed one as an object. Every
+ * route in this application wants *one string or nothing*, so the narrowing
+ * happens once, here, rather than six times across the controllers — and a
+ * caller who sends `?uri=a&uri=b` gets `undefined` instead of an array that
+ * would reach the policy layer as an unhandled type.
+ *
+ * This is deliberately the *same* function as the Basic Code host's helper, so
+ * the behaviour of a malformed query string is a property of the application
+ * rather than a per-project decision.
+ */
+export function query(request: Request, key: string): string | undefined {
+  const value = request.query[key];
+
+  return typeof value === "string" ? value : undefined;
 }
 
 export function requestContext(options: { logger: Logger; metrics: Metrics }) {
-  return async (context: Context<AppEnv>, next: Next): Promise<void> => {
+  return (request: Request, response: Response, next: NextFunction): void => {
     // Honour an inbound id when a caller or a proxy supplied one, so a trace
     // started upstream stays one trace.
-    const requestId = context.req.header("x-request-id")?.trim() || randomUUID().slice(0, 8);
+    const requestId = request.header("x-request-id")?.trim() || randomUUID().slice(0, 8);
     const logger = options.logger.child({ requestId });
     const startedAt = performance.now();
 
-    context.set("requestId", requestId);
-    context.set("logger", logger);
-    context.set("startedAt", startedAt);
-    context.set("session", sessionFromHeaders(context));
+    request.requestId = requestId;
+    request.logger = logger;
+    request.startedAt = startedAt;
+    request.session = sessionFromHeaders(request);
 
-    await next();
+    /**
+     * The access log runs on `finish`, not after `next()`.
+     *
+     * This is the one place the Express version has to differ from the Hono one.
+     * Hono's middleware could `await next()` and then read `context.res.status`,
+     * because Hono owns the whole chain. Express middleware calls `next()` and
+     * returns immediately — the controller is still producing the response — so
+     * reading `response.statusCode` at that point would log the default `200`
+     * for every failure and turn the access log into a lie.
+     *
+     * `finish` fires when the last byte is handed to the socket, which is when
+     * the status is genuinely final. It also covers a streamed response, which a
+     * `.then()` after `next()` would not.
+     */
+    response.on("finish", () => {
+      const milliseconds = performance.now() - startedAt;
 
-    const milliseconds = performance.now() - startedAt;
+      options.metrics.observe("http.latency_ms", milliseconds);
+      options.metrics.count(`http.status.${response.statusCode}`);
 
-    options.metrics.observe("http.latency_ms", milliseconds);
-    options.metrics.count(`http.status.${context.res.status}`);
-
-    logger.info("http.request", {
-      method: context.req.method,
-      path: context.req.path,
-      status: context.res.status,
-      ms: Math.round(milliseconds),
-      actor: context.get("session").actor,
+      logger.info("http.request", {
+        method: request.method,
+        path: request.path,
+        status: response.statusCode,
+        ms: Math.round(milliseconds),
+        actor: request.session.actor,
+      });
     });
+
+    next();
   };
 }
+

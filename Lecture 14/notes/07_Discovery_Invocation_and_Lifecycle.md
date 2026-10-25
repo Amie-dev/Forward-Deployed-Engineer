@@ -506,6 +506,39 @@ flowchart TD
 
 > **The correct mental model:** discovery is a **cache with an invalidation signal**, not a per-request call. Treat a *changed* definition as a re-authorisation event, not just a refresh.
 
+#### The protocol-level hints: `ttlMs` and `cacheScope`
+
+The policy above is *host-side* — it is the host deciding how long to trust what it fetched. Since revision
+**2026-07-28** the protocol also carries the **server's** opinion, so the two can be reconciled rather than guessed at.
+
+| Field | Where it appears | What it means |
+|---|---|---|
+| `ttlMs` | the result's metadata | How long, in milliseconds, the server considers this result fresh |
+| `cacheScope` | the result's metadata | `"public"` — any cache may reuse it; `"private"` — only the requesting client may |
+
+The cacheable methods are a fixed list, and it is worth knowing because it is exactly the set of "list-ish" reads plus
+one read:
+
+```text
+tools/list            prompts/list          resources/list
+resources/templates/list                    resources/read
+server/discover
+```
+
+Three consequences for a host:
+
+1. **A hint is a *hint*.** When a server says nothing, the defaults are the conservative ones — `ttlMs: 0` and
+   `cacheScope: "private"`, meaning *re-fetch it, and do not share it*. A host that ignores the hints entirely is
+   safe, just slower. That is the right way round for a default to be.
+2. **`list_changed` still wins.** A notification invalidates a cached list immediately, **even if its TTL has not
+   expired**. Treat the TTL as a ceiling, never as a promise.
+3. **`cacheScope` is a tenancy decision, not a performance one.** Caching a `private` result in a shared cache is how
+   one user's tool list — or one user's `resources/read` body — leaks into another user's context. When in doubt,
+   `private`.
+
+> **The mental model that covers both layers:** the host decides *whether* to cache; the server's hints say *how long*
+> and *how widely*; and `list_changed` overrides both.
+
 ---
 
 ## 7.9 The Context-Budget Problem *(beyond the lecture)*
@@ -558,6 +591,91 @@ flowchart LR
 | 7 | **Prefer Resources for context** | Resources cost nothing until read (Chapter 06) |
 
 > **The counter-intuitive conclusion:** *more discoverable tools make a system worse, not better.* Discovery is a capability, and every capability you advertise has a price. Curate the catalogue the way you would curate a public API.
+
+### Two patterns that change the shape of the problem *(beyond the lecture)*
+
+Every mitigation above is curation — choosing which definitions enter the prompt. Two client-side patterns go further:
+one changes *when* definitions enter context, the other changes *how* tools are invoked at all.
+
+#### Progressive tool discovery
+
+Instead of injecting every definition up front, the host advertises a small **meta-tool** and loads definitions only
+when the model asks for them.
+
+```mermaid
+flowchart LR
+    M["Model"] -->|"search_tools('update salesforce record')"| H["Host"]
+    H -->|"names + one-line descriptions"| M
+    M -->|"get_tool_details('salesforce_updateRecord')"| H
+    H -->|"the full input schema — one tool"| M
+    M -->|"call_tool(...)"| H
+
+    style M fill:#cba6f7,color:#1e1e2e
+    style H fill:#89b4fa,color:#1e1e2e
+```
+
+Three layers, and the names are the memorable part: **catalog** (search returns names and one-line descriptions),
+**inspect** (fetch the full schema for the one tool that matched), **execute** (call it, now that the model has seen
+the contract). Compare that to §7.9's opening diagram: 45 schemas up front becomes two names and one schema, on demand.
+
+The retrieval behind the catalog can be keyword matching, embeddings, a small fast model, or a hybrid — the layered
+principle is the same either way. The decision to *switch* is a threshold question: while definitions occupy a small
+fraction of the context window, loading them all is simpler and better. Once they occupy a significant share, switch.
+
+Two implementation notes that are easy to get wrong:
+
+- **Cache the definitions host-side.** A definition fetched once should not need another `tools/list` round trip when
+  it is re-injected later. That cache is separate from what is currently in the model's context — §7.8's two layers
+  again.
+- **Mind prompt caching.** Most providers cache the prompt *prefix*, and the tools array is usually part of it. Adding
+  a definition mid-conversation invalidates that cache, and the miss can cost more than the definitions you removed.
+  Append after the breakpoint rather than re-sorting the array, or route every call through one stable
+  `call_tool({ name, args })` meta-tool so the array never changes.
+
+#### Programmatic tool calling ("code mode")
+
+Direct tool calling has a structural cost: every invocation is a round trip, and every *intermediate* result flows back
+through the model's context — even when the model has nothing to do with it. A task like *"find all error logs from the
+past hour and file a ticket for each unique error"* pushes thousands of log entries through the context window to
+produce one summary line.
+
+Programmatic tool calling inverts that. The host converts each tool's schema into a typed function inside a
+**sandbox**, and the model writes a *script* that calls them.
+
+```mermaid
+flowchart LR
+    subgraph Host["MCP Host"]
+        A["LLM"] -->|"writes code"| B["Sandbox"]
+        B -->|"function call"| C["MCP Client"]
+        C -->|"return value"| B
+        B -->|"console output"| A
+    end
+    C -->|"tools/call"| D["Server A"]
+    C -->|"tools/call"| E["Server B"]
+
+    style A fill:#cba6f7,color:#1e1e2e
+    style B fill:#f9e2af,color:#1e1e2e
+    style C fill:#89b4fa,color:#1e1e2e
+```
+
+The filtering, deduplication and chaining happen **inside the sandbox**; only the final `console.log` returns to the
+model. The host stays the **broker**: it holds the credentials, maps each stub call to the right server, and applies
+the same consent policy it would to a direct call.
+
+That last point is the one to be careful about, and it is a security statement rather than a performance one — so it
+belongs in the same breath as Chapter 08's threat model:
+
+| Rule | Why |
+|---|---|
+| **Per-call authorisation** | Approving a script is not blanket approval for every call it makes at runtime; the broker still evaluates each one |
+| **Cross-server data flow** | One server's output is *untrusted input* to another; truncation alone does not stop exfiltration |
+| **Network isolation** | The sandbox should have no network access at all — every call goes through the broker |
+| **No credential exposure** | Keys stay in the host; the generated code only ever sees typed function stubs |
+| **Resource limits and output filtering** | Timeouts and memory caps on the sandbox, and validated/truncated console output before the model reads it |
+
+> **What the two patterns have in common:** both are about *keeping data out of the model's context*. Progressive
+> discovery removes tool definitions the model will not use; code mode removes intermediate results it does not need to
+> read. Neither changes what MCP is — both sit in the **host**, on top of the same `tools/list` and `tools/call`.
 
 ---
 

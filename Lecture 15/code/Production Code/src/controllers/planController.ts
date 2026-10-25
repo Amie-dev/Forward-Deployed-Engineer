@@ -1,11 +1,11 @@
 import { performance } from "node:perf_hooks";
-import type { Context } from "hono";
+import type { Request, Response } from "express";
 import { PromptError } from "../core/errors.js";
 import { textOf } from "../host/client.js";
 import { assembleContext, type AssembledContext } from "../host/context.js";
 import type { HostDeps } from "../host/deps.js";
 import { askModel, type ModelReply } from "../host/model.js";
-import type { AppEnv } from "../middleware/requestContext.js";
+import { query } from "../middleware/requestContext.js";
 import type { PromptMessage } from "../services/promptService.js";
 
 /**
@@ -198,9 +198,9 @@ async function runPipeline(
 export function planController(deps: HostDeps) {
   return {
     /** `GET /plan?hours=4` — Notes Ch08 §8.2, end to end. */
-    plan: async (context: Context<AppEnv>): Promise<Response> => {
-      const hours = context.req.query("hours")?.trim() || "4";
-      const session = context.get("session");
+    plan: async (request: Request, response: Response): Promise<void> => {
+      const hours = query(request, "hours")?.trim() || "4";
+      const session = request.session;
       const startedAt = performance.now();
 
       const result = await runPipeline(deps, {
@@ -216,7 +216,7 @@ export function planController(deps: HostDeps) {
       deps.metrics.count("plan.ok");
       deps.metrics.observe("plan.latency_ms", durationMs);
 
-      return context.json({
+      response.json({
         request: { hours, actor: session.actor, projects: session.projects, admin: session.isAdmin },
         steps: result.steps,
         context: {
@@ -236,8 +236,8 @@ export function planController(deps: HostDeps) {
     },
 
     /** `GET /ask?message=...` — the same pipeline, with the user's own words. */
-    ask: async (context: Context<AppEnv>): Promise<Response> => {
-      const message = context.req.query("message")?.trim();
+    ask: async (request: Request, response: Response): Promise<void> => {
+      const message = query(request, "message")?.trim();
 
       if (message === undefined || message === "") {
         throw new PromptError(
@@ -247,7 +247,7 @@ export function planController(deps: HostDeps) {
         );
       }
 
-      const session = context.get("session");
+      const session = request.session;
       const startedAt = performance.now();
 
       const result = await runPipeline(deps, { message, session });
@@ -256,7 +256,7 @@ export function planController(deps: HostDeps) {
       deps.metrics.count("ask.ok");
       deps.metrics.observe("ask.latency_ms", durationMs);
 
-      return context.json({
+      response.json({
         request: { message, actor: session.actor, projects: session.projects },
         steps: result.steps,
         context: {

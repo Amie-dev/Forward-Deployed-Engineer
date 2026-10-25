@@ -239,7 +239,7 @@ Three things to notice, because they are the architecture of the lecture:
 - The three `@modelcontextprotocol/*` packages are the **protocol**; `zod` is the **contract**
   (schemas); `openai` is the **model**, and it is the only dependency the code can run without.
 - `express` is the only dependency that belongs to the **host** rather than the server. The MCP
-  server process (`src/index.ts`) still talks to `node:http` directly — one route, one job — while
+  server process (`src/index.ts`) is an Express app created by `createMcpExpressApp` — one route, one job — while
   the host, which has a route table, gets a router.
 
 **Block 5 — the dev dependencies**

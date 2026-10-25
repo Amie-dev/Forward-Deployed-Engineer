@@ -1,6 +1,5 @@
 #!/usr/bin/env node
-import { serve } from "@hono/node-server";
-import { Hono } from "hono";
+import express, { type Express, type Request, type Response } from "express";
 
 import { env } from "../config/env.js";
 import { createContextBudget } from "../core/guards.js";
@@ -16,7 +15,7 @@ import { createMcpClient } from "../host/client.js";
 import type { HostDeps } from "../host/deps.js";
 import { createHostPolicy, type ConsentHandler } from "../host/policy.js";
 import { errorHandler } from "../middleware/errorHandler.js";
-import { requestContext, type AppEnv } from "../middleware/requestContext.js";
+import { requestContext } from "../middleware/requestContext.js";
 import { createSelectionService } from "../services/selectionService.js";
 
 /**
@@ -124,11 +123,22 @@ const resources = resourceController(deps);
 const prompts = promptController(deps);
 const plan = planController(deps);
 
-const app = new Hono<AppEnv>();
+const app: Express = express();
 
-// Middleware first, in the order it must run: context, then routes, then errors.
-app.use("*", requestContext({ logger, metrics }));
-app.onError(errorHandler({ logger, metrics }));
+// Express would otherwise advertise itself with `X-Powered-By: Express`. The
+// Hono binding sent no such header, and swapping the framework should not change
+// the bytes on the wire — so it goes off.
+app.disable("x-powered-by");
+
+/**
+ * Middleware first, in the order it must run.
+ *
+ * `app.use(requestContext(...))` with no path matches every request — the
+ * Express spelling of Hono's `app.use("*", …)`. (Express 5 routes on
+ * path-to-regexp v8, where a bare `"*"` is no longer a valid pattern; omitting
+ * the path is both correct and clearer.)
+ */
+app.use(requestContext({ logger, metrics }));
 
 /**
  * The route table. Each line is a path and a controller method — no logic, which
@@ -150,20 +160,36 @@ app.get("/prompt", prompts.get);
 app.get("/plan", plan.plan);
 app.get("/ask", plan.ask);
 
-app.notFound((context) =>
-  context.json(
-    {
-      error: {
-        code: "NOT_FOUND",
-        message: `No route for ${context.req.method} ${context.req.path}.`,
-        recovery: "Call GET / for the index of available routes.",
-      },
+/**
+ * The 404, as a catch-all registered *after* every route.
+ *
+ * Hono had `app.notFound(...)` for this. Express has no dedicated hook, and does
+ * not need one: an ordinary two-argument `app.use` runs only when nothing above
+ * it matched, which is the same behaviour with one fewer API to learn.
+ */
+app.use((request: Request, response: Response) => {
+  response.status(404).json({
+    error: {
+      code: "NOT_FOUND",
+      message: `No route for ${request.method} ${request.path}.`,
+      recovery: "Call GET / for the index of available routes.",
     },
-    404,
-  ),
-);
+  });
+});
 
-const server = serve({ fetch: app.fetch, port: env.MCP_HOST_PORT, hostname: "127.0.0.1" }, () => {
+/**
+ * The error handler, last — and its *position* is load-bearing.
+ *
+ * Hono's `app.onError(...)` could be registered above the routes, because Hono
+ * keeps a raised error out of the middleware chain until it unwinds. Express
+ * matches in registration order, so an error handler placed above the routes
+ * would never see a failure they raised; it has to come after them. The four
+ * parameters are what mark it as an error handler rather than ordinary
+ * middleware, and Chapter 24 takes that apart.
+ */
+app.use(errorHandler({ logger, metrics }));
+
+const httpServer = app.listen(env.MCP_HOST_PORT, "127.0.0.1", () => {
   logger.info("host.listening", {
     url: `http://127.0.0.1:${env.MCP_HOST_PORT}`,
     server: env.MCP_SERVER_URL,
@@ -187,7 +213,7 @@ for (const signal of ["SIGINT", "SIGTERM"] as const) {
     shuttingDown = true;
     logger.info("host.shutdown", { signal });
 
-    server.close(() => {
+    httpServer.close(() => {
       void close().finally(() => process.exit(0));
     });
   });

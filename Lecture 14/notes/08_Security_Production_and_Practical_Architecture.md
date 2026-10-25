@@ -190,6 +190,92 @@ flowchart LR
 | Show the requesting server | The user must know *who* is asking |
 | Never let the model see tokens | Credentials are host-side infrastructure, not context |
 
+### Where a server actually runs: the four deployment paths *(beyond the lecture)*
+
+§8.3 is about *authorising* a remote server. The prior question is which of four shapes the server is, because that
+choice decides the transport, the auth story, and how a user installs it.
+
+| Path | Transport | Auth | Fits when |
+|---|---|---|---|
+| **Local (stdio)** | stdin/stdout; the client spawns it as a child process | none — it runs with the user's own permissions | the server must touch the user's machine: local files, desktop apps, localhost services |
+| **Remote (Streamable HTTP)** | HTTP; one deployment serves everyone | OAuth 2.0 as a resource server (§8.3) | it wraps a cloud API — zero install friction, and redirects/token storage work properly |
+| **Bundled (MCPB)** | stdio, packaged with its own runtime | none | same as local, but the user should not have to install Node or Python first |
+| **Prototype (local stdio)** | stdio | none | you are still iterating; plan the upgrade path to one of the above |
+
+The ordering is a progression of *who pays the cost*:
+
+- **Local stdio** costs the user an install and a config file. The client spawns the server itself — which is why a
+  stdio server must never write to stdout (§8.5, observability): **stdout is the protocol channel.**
+- **Remote HTTP** costs you a deployment and an auth implementation, and costs the user nothing. That trade is why it
+  is the default for anything wrapping a cloud API.
+- **MCPB** keeps a local server's power without making the user a developer.
+
+#### Configuring a local server
+
+A local server is wired up by declaring it to the client — name, command, arguments — in the client's own config file.
+For Claude Desktop that file is `claude_desktop_config.json`:
+
+```json
+{
+  "mcpServers": {
+    "filesystem": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-filesystem", "/Users/username/Desktop"]
+    }
+  }
+}
+```
+
+Four things to read out of it, because each is a place people go wrong:
+
+| Field | Meaning | Common mistake |
+|---|---|---|
+| the key (`"filesystem"`) | the friendly name the client shows | renaming it later and expecting saved settings to follow |
+| `command` | the executable the client spawns | a relative path — it must be absolute, or resolvable on `PATH` |
+| `args` | arguments, usually including the **absolute** path to the server | relative paths, which resolve against the *client's* working directory, not yours |
+| `env` | extra environment variables | assuming the client inherits your shell's environment — it does not |
+
+> **The security rule that falls straight out of this file:** the server runs **with the user's permissions**, so the
+> paths in `args` are an access-control boundary. Grant a directory and you have granted everything inside it.
+
+#### Configuring a remote server
+
+A remote server is added by **URL** rather than by command, through the client's connector UI — and the interesting
+half is the handshake that follows:
+
+1. The client POSTs to the server's MCP endpoint.
+2. The server answers `401` with a `WWW-Authenticate` challenge naming its **protected-resource metadata**.
+3. The client fetches that metadata, discovers the authorization server, and runs the OAuth flow.
+4. Tokens are stored by the **client**, scoped to that server — and the model never sees them (§8.3).
+
+That is §8.3 compressed into a sequence, and it is why a remote server can be added with a URL and a consent click
+instead of a config file and a restart. It is also why **the URL is itself a trust decision**: the client is about to
+send it credentials.
+
+#### The debugging tool to reach for first
+
+Whatever the transport, the **MCP Inspector** speaks the protocol directly — no LLM, no host — so it is the fastest way
+to separate *my server is wrong* from *my host is wrong*.
+
+```bash
+# stdio server, with the UI
+npx @modelcontextprotocol/inspector npx tsx src/index.ts
+
+# one method, no UI
+npx @modelcontextprotocol/inspector --cli npx tsx src/index.ts --method tools/list
+```
+
+> **Which protocol era is it testing?** The Inspector defaults to the **legacy** era, which exercises the 2025-era
+> `initialize` handshake. To exercise a `2026-07-28` client — the stateless model with `server/discover` — pass
+> `--protocol-era modern`:
+>
+> ```bash
+> npx @modelcontextprotocol/inspector --cli npx tsx src/index.ts --protocol-era modern --method tools/list
+> ```
+>
+> Running both is the useful habit while the ecosystem is mid-migration: `legacy` proves you still serve the clients
+> that exist today, `modern` proves you serve the ones arriving.
+
 ---
 
 ## 8.4 The Practical Demo Architecture

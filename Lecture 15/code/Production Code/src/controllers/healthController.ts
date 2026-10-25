@@ -1,7 +1,6 @@
-import type { Context } from "hono";
+import type { Request, Response } from "express";
 import { env, hasModelKey } from "../config/env.js";
 import type { HostDeps } from "../host/deps.js";
-import type { AppEnv } from "../middleware/requestContext.js";
 
 /**
  * Liveness, readiness and the numbers.
@@ -26,8 +25,8 @@ export function healthController(deps: HostDeps) {
 
   return {
     /** The index. Cheap, static, and the first thing a human reads. */
-    index: (context: Context<AppEnv>): Response =>
-      context.json({
+    index: (request: Request, response: Response): void => {
+      response.json({
         host: "task-host",
         version: env.MCP_SERVER_VERSION,
         server: env.MCP_SERVER_URL,
@@ -47,7 +46,8 @@ export function healthController(deps: HostDeps) {
           "x-projects": "comma-separated project scope, e.g. fde,media",
           "x-admin": '"true" to allow reading another user\'s profile',
         },
-      }),
+      });
+    },
 
     /**
      * Readiness, proven rather than asserted.
@@ -56,8 +56,8 @@ export function healthController(deps: HostDeps) {
      * exercises the whole chain — session, transport, handshake, capability
      * negotiation — and if it fails, the honest answer is 503.
      */
-    health: async (context: Context<AppEnv>): Promise<Response> => {
-      const logger = context.get("logger");
+    health: async (request: Request, response: Response): Promise<void> => {
+      const logger = request.logger;
 
       try {
         const [resources, prompts, tools] = await Promise.all([
@@ -66,7 +66,7 @@ export function healthController(deps: HostDeps) {
           deps.client.listTools(),
         ]);
 
-        return context.json({
+        response.json({
           status: "ready",
           uptimeSeconds: Math.round((Date.now() - startedAt) / 1000),
           server: { url: env.MCP_SERVER_URL, version: env.MCP_SERVER_VERSION },
@@ -91,15 +91,16 @@ export function healthController(deps: HostDeps) {
         deps.metrics.count("health.unready");
         logger.error("health.unready", { message });
 
-        return context.json({ status: "unready", reason: message }, 503);
+        response.status(503).json({ status: "unready", reason: message });
       }
     },
 
     /** The raw counter snapshot — the thing a scrape would read. */
-    metrics: (context: Context<AppEnv>): Response =>
-      context.json({
+    metrics: (request: Request, response: Response): void => {
+      response.json({
         uptimeSeconds: Math.round((Date.now() - startedAt) / 1000),
         metrics: deps.metrics.snapshot(),
-      }),
+      });
+    },
   };
 }

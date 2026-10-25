@@ -40,7 +40,7 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 .pnpm-debug.log*
-
+content.md
 # ------------------------------------------------------------------------------
 # 3. Python (Virtual Environments & Bytecode)
 # ------------------------------------------------------------------------------

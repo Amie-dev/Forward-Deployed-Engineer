@@ -49,9 +49,8 @@ curl -s -o /dev/null -w 'origin=%{http_code}\n' -H 'Origin: https://evil.example
 
 ```ts
 #!/usr/bin/env node
-import { createServer as createHttpServer } from "node:http";
-
-import { localhostHostValidation, localhostOriginValidation, toNodeHandler } from "@modelcontextprotocol/node";
+import { createMcpExpressApp } from "@modelcontextprotocol/express";
+import { toNodeHandler } from "@modelcontextprotocol/node";
 import { createMcpHandler } from "@modelcontextprotocol/server";
 
 import { env } from "./config/env.js";
@@ -69,12 +68,14 @@ import { createServer } from "./mcp/server.js";
  *
  * Two things about this file are load-bearing rather than incidental:
  *
- *  1. **The security validators are not optional.** A server bound to localhost
- *     is still reachable from any web page in the user's browser, so the `Host`
- *     and `Origin` headers have to be checked. `localhostHostValidation()` and
- *     `localhostOriginValidation()` are the SDK's DNS-rebinding and
- *     foreign-origin defences, and removing them turns a local server into a
- *     remote one.
+ *  1. **The security checks are not optional, and they are now the adapter's
+ *     defaults.** A server bound to localhost is still reachable from any web
+ *     page in the user's browser, so the `Host` (DNS-rebinding) and `Origin`
+ *     (foreign-origin) headers have to be validated. `createMcpExpressApp`
+ *     enables both automatically for a localhost bind, which is the point of
+ *     using it: the protection is on unless someone deliberately binds
+ *     elsewhere or passes an explicit `allowedHosts` / `allowedOrigins` list.
+ *     Removing it is now an act, not an omission.
  *
  *  2. **stdout is never written to.** Diagnostics go to stderr through the
  *     logger, because a stdio binding would make stdout the protocol channel and
@@ -86,18 +87,26 @@ const log = createLogger(env.MCP_LOG_LEVEL, { server: env.MCP_SERVER_NAME, pid: 
 
 const handler = createMcpHandler(createServer);
 const nodeHandler = toNodeHandler(handler);
-const validateHost = localhostHostValidation();
-const validateOrigin = localhostOriginValidation();
 
-const httpServer = createHttpServer((request, response) => {
-  if (!validateHost(request, response) || !validateOrigin(request, response)) {
-    return;
-  }
+const app = createMcpExpressApp({ host: "127.0.0.1" });
 
-  void nodeHandler(request, response);
+// Express would otherwise advertise itself with `X-Powered-By: Express`. A
+// server that answers strangers should not volunteer its stack.
+app.disable("x-powered-by");
+
+/**
+ * The MCP endpoint.
+ *
+ * `request.body` is passed as the third argument because it is no longer
+ * optional: `createMcpExpressApp` installs `express.json()`, which drains the
+ * request stream into `request.body`. Without it, `toNodeHandler` would try to
+ * read a stream that has already been consumed and see an empty frame.
+ */
+app.all("/mcp", (request, response) => {
+  void nodeHandler(request, response, request.body);
 });
 
-httpServer.listen(env.MCP_SERVER_PORT, "127.0.0.1", () => {
+const httpServer = app.listen(env.MCP_SERVER_PORT, "127.0.0.1", () => {
   log.info("server.listening", {
     transport: "streamable-http",
     url: env.MCP_SERVER_URL,
@@ -137,10 +146,10 @@ for (const signal of ["SIGINT", "SIGTERM"] as const) {
 The comment names two things that are *load-bearing rather than incidental*, and they are worth reading before the
 code:
 
-> 1. **The security validators are not optional.** A server bound to localhost is still reachable from any web page in
->    the user's browser, so the `Host` and `Origin` headers have to be checked. `localhostHostValidation()` and
->    `localhostOriginValidation()` are the SDK's DNS-rebinding and foreign-origin defences, and **removing them turns a
->    local server into a remote one.**
+> 1. **The security checks are not optional, and they are now the adapter's defaults.** A server bound to localhost is
+>    still reachable from any web page in the user's browser, so the `Host` (DNS-rebinding) and `Origin` (foreign-origin)
+>    headers have to be validated. `createMcpExpressApp` enables both automatically for a localhost bind — **removing them
+>    turns a local server into a remote one, and now takes a deliberate edit rather than an omission.**
 >
 > 2. **stdout is never written to.** Diagnostics go to stderr through the logger, because a stdio binding would make
 >    stdout the protocol channel and a stray `console.log` would corrupt a frame. Keeping the discipline here means the
@@ -152,75 +161,87 @@ feels like a firewall, and it is not one: a page open in the user's own browser 
 re-resolved to `127.0.0.1`, so the browser thinks it is talking to the attacker's site while the request arrives at a
 service on the user's own machine.
 
-The defence is header validation, and the SDK provides it:
+The defence is header validation, and `createMcpExpressApp` applies it for you:
 
 ```ts
-const validateHost = localhostHostValidation();
-const validateOrigin = localhostOriginValidation();
+const app = createMcpExpressApp({ host: "127.0.0.1" });
 ```
 
-Two validators, checking two headers. `Host` validation is what stops the rebinding attack (the request's `Host` will be
-the attacker's domain, not `localhost`); `Origin` validation stops a cross-origin request from a page that is not the
-host application. **Both are needed** — they defend against different attacks, and a reader who deletes one because
-"the other one covers it" has removed half the protection.
+Binding to a localhost-class host — `127.0.0.1`, `localhost` or `::1` — is the trigger. The adapter then installs two
+checks: **`Host` validation**, which is what stops the rebinding attack (the request's `Host` will be the attacker's
+domain, not `localhost`), and **`Origin` validation**, which rejects a cross-origin request from a page that is not the
+host application. Requests with no `Origin` header pass, so `curl` and a native MCP client still work. **Both are
+needed** — they defend against different attacks — and because they now arrive as defaults, the failure mode has flipped:
+you can no longer *forget* the protection, only *remove* it, and removing it means passing `allowedHosts` /
+`allowedOrigins` explicitly. The hand-wired `localhostHostValidation()` and `localhostOriginValidation()` are still
+exported from `@modelcontextprotocol/node` when you want to see the pieces; the default is simply to have them.
 
 The second warning is a discipline rather than a defence. This file binds to HTTP, where stdout is *not* the protocol
 channel, so a `console.log` would be harmless here. The discipline is kept anyway so the STDIO swap in the main README
 stays a three-line change — and Chapter 03 made it structural by giving the logger no way to write to stdout.
 
-**Block 2 — the composition (lines 35–40).**
+**Block 2 — the composition (lines 36–45).**
 
 ```ts
 const log = createLogger(env.MCP_LOG_LEVEL, { server: env.MCP_SERVER_NAME, pid: process.pid });
 
 const handler = createMcpHandler(createServer);
 const nodeHandler = toNodeHandler(handler);
-const validateHost = localhostHostValidation();
-const validateOrigin = localhostOriginValidation();
+
+const app = createMcpExpressApp({ host: "127.0.0.1" });
+app.disable("x-powered-by");
 ```
 
-Four lines, and the first is where the per-request factory behaviour from Chapter 17 is established:
+Four lines of composition, and the first is where the per-request factory behaviour from Chapter 17 is established:
 
 **`createMcpHandler(createServer)` — the factory is passed, not a server.** That is what makes serving stateless, and
 it is the reason Chapter 17 had to move the state to module scope. This one line is the cause; that chapter is the
 consequence.
 
 **`toNodeHandler(handler)`** adapts the SDK's fetch-style handler to Node's `(request, response)` signature — the same
-kind of boundary adapter as `uri.href` in Chapter 15. Two SDK calls, one adapter, and the composition is done.
+kind of boundary adapter as `uri.href` in Chapter 15. It also accepts an optional third argument, the already-parsed
+body, and that argument is what makes an Express binding possible at all (Block 3). Two SDK calls, one adapter, one app,
+and the composition is done.
 
 **The logger binds `pid`** in addition to the server name. That is a small addition with a practical purpose: with the
 server and host as separate processes, a log line's `pid` is what tells you which process emitted it — and it is why
 the lifecycle's `server.shutdown` line names the pid it signalled.
 
-**Block 3 — the HTTP server, and the validators in the request path (lines 42–48).**
+**Block 3 — the Express app, and the endpoint (lines 41–57).**
 
 ```ts
-const httpServer = createHttpServer((request, response) => {
-  if (!validateHost(request, response) || !validateOrigin(request, response)) {
-    return;
-  }
+const app = createMcpExpressApp({ host: "127.0.0.1" });
 
-  void nodeHandler(request, response);
+app.disable("x-powered-by");
+
+app.all("/mcp", (request, response) => {
+  void nodeHandler(request, response, request.body);
 });
 ```
 
-**Six lines, and the security of the whole server is in the `if`.** Three details:
+**Four lines, and the security of the whole server is in the first one.** Three details:
 
-**Short-circuit `||`** — if `validateHost` returns false, `validateOrigin` is not called. Both validators *write the
-rejection response themselves* when they fail, so returning early is the complete handling; there is nothing to add.
+**`createMcpExpressApp({ host: "127.0.0.1" })` applies the two header checks automatically.** A localhost-class bind is
+the trigger. That is the change worth understanding: the protection did not disappear when the binding moved to Express,
+it moved from *code you could forget to write* to *a default you have to work to remove*. Passing `allowedHosts` /
+`allowedOrigins` is how you would narrow or widen it deliberately.
 
-**`return` rather than `response.end()`** — the validator has already responded. A caller that also ended the response
-would attempt a double-write, which throws.
+**`request.body` is passed as the third argument, and omitting it is the one mistake this file can make.**
+`createMcpExpressApp` installs `express.json()`, which consumes the request stream to populate `request.body` before any
+route runs. `toNodeHandler` takes the body from either the third argument or the raw stream — so drop it and the adapter
+reads a stream that has already been drained and sees an empty frame. It fails as a protocol error rather than a crash,
+which is exactly the kind of bug that costs an afternoon.
 
-**`void nodeHandler(...)`** — the explicit `void` is a promise-ignoring annotation. The handler returns a promise; nothing
-awaits it, and the `void` says *this is deliberate*. Without it, a linter (or a reader) would flag a floating promise
-as a missing `await` — and adding an `await` here would be wrong, because the response is written asynchronously by the
-handler, not by this function.
+**`void nodeHandler(...)`** — the explicit `void` is a promise-ignoring annotation. The handler returns a promise;
+nothing awaits it, and the `void` says *this is deliberate*. Without it, a linter (or a reader) would flag a floating
+promise as a missing `await` — and adding an `await` here would be wrong, because the response is written
+asynchronously by the handler, not by this function. Express is content for a route handler to return `void`, which is
+also what keeps the route's type honest.
 
-**Block 4 — listening, and the log that proves the ordering (lines 50–56).**
+**Block 4 — listening, and the log that proves the ordering (lines 59–65).**
 
 ```ts
-httpServer.listen(env.MCP_SERVER_PORT, "127.0.0.1", () => {
+const httpServer = app.listen(env.MCP_SERVER_PORT, "127.0.0.1", () => {
   log.info("server.listening", {
     transport: "streamable-http",
     url: env.MCP_SERVER_URL,
@@ -229,10 +250,15 @@ httpServer.listen(env.MCP_SERVER_PORT, "127.0.0.1", () => {
 });
 ```
 
-**`"127.0.0.1"` as the second argument** — the hostname is passed explicitly rather than defaulting. Node's default is to
-bind all interfaces, which would make this server reachable from the local network — a much larger exposure than the
-browser-rebinding case the validators defend against. Binding to loopback is the primary control; the header validators
+**`"127.0.0.1"` is now stated twice, on purpose.** `createMcpExpressApp({ host })` needs it to decide *whether* to apply
+the localhost protections, and `app.listen(port, host)` needs it to decide *what to bind*. They agree here, and a reader
+who changes one has to change the other — the honest cost of the adapter's automatic-protection design. Node's default
+would bind all interfaces, making this server reachable from the local network: a much larger exposure than the
+browser-rebinding case the header checks defend against. Binding to loopback is the primary control; the header checks
 are the secondary one.
+
+**`app.listen(...)` returns the underlying `http.Server`**, which is why the result is still stored in `httpServer` —
+Block 5 needs a handle to close. Express builds a request pipeline in front of the server; it does not hide it.
 
 And note this log line is what makes the module-scope ordering from Chapter 17 observable. Because `server.ready` fires
 at module evaluation and `server.listening` fires here, the log stream shows the dependency order:
@@ -375,7 +401,7 @@ produce two shutdown sequences racing on `handler.close()`.
 
 ### 4. The same server behind a different door
 
-This is the payoff of everything above, and it is the reason the validators and the stdout discipline were kept even
+This is the payoff of everything above, and it is the reason the header checks and the stdout discipline matter even
 though this binding does not strictly need them. Chapter 01's split means the transport is a detail:
 
 ```ts
@@ -415,20 +441,24 @@ PASS
 1. **Why is binding to `127.0.0.1` not sufficient on its own?**
    Because a page open in the user's own browser can send requests to `127.0.0.1`. DNS rebinding re-resolves an
    attacker's domain to loopback, so the browser delivers the request to a service on the user's machine. The `Host`
-   and `Origin` validators are what catch it.
+   and `Origin` checks are what catch it — and `createMcpExpressApp` turns both on precisely because the bind is
+   localhost-class.
 
-2. **Why are there two validators rather than one?**
+2. **Why are there two checks rather than one, and what changed when the binding moved to Express?**
    They defend against different attacks: `Host` validation catches DNS rebinding, `Origin` validation catches a
-   cross-origin request from a page that is not the host application. Deleting either removes half the protection.
+   cross-origin request from a page that is not the host application. Deleting either removes half the protection. What
+   changed is *who applies them*: they are now defaults of `createMcpExpressApp` rather than two lines you had to
+   remember, so the protection can be removed deliberately but not accidentally.
 
 3. **What does `createMcpHandler(createServer)` establish, and where is the consequence documented?**
    That serving is stateless and the factory is called **once per request** — which is why the state had to move to
    module scope in Chapter 17.
 
-4. **Why is the hostname passed explicitly to `httpServer.listen`?**
+4. **Why is the hostname passed explicitly, and why twice?**
    Node's default is to bind all interfaces, which would make the server reachable from the local network — a much
-   larger exposure than the browser-rebinding case. Binding to loopback is the primary control; the validators are the
-   secondary one.
+   larger exposure than the browser-rebinding case. Binding to loopback is the primary control; the header checks are
+   the secondary one. It appears twice because `createMcpExpressApp({ host })` needs it to decide *whether* to install
+   the localhost protections, and `app.listen(port, host)` needs it to decide *what to bind*.
 
 5. **What is the `shuttingDown` flag for?**
    A double `SIGTERM` (or a double Ctrl-C) is routine. Without it, the second signal would run `handler.close()` while

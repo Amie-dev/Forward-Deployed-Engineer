@@ -1,8 +1,8 @@
 import { performance } from "node:perf_hooks";
-import type { Context } from "hono";
+import type { Request, Response } from "express";
 import { ResourceError } from "../core/errors.js";
 import type { HostDeps } from "../host/deps.js";
-import type { AppEnv } from "../middleware/requestContext.js";
+import { query } from "../middleware/requestContext.js";
 
 /**
  * Notes Ch03 §3.1 — **two operations, not one.**
@@ -28,10 +28,10 @@ export function resourceController(deps: HostDeps) {
      * templates it can offer as a text field. The distinction between them is the
      * user-facing half of Chapter 04.
      */
-    list: async (context: Context<AppEnv>): Promise<Response> => {
+    list: async (request: Request, response: Response): Promise<void> => {
       const { resources, templates } = await deps.client.listResources();
 
-      return context.json({
+      response.json({
         // The concrete addresses. `description` is included because Notes Ch03
         // §3.6 makes it a *user-facing* field: a checkbox labelled
         // `task://guidelines` is unusable, and one labelled "Task management
@@ -67,8 +67,8 @@ export function resourceController(deps: HostDeps) {
      * applies here for a stronger one: a check that runs after the read has
      * already leaked whatever it was checking for.
      */
-    read: async (context: Context<AppEnv>): Promise<Response> => {
-      const uri = context.req.query("uri")?.trim();
+    read: async (request: Request, response: Response): Promise<void> => {
+      const uri = query(request, "uri")?.trim();
 
       if (uri === undefined || uri === "") {
         throw new ResourceError(
@@ -78,7 +78,7 @@ export function resourceController(deps: HostDeps) {
         );
       }
 
-      const session = context.get("session");
+      const session = request.session;
       const decision = deps.policy.mayRead(uri, session);
 
       if (!decision.allowed) {
@@ -122,7 +122,7 @@ export function resourceController(deps: HostDeps) {
         note: `${body.chars} chars, ${body.mimeType}, ${decision.reason}`,
       });
 
-      return context.json({
+      response.json({
         uri: body.uri,
         mimeType: body.mimeType,
         chars: body.chars,

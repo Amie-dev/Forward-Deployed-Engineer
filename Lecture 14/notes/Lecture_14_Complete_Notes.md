@@ -1268,6 +1268,7 @@ flowchart TD
 | Connection restarted | Re-query |
 | TTL expired | Re-query |
 | Definition *changed* | Treat as a **re-authorisation event** |
+| Server sent `ttlMs` / `cacheScope` | Honour them — but `list_changed` still wins, even before the TTL expires ([Ch. 07](./07_Discovery_Invocation_and_Lifecycle.md)) |
 
 ### Which Policy for Which Tool?
 

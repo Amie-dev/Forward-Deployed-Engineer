@@ -1,7 +1,6 @@
 #!/usr/bin/env node
-import { createServer as createHttpServer } from "node:http";
-
-import { localhostHostValidation, localhostOriginValidation, toNodeHandler } from "@modelcontextprotocol/node";
+import { createMcpExpressApp } from "@modelcontextprotocol/express";
+import { toNodeHandler } from "@modelcontextprotocol/node";
 import { createMcpHandler } from "@modelcontextprotocol/server";
 
 import { env } from "./config/env.js";
@@ -19,12 +18,14 @@ import { createServer } from "./mcp/server.js";
  *
  * Two things about this file are load-bearing rather than incidental:
  *
- *  1. **The security validators are not optional.** A server bound to localhost
- *     is still reachable from any web page in the user's browser, so the `Host`
- *     and `Origin` headers have to be checked. `localhostHostValidation()` and
- *     `localhostOriginValidation()` are the SDK's DNS-rebinding and
- *     foreign-origin defences, and removing them turns a local server into a
- *     remote one.
+ *  1. **The security checks are not optional, and they are now the adapter's
+ *     defaults.** A server bound to localhost is still reachable from any web
+ *     page in the user's browser, so the `Host` (DNS-rebinding) and `Origin`
+ *     (foreign-origin) headers have to be validated. `createMcpExpressApp`
+ *     enables both automatically for a localhost bind, which is the point of
+ *     using it: the protection is on unless someone deliberately binds
+ *     elsewhere or passes an explicit `allowedHosts` / `allowedOrigins` list.
+ *     Removing it is now an act, not an omission.
  *
  *  2. **stdout is never written to.** Diagnostics go to stderr through the
  *     logger, because a stdio binding would make stdout the protocol channel and
@@ -36,18 +37,26 @@ const log = createLogger(env.MCP_LOG_LEVEL, { server: env.MCP_SERVER_NAME, pid: 
 
 const handler = createMcpHandler(createServer);
 const nodeHandler = toNodeHandler(handler);
-const validateHost = localhostHostValidation();
-const validateOrigin = localhostOriginValidation();
 
-const httpServer = createHttpServer((request, response) => {
-  if (!validateHost(request, response) || !validateOrigin(request, response)) {
-    return;
-  }
+const app = createMcpExpressApp({ host: "127.0.0.1" });
 
-  void nodeHandler(request, response);
+// Express would otherwise advertise itself with `X-Powered-By: Express`. A
+// server that answers strangers should not volunteer its stack.
+app.disable("x-powered-by");
+
+/**
+ * The MCP endpoint.
+ *
+ * `request.body` is passed as the third argument because it is no longer
+ * optional: `createMcpExpressApp` installs `express.json()`, which drains the
+ * request stream into `request.body`. Without it, `toNodeHandler` would try to
+ * read a stream that has already been consumed and see an empty frame.
+ */
+app.all("/mcp", (request, response) => {
+  void nodeHandler(request, response, request.body);
 });
 
-httpServer.listen(env.MCP_SERVER_PORT, "127.0.0.1", () => {
+const httpServer = app.listen(env.MCP_SERVER_PORT, "127.0.0.1", () => {
   log.info("server.listening", {
     transport: "streamable-http",
     url: env.MCP_SERVER_URL,

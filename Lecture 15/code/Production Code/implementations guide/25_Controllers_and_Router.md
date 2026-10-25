@@ -57,10 +57,10 @@ one primitive each, and `plan`/`ask` are the composition of all three.
 ## `src/controllers/healthController.ts` — the full file
 
 ```ts
-import type { Context } from "hono";
+import type { Request, Response } from "express";
 import { env, hasModelKey } from "../config/env.js";
 import type { HostDeps } from "../host/deps.js";
-import type { AppEnv } from "../middleware/requestContext.js";
+import { query } from "../middleware/requestContext.js";
 
 /**
  * Liveness, readiness and the numbers.
@@ -85,8 +85,8 @@ export function healthController(deps: HostDeps) {
 
   return {
     /** The index. Cheap, static, and the first thing a human reads. */
-    index: (context: Context<AppEnv>): Response =>
-      context.json({
+    index: (request: Request, response: Response): void =>
+      response.json({
         host: "task-host",
         version: env.MCP_SERVER_VERSION,
         server: env.MCP_SERVER_URL,
@@ -115,8 +115,8 @@ export function healthController(deps: HostDeps) {
      * exercises the whole chain — session, transport, handshake, capability
      * negotiation — and if it fails, the honest answer is 503.
      */
-    health: async (context: Context<AppEnv>): Promise<Response> => {
-      const logger = context.get("logger");
+    health: async (request: Request, response: Response): Promise<void> => {
+      const logger = request.logger;
 
       try {
         const [resources, prompts, tools] = await Promise.all([
@@ -125,7 +125,7 @@ export function healthController(deps: HostDeps) {
           deps.client.listTools(),
         ]);
 
-        return context.json({
+        response.json({
           status: "ready",
           uptimeSeconds: Math.round((Date.now() - startedAt) / 1000),
           server: { url: env.MCP_SERVER_URL, version: env.MCP_SERVER_VERSION },
@@ -150,13 +150,13 @@ export function healthController(deps: HostDeps) {
         deps.metrics.count("health.unready");
         logger.error("health.unready", { message });
 
-        return context.json({ status: "unready", reason: message }, 503);
+        response.status(503).json({ status: "unready", reason: message });
       }
     },
 
     /** The raw counter snapshot — the thing a scrape would read. */
-    metrics: (context: Context<AppEnv>): Response =>
-      context.json({
+    metrics: (request: Request, response: Response): void =>
+      response.json({
         uptimeSeconds: Math.round((Date.now() - startedAt) / 1000),
         metrics: deps.metrics.snapshot(),
       }),
@@ -187,8 +187,8 @@ export function healthController(deps: HostDeps) {
   const startedAt = Date.now();
 
   return {
-    index: (context: Context<AppEnv>): Response =>
-      context.json({
+    index: (request: Request, response: Response): void =>
+      response.json({
         host: "task-host",
         version: env.MCP_SERVER_VERSION,
         server: env.MCP_SERVER_URL,
@@ -223,8 +223,8 @@ security-relevant substitution should be visible to whoever is using the thing.
 **Block 3 — `health`, readiness proven (lines 54–96).**
 
 ```ts
-health: async (context: Context<AppEnv>): Promise<Response> => {
-  const logger = context.get("logger");
+health: async (request: Request, response: Response): Promise<void> => {
+  const logger = request.logger;
 
   try {
     const [resources, prompts, tools] = await Promise.all([
@@ -233,7 +233,7 @@ health: async (context: Context<AppEnv>): Promise<Response> => {
       deps.client.listTools(),
     ]);
 
-    return context.json({
+    response.json({
       status: "ready",
       uptimeSeconds: Math.round((Date.now() - startedAt) / 1000),
       server: { url: env.MCP_SERVER_URL, version: env.MCP_SERVER_VERSION },
@@ -253,7 +253,7 @@ health: async (context: Context<AppEnv>): Promise<Response> => {
     deps.metrics.count("health.unready");
     logger.error("health.unready", { message });
 
-    return context.json({ status: "unready", reason: message }, 503);
+    response.status(503).json({ status: "unready", reason: message });
   }
 }
 ```
@@ -280,8 +280,8 @@ see why.
 **Block 4 — `metrics` (lines 98–104).**
 
 ```ts
-metrics: (context: Context<AppEnv>): Response =>
-  context.json({
+metrics: (request: Request, response: Response): void =>
+  response.json({
     uptimeSeconds: Math.round((Date.now() - startedAt) / 1000),
     metrics: deps.metrics.snapshot(),
   }),
@@ -297,10 +297,10 @@ A deployment whose metric names embedded user ids would need to think about that
 
 ```ts
 import { performance } from "node:perf_hooks";
-import type { Context } from "hono";
+import type { Request, Response } from "express";
 import { ResourceError } from "../core/errors.js";
 import type { HostDeps } from "../host/deps.js";
-import type { AppEnv } from "../middleware/requestContext.js";
+import { query } from "../middleware/requestContext.js";
 
 /**
  * Notes Ch03 §3.1 — **two operations, not one.**
@@ -326,10 +326,10 @@ export function resourceController(deps: HostDeps) {
      * templates it can offer as a text field. The distinction between them is the
      * user-facing half of Chapter 04.
      */
-    list: async (context: Context<AppEnv>): Promise<Response> => {
+    list: async (request: Request, response: Response): Promise<void> => {
       const { resources, templates } = await deps.client.listResources();
 
-      return context.json({
+      response.json({
         // The concrete addresses. `description` is included because Notes Ch03
         // §3.6 makes it a *user-facing* field: a checkbox labelled
         // `task://guidelines` is unusable, and one labelled "Task management
@@ -365,8 +365,8 @@ export function resourceController(deps: HostDeps) {
      * applies here for a stronger one: a check that runs after the read has
      * already leaked whatever it was checking for.
      */
-    read: async (context: Context<AppEnv>): Promise<Response> => {
-      const uri = context.req.query("uri")?.trim();
+    read: async (request: Request, response: Response): Promise<void> => {
+      const uri = query(request, "uri")?.trim();
 
       if (uri === undefined || uri === "") {
         throw new ResourceError(
@@ -376,7 +376,7 @@ export function resourceController(deps: HostDeps) {
         );
       }
 
-      const session = context.get("session");
+      const session = request.session;
       const decision = deps.policy.mayRead(uri, session);
 
       if (!decision.allowed) {
@@ -420,7 +420,7 @@ export function resourceController(deps: HostDeps) {
         note: `${body.chars} chars, ${body.mimeType}, ${decision.reason}`,
       });
 
-      return context.json({
+      response.json({
         uri: body.uri,
         mimeType: body.mimeType,
         chars: body.chars,
@@ -458,10 +458,10 @@ network round trips — for a question `resources/list` answers from metadata al
 **Block 6 — `list`, both verbs in one response (lines 22–58).**
 
 ```ts
-list: async (context: Context<AppEnv>): Promise<Response> => {
+list: async (request: Request, response: Response): Promise<void> => {
   const { resources, templates } = await deps.client.listResources();
 
-  return context.json({
+  response.json({
     resources: resources.map((resource) => ({ uri, name, title, description, mimeType })),
     templates: templates.map((template) => ({ uriTemplate, name, title, description, mimeType })),
     count: resources.length + templates.length,
@@ -490,8 +490,8 @@ uses are visible at once.
 **Block 7 — `read`, and the order that is the security design (lines 60–136).**
 
 ```ts
-read: async (context: Context<AppEnv>): Promise<Response> => {
-  const uri = context.req.query("uri")?.trim();
+read: async (request: Request, response: Response): Promise<void> => {
+  const uri = query(request, "uri")?.trim();
 
   if (uri === undefined || uri === "") {
     throw new ResourceError(
@@ -501,7 +501,7 @@ read: async (context: Context<AppEnv>): Promise<Response> => {
     );
   }
 
-  const session = context.get("session");
+  const session = request.session;
   const decision = deps.policy.mayRead(uri, session);
 
   if (!decision.allowed) {
@@ -522,7 +522,7 @@ read: async (context: Context<AppEnv>): Promise<Response> => {
 
   deps.audit.record({ actor: session.actor, action: "resource", target: uri, decision: "allowed", outcome: "ok", args: { uri }, durationMs: performance.now() - startedAt, note: `${body.chars} chars, ${body.mimeType}, ${decision.reason}` });
 
-  return context.json({ uri: body.uri, mimeType: body.mimeType, chars: body.chars, text: body.text, policy: decision.reason });
+  response.json({ uri: body.uri, mimeType: body.mimeType, chars: body.chars, text: body.text, policy: decision.reason });
 }
 ```
 
@@ -579,7 +579,7 @@ is Chapter 22's second omission enforced at the call site — a note about the b
 **And the response includes a `policy` field:**
 
 ```ts
-return context.json({ uri: body.uri, mimeType: body.mimeType, chars: body.chars, text: body.text, policy: decision.reason });
+response.json({ uri: body.uri, mimeType: body.mimeType, chars: body.chars, text: body.text, policy: decision.reason });
 ```
 
 So the response says *why it was allowed* — `"project" is public` or `"user-profile" belongs to the session's own user`.
@@ -600,11 +600,11 @@ what makes it a deliberate choice rather than an oversight.
 
 ```ts
 import { performance } from "node:perf_hooks";
-import type { Context } from "hono";
+import type { Request, Response } from "express";
 import { PromptError } from "../core/errors.js";
 import { textOf } from "../host/client.js";
 import type { HostDeps } from "../host/deps.js";
-import type { AppEnv } from "../middleware/requestContext.js";
+import { query } from "../middleware/requestContext.js";
 
 /**
  * Notes Ch06 §6.7 and Ch07 §7.3 — the **user-controlled** primitive.
@@ -654,11 +654,11 @@ export function promptController(deps: HostDeps) {
      * from the server (`prompts/list`), not from a table here, which is what
      * stops the menu and the validator from drifting apart.
      */
-    list: async (context: Context<AppEnv>): Promise<Response> => {
-      const session = context.get("session");
+    list: async (request: Request, response: Response): Promise<void> => {
+      const session = request.session;
       const prompts = await deps.client.listPrompts();
 
-      return context.json({
+      response.json({
         prompts: prompts.map((prompt) => {
           const decision = deps.policy.mayUsePrompt(prompt.name, session);
 
@@ -695,8 +695,8 @@ export function promptController(deps: HostDeps) {
      * deliberately does not duplicate that check. Two validators for one contract
      * is two things to keep in sync.
      */
-    get: async (context: Context<AppEnv>): Promise<Response> => {
-      const name = context.req.query("name")?.trim();
+    get: async (request: Request, response: Response): Promise<void> => {
+      const name = query(request, "name")?.trim();
 
       if (name === undefined || name === "") {
         throw new PromptError(
@@ -706,7 +706,7 @@ export function promptController(deps: HostDeps) {
         );
       }
 
-      const session = context.get("session");
+      const session = request.session;
 
       // Predict the failure rather than parse it: an unknown name is a 404, and
       // no round trip is needed to know that.
@@ -735,7 +735,7 @@ export function promptController(deps: HostDeps) {
 
       const args: Record<string, string> = {};
 
-      for (const [key, value] of Object.entries(context.req.query())) {
+      for (const [key, value] of Object.entries(request.query)) {
         if (key !== "name" && typeof value === "string") {
           args[key] = value;
         }
@@ -765,7 +765,7 @@ export function promptController(deps: HostDeps) {
         note: `${messages.length} message(s), args: ${Object.keys(args).join(",") || "none"}`,
       });
 
-      return context.json({
+      response.json({
         name,
         description: rendered.description,
         messages,
@@ -840,11 +840,11 @@ knowledge to answer questions the server's error channel cannot.
 **Block 10 — `list`, the menu with the host's verdict attached (lines 42–80).**
 
 ```ts
-list: async (context: Context<AppEnv>): Promise<Response> => {
-  const session = context.get("session");
+list: async (request: Request, response: Response): Promise<void> => {
+  const session = request.session;
   const prompts = await deps.client.listPrompts();
 
-  return context.json({
+  response.json({
     prompts: prompts.map((prompt) => {
       const decision = deps.policy.mayUsePrompt(prompt.name, session);
 
@@ -895,14 +895,14 @@ And the `reason` is only present when refused, so the response does not carry a 
 **Block 11 — `get`, three gates before the call (lines 82–183).**
 
 ```ts
-get: async (context: Context<AppEnv>): Promise<Response> => {
-  const name = context.req.query("name")?.trim();
+get: async (request: Request, response: Response): Promise<void> => {
+  const name = query(request, "name")?.trim();
 
   if (name === undefined || name === "") {
     throw new PromptError("INVALID_INPUT", "Query parameter 'name' is required.", "Call GET /prompts to read the available names, then pass one as ?name=plan_day.");
   }
 
-  const session = context.get("session");
+  const session = request.session;
   const names = await knownPrompts();
 
   if (!names.includes(name)) {
@@ -920,7 +920,7 @@ get: async (context: Context<AppEnv>): Promise<Response> => {
 
   const args: Record<string, string> = {};
 
-  for (const [key, value] of Object.entries(context.req.query())) {
+  for (const [key, value] of Object.entries(request.query)) {
     if (key !== "name" && typeof value === "string") {
       args[key] = value;
     }
@@ -934,7 +934,7 @@ get: async (context: Context<AppEnv>): Promise<Response> => {
 
   deps.audit.record({ actor: session.actor, action: "prompt", target: name, decision: "allowed", outcome: "ok", args, durationMs, note: `${messages.length} message(s), args: ${Object.keys(args).join(",") || "none"}` });
 
-  return context.json({
+  response.json({
     name,
     description: rendered.description,
     messages,
@@ -962,7 +962,7 @@ learned a name still cannot render it. **Both places, because a listing is a hin
 **The argument extraction is the elegant bit:**
 
 ```ts
-for (const [key, value] of Object.entries(context.req.query())) {
+for (const [key, value] of Object.entries(request.query)) {
   if (key !== "name" && typeof value === "string") {
     args[key] = value;
   }
@@ -972,7 +972,7 @@ for (const [key, value] of Object.entries(context.req.query())) {
 *Every query parameter other than `name` is treated as an argument, so `?name=plan_day&availableHours=4` reads the way the
 protocol does.* So the URL shape mirrors the protocol's `arguments` object — no `?args=` JSON blob, no per-prompt route.
 
-And the `typeof value === "string"` guard handles Hono's type: a query parameter can be a string *or an array* (for a
+And the `typeof value === "string"` guard handles Express's type: a query parameter can be a string *or an array* (for a
 repeated key). An array would not satisfy `Record<string, string>`, so it is dropped rather than coerced — which is the
 right call for an argument the server will validate anyway.
 
@@ -1012,13 +1012,13 @@ in the documentation**, because a UI author reads the response.
 
 ```ts
 import { performance } from "node:perf_hooks";
-import type { Context } from "hono";
+import type { Request, Response } from "express";
 import { PromptError } from "../core/errors.js";
 import { textOf } from "../host/client.js";
 import { assembleContext, type AssembledContext } from "../host/context.js";
 import type { HostDeps } from "../host/deps.js";
 import { askModel, type ModelReply } from "../host/model.js";
-import type { AppEnv } from "../middleware/requestContext.js";
+import { query } from "../middleware/requestContext.js";
 import type { PromptMessage } from "../services/promptService.js";
 
 /**
@@ -1211,9 +1211,9 @@ async function runPipeline(
 export function planController(deps: HostDeps) {
   return {
     /** `GET /plan?hours=4` — Notes Ch08 §8.2, end to end. */
-    plan: async (context: Context<AppEnv>): Promise<Response> => {
-      const hours = context.req.query("hours")?.trim() || "4";
-      const session = context.get("session");
+    plan: async (request: Request, response: Response): Promise<void> => {
+      const hours = query(request, "hours")?.trim() || "4";
+      const session = request.session;
       const startedAt = performance.now();
 
       const result = await runPipeline(deps, {
@@ -1229,7 +1229,7 @@ export function planController(deps: HostDeps) {
       deps.metrics.count("plan.ok");
       deps.metrics.observe("plan.latency_ms", durationMs);
 
-      return context.json({
+      response.json({
         request: { hours, actor: session.actor, projects: session.projects, admin: session.isAdmin },
         steps: result.steps,
         context: {
@@ -1249,8 +1249,8 @@ export function planController(deps: HostDeps) {
     },
 
     /** `GET /ask?message=...` — the same pipeline, with the user's own words. */
-    ask: async (context: Context<AppEnv>): Promise<Response> => {
-      const message = context.req.query("message")?.trim();
+    ask: async (request: Request, response: Response): Promise<void> => {
+      const message = query(request, "message")?.trim();
 
       if (message === undefined || message === "") {
         throw new PromptError(
@@ -1260,7 +1260,7 @@ export function planController(deps: HostDeps) {
         );
       }
 
-      const session = context.get("session");
+      const session = request.session;
       const startedAt = performance.now();
 
       const result = await runPipeline(deps, { message, session });
@@ -1269,7 +1269,7 @@ export function planController(deps: HostDeps) {
       deps.metrics.count("ask.ok");
       deps.metrics.observe("ask.latency_ms", durationMs);
 
-      return context.json({
+      response.json({
         request: { message, actor: session.actor, projects: session.projects },
         steps: result.steps,
         context: {
@@ -1428,8 +1428,8 @@ mode and a misleading one.
 
 ```ts
 plan: async (context) => {
-  const hours = context.req.query("hours")?.trim() || "4";
-  const session = context.get("session");
+  const hours = query(request, "hours")?.trim() || "4";
+  const session = request.session;
   const startedAt = performance.now();
 
   const result = await runPipeline(deps, {
@@ -1443,7 +1443,7 @@ plan: async (context) => {
   deps.metrics.count("plan.ok");
   deps.metrics.observe("plan.latency_ms", durationMs);
 
-  return context.json({ request: {…}, steps: result.steps, context: {…}, prompt: {…}, answer: {…}, ms: Math.round(durationMs) });
+  response.json({ request: {…}, steps: result.steps, context: {…}, prompt: {…}, answer: {…}, ms: Math.round(durationMs) });
 }
 ```
 
@@ -1471,8 +1471,7 @@ own state rather than pretending.
 
 ```ts
 #!/usr/bin/env node
-import { serve } from "@hono/node-server";
-import { Hono } from "hono";
+import express, { type Express, type Request, type Response } from "express";
 
 import { env } from "../config/env.js";
 import { createContextBudget } from "../core/guards.js";
@@ -1488,7 +1487,7 @@ import { createMcpClient } from "../host/client.js";
 import type { HostDeps } from "../host/deps.js";
 import { createHostPolicy, type ConsentHandler } from "../host/policy.js";
 import { errorHandler } from "../middleware/errorHandler.js";
-import { requestContext, type AppEnv } from "../middleware/requestContext.js";
+import { requestContext } from "../middleware/requestContext.js";
 import { createSelectionService } from "../services/selectionService.js";
 
 /**
@@ -1596,11 +1595,22 @@ const resources = resourceController(deps);
 const prompts = promptController(deps);
 const plan = planController(deps);
 
-const app = new Hono<AppEnv>();
+const app: Express = express();
 
-// Middleware first, in the order it must run: context, then routes, then errors.
-app.use("*", requestContext({ logger, metrics }));
-app.onError(errorHandler({ logger, metrics }));
+// Express would otherwise advertise itself with `X-Powered-By: Express`. The
+// Hono binding sent no such header, and swapping the framework should not change
+// the bytes on the wire — so it goes off.
+app.disable("x-powered-by");
+
+/**
+ * Middleware first, in the order it must run.
+ *
+ * `app.use(requestContext(...))` with no path matches every request — the
+ * Express spelling of Hono's `app.use("*", …)`. (Express 5 routes on
+ * path-to-regexp v8, where a bare `"*"` is no longer a valid pattern; omitting
+ * the path is both correct and clearer.)
+ */
+app.use(requestContext({ logger, metrics }));
 
 /**
  * The route table. Each line is a path and a controller method — no logic, which
@@ -1622,20 +1632,36 @@ app.get("/prompt", prompts.get);
 app.get("/plan", plan.plan);
 app.get("/ask", plan.ask);
 
-app.notFound((context) =>
-  context.json(
-    {
-      error: {
-        code: "NOT_FOUND",
-        message: `No route for ${context.req.method} ${context.req.path}.`,
-        recovery: "Call GET / for the index of available routes.",
-      },
+/**
+ * The 404, as a catch-all registered *after* every route.
+ *
+ * Hono had `app.notFound(...)` for this. Express has no dedicated hook, and does
+ * not need one: an ordinary two-argument `app.use` runs only when nothing above
+ * it matched, which is the same behaviour with one fewer API to learn.
+ */
+app.use((request: Request, response: Response) => {
+  response.status(404).json({
+    error: {
+      code: "NOT_FOUND",
+      message: `No route for ${request.method} ${request.path}.`,
+      recovery: "Call GET / for the index of available routes.",
     },
-    404,
-  ),
-);
+  });
+});
 
-const server = serve({ fetch: app.fetch, port: env.MCP_HOST_PORT, hostname: "127.0.0.1" }, () => {
+/**
+ * The error handler, last — and its *position* is load-bearing.
+ *
+ * Hono's `app.onError(...)` could be registered above the routes, because Hono
+ * keeps a raised error out of the middleware chain until it unwinds. Express
+ * matches in registration order, so an error handler placed above the routes
+ * would never see a failure they raised; it has to come after them. The four
+ * parameters are what mark it as an error handler rather than ordinary
+ * middleware, and Chapter 24 takes that apart.
+ */
+app.use(errorHandler({ logger, metrics }));
+
+const httpServer = app.listen(env.MCP_HOST_PORT, "127.0.0.1", () => {
   logger.info("host.listening", {
     url: `http://127.0.0.1:${env.MCP_HOST_PORT}`,
     server: env.MCP_SERVER_URL,
@@ -1659,7 +1685,7 @@ for (const signal of ["SIGINT", "SIGTERM"] as const) {
     shuttingDown = true;
     logger.info("host.shutdown", { signal });
 
-    server.close(() => {
+    httpServer.close(() => {
       void close().finally(() => process.exit(0));
     });
   });
@@ -1760,7 +1786,7 @@ That warning is a nice piece of design: if a future route *did* invoke a tool, t
 `consent.not_implemented` with the tool name and the argument *names* — and a `false` means the call would be refused
 rather than silently allowed. **A not-implemented path that fails closed and says so.**
 
-**Block 21 — the wiring and the route table (lines 120–164).**
+**Block 21 — the wiring and the route table (lines 119–162).**
 
 ```ts
 const { deps, close } = await createHost();
@@ -1770,10 +1796,10 @@ const resources = resourceController(deps);
 const prompts = promptController(deps);
 const plan = planController(deps);
 
-const app = new Hono<AppEnv>();
+const app: Express = express();
 
-app.use("*", requestContext({ logger, metrics }));
-app.onError(errorHandler({ logger, metrics }));
+app.disable("x-powered-by");
+app.use(requestContext({ logger, metrics }));
 
 app.get("/", health.index);
 app.get("/health", health.health);
@@ -1793,37 +1819,37 @@ app.get("/ask", plan.ask);
 is ESM. So the host connects to the server *before* it starts listening, and a failure to connect is a startup failure
 rather than a per-request surprise.
 
-**Middleware first, in the order it must run** — and the comment above them states it: *context, then routes, then errors.*
-`app.use("*", requestContext(…))` runs first so every request has a logger and a session; `app.onError(errorHandler(…))`
-is registered second but fires on failure. That ordering is what makes the access log complete (Chapter 24).
+**Middleware first, in the order it must run** — `app.use(requestContext(…))` is registered first, so every request has a
+logger and a session. The error handler is registered **last**, after the routes: Express matches middleware in
+registration order, so an error handler placed above the routes would never see a failure they raised. (Hono's
+`app.onError` could sit at the top, because Hono keeps a raised error out of the chain until it unwinds.) That ordering is
+what makes the access log complete — Chapter 24.
 
 **Nine routes, each one line.** The path and the method, nothing else. And the grouping with blank lines and comments
 mirrors the three primitives — discovery for resources, the prompt surface, and the composed request — which is what makes
 the table readable as a description of the system rather than a list of endpoints.
 
-**Block 22 — the 404 and the shutdown (lines 153–194).**
+**Block 22 — the 404 and the shutdown (lines 163–220).**
 
 ```ts
-app.notFound((context) =>
-  context.json(
-    {
-      error: {
-        code: "NOT_FOUND",
-        message: `No route for ${context.req.method} ${context.req.path}.`,
-        recovery: "Call GET / for the index of available routes.",
-      },
+app.use((request: Request, response: Response) => {
+  response.status(404).json({
+    error: {
+      code: "NOT_FOUND",
+      message: `No route for ${request.method} ${request.path}.`,
+      recovery: "Call GET / for the index of available routes.",
     },
-    404,
-  ),
-);
+  });
+});
 ```
 
 The 404 names the method and the path — so a client that mistyped a URL sees what it actually sent — and the recovery
-points at `GET /`. This is the handler whose body shape differs from `errorHandler`'s, documented in Chapter 24: three
-fields rather than five, and no `requestId`.
+points at `GET /`. It is a plain two-argument `app.use`, which Express runs only when nothing above it matched; that is
+the entire mechanism, and it is why this handler has to be registered *after* the routes. It is also the handler whose
+body shape differs from `errorHandler`'s, documented in Chapter 24: three fields rather than five, and no `requestId`.
 
 ```ts
-const server = serve({ fetch: app.fetch, port: env.MCP_HOST_PORT, hostname: "127.0.0.1" }, () => {
+const httpServer = app.listen(env.MCP_HOST_PORT, "127.0.0.1", () => {
   logger.info("host.listening", {
     url: `http://127.0.0.1:${env.MCP_HOST_PORT}`,
     server: env.MCP_SERVER_URL,
@@ -1847,7 +1873,7 @@ for (const signal of ["SIGINT", "SIGTERM"] as const) {
     shuttingDown = true;
     logger.info("host.shutdown", { signal });
 
-    server.close(() => {
+    httpServer.close(() => {
       void close().finally(() => process.exit(0));
     });
   });
@@ -1859,7 +1885,7 @@ for (const signal of ["SIGINT", "SIGTERM"] as const) {
 > Graceful shutdown, in the right order: **stop accepting requests, then close the MCP session.** Closing the client first
 > would fail the requests already in flight, which is the opposite of graceful.
 
-So `server.close(callback)` — which stops accepting and invokes the callback once in-flight requests finish — and *then*
+So `httpServer.close(callback)` — which stops accepting and invokes the callback once in-flight requests finish — and *then*
 `close()` on the MCP client. The `finally` guarantees the exit, and `process.exit(0)` reports a clean shutdown.
 
 The `shuttingDown` flag is the same double-signal guard as Chapter 18's, for the same reason: a second `SIGTERM` or a
@@ -1976,8 +2002,8 @@ So a caller who guessed wrong is told exactly what to guess. That is only possib
 the names — and it is a good example of why a host duplicating *some* knowledge is a feature rather than a smell.
 
 Note also the body has **five fields** (`retryable` and `requestId` present), unlike the route-level 404 from Chapter 24.
-The difference is the path: this one *throws*, so `errorHandler` builds the response, while a bad URL goes through
-`app.notFound`. Two 404s, two shapes — the inconsistency Chapter 24 documents.
+The difference is the path: this one *throws*, so `errorHandler` builds the response, while a bad URL is answered by the
+catch-all `app.use`. Two 404s, two shapes — the inconsistency Chapter 24 documents.
 
 ### 5. The composed request
 

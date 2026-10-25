@@ -244,6 +244,10 @@ full definitions — schemas and annotations included. To browse it with a UI:
 
 ```bash
 npx @modelcontextprotocol/inspector npx tsx src/index.ts
+
+# one method, no UI — `--protocol-era modern` exercises a 2026-07-28 client
+# (`server/discover`); the Inspector's default is the *legacy* 2025-era handshake.
+npx @modelcontextprotocol/inspector --cli npx tsx src/index.ts --protocol-era modern --method tools/list
 ```
 
 To see the other policy branch — the one where a destructive tool is never shown
@@ -272,7 +276,7 @@ local binding; the remote one is **Streamable HTTP**, and `createServer()` does
 not change at all:
 
 ```bash
-npm install @modelcontextprotocol/express @modelcontextprotocol/node
+npm install @modelcontextprotocol/express @modelcontextprotocol/node express
 ```
 
 ```ts

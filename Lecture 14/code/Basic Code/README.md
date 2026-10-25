@@ -111,7 +111,15 @@ with a UI instead:
 
 ```bash
 npx @modelcontextprotocol/inspector npx tsx src/index.ts
+
+# one method, no UI — and note the era flag: the Inspector defaults to the
+# *legacy* (2025-era `initialize`) handshake, so `--protocol-era modern` is what
+# exercises a 2026-07-28 client and `server/discover`.
+npx @modelcontextprotocol/inspector --cli npx tsx src/index.ts --protocol-era modern --method tools/list
 ```
+
+Running both is the habit worth forming while the ecosystem migrates: `legacy` proves you still serve the
+clients that exist, `modern` proves you serve the ones arriving.
 
 ---
 
@@ -121,7 +129,7 @@ npx @modelcontextprotocol/inspector npx tsx src/index.ts
 remote one is **Streamable HTTP**, and `createServer()` does not change at all:
 
 ```bash
-npm install @modelcontextprotocol/express @modelcontextprotocol/node
+npm install @modelcontextprotocol/express @modelcontextprotocol/node express
 ```
 
 ```ts

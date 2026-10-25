@@ -1,8 +1,7 @@
-import type { Context } from "hono";
+import type { NextFunction, Request, Response } from "express";
 import { AppError, toAppError } from "../core/errors.js";
 import type { Logger } from "../core/logger.js";
 import type { Metrics } from "../core/metrics.js";
-import type { AppEnv } from "./requestContext.js";
 
 /**
  * The last middleware: turn whatever went wrong into an HTTP answer.
@@ -26,9 +25,22 @@ import type { AppEnv } from "./requestContext.js";
  */
 
 export function errorHandler(options: { logger: Logger; metrics: Metrics }) {
-  return (error: Error, context: Context<AppEnv>): Response => {
-    const logger = context.get("logger") ?? options.logger;
-    const failure = toAppError(originOf(context), error, context.req.path);
+  /**
+   * Express identifies an error handler by **arity**: four parameters. Dropping
+   * the trailing `_next` would silently demote this to ordinary middleware that
+   * Express never calls for a failure — and the bug is invisible until something
+   * throws, which is the worst possible moment to discover it. The unused
+   * parameter is prefixed `_` for the same reason Chapter 08 prefixes its
+   * deliberately-unused values.
+   */
+  return (error: Error, request: Request, response: Response, _next: NextFunction): void => {
+    // `requestContext` runs before every route, so a failure raised by a
+    // controller always arrives with a logger attached. A failure raised
+    // *earlier* — `express.json()` rejecting a malformed body — does not, and the
+    // root logger is the honest fallback rather than a crash inside the error
+    // handler itself.
+    const logger: Logger = request.logger ?? options.logger;
+    const failure = toAppError(originOf(request), error, request.path);
 
     options.metrics.count("http.error");
     options.metrics.count(`http.error.${failure.code}`);
@@ -39,8 +51,8 @@ export function errorHandler(options: { logger: Logger; metrics: Metrics }) {
     const log = failure.httpStatus >= 500 ? logger.error : logger.warn;
 
     log("http.failed", {
-      method: context.req.method,
-      path: context.req.path,
+      method: request.method,
+      path: request.path,
       status: failure.httpStatus,
       code: failure.code,
       origin: failure.origin,
@@ -48,20 +60,21 @@ export function errorHandler(options: { logger: Logger; metrics: Metrics }) {
       ...(failure.httpStatus >= 500 ? { stack: error.stack } : {}),
     });
 
-    return context.json(
-      {
-        error: {
-          code: failure.code,
-          message: failure.message,
-          // The recovery sentence is written for the *caller*, so it is exactly
-          // the thing an API consumer needs to see.
-          recovery: failure.recovery,
-          retryable: failure.retryable,
-          requestId: context.get("requestId"),
-        },
+    // `failure.httpStatus` is a `number` here, not the narrow union Hono's
+    // `context.json(body, status)` demanded — so the `as 400` cast that used to
+    // sit on this line is gone. The taxonomy is the only thing that decides the
+    // status; Express does not ask for a second opinion.
+    response.status(failure.httpStatus).json({
+      error: {
+        code: failure.code,
+        message: failure.message,
+        // The recovery sentence is written for the *caller*, so it is exactly
+        // the thing an API consumer needs to see.
+        recovery: failure.recovery,
+        retryable: failure.retryable,
+        requestId: request.requestId,
       },
-      failure.httpStatus as 400,
-    );
+    });
   };
 }
 
@@ -72,8 +85,8 @@ export function errorHandler(options: { logger: Logger; metrics: Metrics }) {
  * bookkeeping inside business logic. The route is the honest place to read it
  * from, because the route is what chose the primitive in the first place.
  */
-function originOf(context: Context<AppEnv>): AppError["origin"] {
-  const path = context.req.path;
+function originOf(request: Request): AppError["origin"] {
+  const path = request.path;
 
   if (path.startsWith("/read") || path.startsWith("/resources")) {
     return "resource";

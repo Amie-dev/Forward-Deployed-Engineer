@@ -145,7 +145,7 @@ Why it matters, concretely:
 | Rule | Enforced by | Buys you |
 | :--- | :--- | :--- |
 | `core/` never imports the MCP SDK | nothing imports `@modelcontextprotocol/*` outside `mcp/` and `host/` | The budget, the rate limiter and the error taxonomy are unit-testable and reusable. |
-| `domain/` and `services/` never import a transport | no `hono`, no `@hono/node-server`, no SDK | `createServer()` can be bound to STDIO or HTTP with three lines changed. |
+| `domain/` and `services/` never import a transport | no `express`, no `@modelcontextprotocol/express`, no SDK | `createServer()` can be bound to STDIO or HTTP with three lines changed. |
 | `mcp/` and `host/` never import each other | they are separate processes with separate `deps.ts` | The server genuinely cannot know what the host decides, so the host's decisions are real. |
 | `host/` reaches `services/` only through the wire | `src/host/client.ts` speaks JSON-RPC | The host cannot cheat by calling a service directly — what the demo shows is what a real deployment does. |
 
@@ -186,16 +186,17 @@ Why it matters, concretely:
   "author": "Forward Deployed Engineering Team",
   "license": "MIT",
   "dependencies": {
-    "@hono/node-server": "^1.19.17",
     "@modelcontextprotocol/client": "^2.3.1",
+    "@modelcontextprotocol/express": "^2.0.2",
     "@modelcontextprotocol/node": "^2.1.1",
     "@modelcontextprotocol/server": "^2.3.1",
     "dotenv": "^16.4.7",
-    "hono": "^4.13.13",
+    "express": "^5.3.0",
     "openai": "^6.0.0",
     "zod": "^4.2.0"
   },
   "devDependencies": {
+    "@types/express": "^5.0.0",
     "@types/node": "^22.13.8",
     "tsx": "^4.23.15",
     "typescript": "^5.9.3"
@@ -239,8 +240,8 @@ bearing:
 | `@modelcontextprotocol/server` | `McpServer`, the transports, the request router | `src/mcp/*`, `src/index.ts` |
 | `@modelcontextprotocol/client` | `Client`, the session | `src/host/client.ts`, `src/host/lifecycle.ts` |
 | `@modelcontextprotocol/node` | Node bindings for the HTTP transport (request/response adapters) | `src/index.ts` |
-| `hono` | The HTTP framework for the host's nine routes | `src/routes/index.ts`, controllers |
-| `@hono/node-server` | Binds Hono to `node:http` | `src/routes/index.ts` |
+| `@modelcontextprotocol/express` | Express adapter: `createMcpExpressApp`, plus the localhost `Host`/`Origin` checks it installs by default | `src/index.ts` |
+| `express` | The HTTP framework — the host's nine routes, and the MCP server's binding | `src/routes/index.ts`, `src/index.ts`, controllers |
 | `zod` | Every input schema — tool args, prompt args, env vars, template variables | throughout |
 | `dotenv` | Loads `.env` in the two entry points | `src/config/env.ts` |
 | `openai` | The model client | **`src/host/model.ts` only**, via dynamic `import()` |
@@ -250,6 +251,13 @@ directly, and `tsc --noEmit` is the entire verification story. That is deliberat
 teaching codebase — every dependency you add is one more thing between the reader and the
 protocol — but the `typecheck` script is not optional, because it is the only mechanical
 check the project has.
+
+> **Why `hono` still appears in `package-lock.json`.** It is a *transitive* dependency, not a direct one:
+> the SDK's own Node adapter, `@modelcontextprotocol/node`, is built on Hono internally — `hono` and
+> `@hono/node-server` are in *its* `dependencies`. So the lock file mentions Hono while `package.json`
+> does not, and that distinction is the point. The host no longer uses Hono directly; the SDK still does,
+> and that is the SDK's business. A reader who greps the lock file for `hono` and concludes this project
+> depends on it has found a transitive edge. (`npm explain hono` is the command that tells the two apart.)
 
 **Why `openai` is a runtime dependency even though the project runs offline.** Because
 `src/host/model.ts` imports it *dynamically*, inside the branch that runs only when

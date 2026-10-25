@@ -176,6 +176,13 @@ Or browse it with a UI:
 npx @modelcontextprotocol/inspector --url http://127.0.0.1:8081/mcp
 ```
 
+The Inspector's default is the **legacy** era — the 2025-era `initialize` handshake. To exercise a
+`2026-07-28` client (stateless, `server/discover`) against the same endpoint, add `--protocol-era modern`:
+
+```bash
+npx @modelcontextprotocol/inspector --cli --url http://127.0.0.1:8081/mcp --protocol-era modern --method tools/list
+```
+
 ---
 
 ## Turning the model on

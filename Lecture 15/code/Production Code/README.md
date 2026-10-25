@@ -310,6 +310,10 @@ printf '%s\n%s\n%s\n' \
 
 # browse it with a UI
 npx @modelcontextprotocol/inspector npx tsx src/index.ts
+
+# one method, no UI — `--protocol-era modern` exercises a 2026-07-28 client
+# (`server/discover`); the Inspector's default is the *legacy* 2025-era handshake.
+npx @modelcontextprotocol/inspector --cli npx tsx src/index.ts --protocol-era modern --method tools/list
 ```
 
 To watch the config guard fire:

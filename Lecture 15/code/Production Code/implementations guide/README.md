@@ -27,7 +27,7 @@ Runtime used for every output quoted in this guide:
 ```text
 Node v24.22.0 · tsx 4.23.15 · tsc 5.9.3
 @modelcontextprotocol/server 2.3.1 · @modelcontextprotocol/client 2.3.1 · @modelcontextprotocol/node 2.1.1
-zod 4.6.7 · hono 4.13.13 · @hono/node-server 1.19.17
+@modelcontextprotocol/express 2.0.2 · express 5.3.0 · zod 4.6.7
 ```
 
 ---
