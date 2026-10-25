@@ -1,0 +1,40 @@
+{
+  "name": "lecture-19-genai-security",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Lecture 19 — GenAI Security & Guardrails: Prompt Injection, Jailbreaks & Safe Tool Use. The minimum runnable code behind the notes: a ShopX support agent whose retrieval channel is untrusted, a capability router, argument validation, authorization, confirmation, four guardrail layers and a security trace — so you can watch a prompt injection get proposed by the model and refused by the code.",
+  "type": "module",
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "scripts": {
+    "start": "tsx src/index.ts",
+    "dev": "tsx watch src/index.ts",
+    "demo": "tsx src/cli.ts",
+    "typecheck": "tsc --noEmit"
+  },
+  "keywords": [
+    "fde",
+    "genai-security",
+    "prompt-injection",
+    "jailbreak",
+    "guardrails",
+    "least-privilege",
+    "tool-calling",
+    "defense-in-depth",
+    "typescript"
+  ],
+  "author": "Forward Deployed Engineering Team",
+  "license": "MIT",
+  "dependencies": {
+    "dotenv": "^16.4.7",
+    "express": "^5.3.0",
+    "openai": "^6.0.0"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.0",
+    "@types/node": "^22.13.8",
+    "tsx": "^4.23.15",
+    "typescript": "^5.9.3"
+  }
+}
