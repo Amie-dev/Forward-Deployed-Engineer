@@ -1,0 +1,40 @@
+{
+  "name": "lecture-18-ai-application-testing",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Lecture 18 — AI Application Testing: Deterministic Evals & LLM-as-a-Judge. The minimal, runnable code behind the notes: an observable support agent (AgentResponse + trace), a golden dataset, deterministic checks, an LLM-as-a-judge with five metrics, the four-layer pipeline, and per-metric thresholds feeding a release gate.",
+  "type": "module",
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "scripts": {
+    "start": "tsx src/index.ts",
+    "dev": "tsx watch src/index.ts",
+    "eval": "tsx src/cli.ts",
+    "typecheck": "tsc --noEmit"
+  },
+  "keywords": [
+    "fde",
+    "ai-application-testing",
+    "evals",
+    "deterministic-evaluation",
+    "llm-as-a-judge",
+    "observability",
+    "traces",
+    "golden-dataset",
+    "typescript"
+  ],
+  "author": "Forward Deployed Engineering Team",
+  "license": "MIT",
+  "dependencies": {
+    "dotenv": "^16.4.7",
+    "express": "^5.3.0",
+    "openai": "^6.0.0"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.0",
+    "@types/node": "^22.13.8",
+    "tsx": "^4.23.15",
+    "typescript": "^5.9.3"
+  }
+}
