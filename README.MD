@@ -6,9 +6,9 @@
 
 *Lecture notes · System architectures · Mathematical foundations · Paper deep-dives · Production blueprints*
 
-[![Lectures](https://img.shields.io/badge/Lectures-18-blueviolet?style=for-the-badge)](#-curriculum-navigation)
-[![Chapter Notes](https://img.shields.io/badge/Chapter_Notes-143-2ea44f?style=for-the-badge)](#-curriculum-navigation)
-[![Notes Volume](https://img.shields.io/badge/Notes-210k%2B_lines-informational?style=for-the-badge)](#-repository-at-a-glance)
+[![Lectures](https://img.shields.io/badge/Lectures-19-blueviolet?style=for-the-badge)](#-curriculum-navigation)
+[![Chapter Notes](https://img.shields.io/badge/Chapter_Notes-152-2ea44f?style=for-the-badge)](#-curriculum-navigation)
+[![Notes Volume](https://img.shields.io/badge/Notes-219k%2B_lines-informational?style=for-the-badge)](#-repository-at-a-glance)
 [![Code](https://img.shields.io/badge/Code-TypeScript_%7C_Node.js-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](#-technology-stack)
 
 [![Paper Deep-Dives](https://img.shields.io/badge/Paper_Deep--Dives-Transformers_%7C_RAG_%7C_Vector_DB-orange?style=for-the-badge)](#-lecture-highlights)
@@ -30,7 +30,7 @@
 | 📊 | **[Repository at a Glance](#-repository-at-a-glance)** | Hard numbers: lectures, chapters, lines of notes, lines of code |
 | 🗺️ | **[Learning Path](#-learning-path)** | The five-phase route through the curriculum |
 | 📚 | **[Curriculum Navigation](#-curriculum-navigation)** | Every lecture, note set, codebase and implementation guide |
-| 📖 | **[Lecture Highlights](#-lecture-highlights)** | Deep-dive summaries of all 18 lectures |
+| 📖 | **[Lecture Highlights](#-lecture-highlights)** | Deep-dive summaries of all 19 lectures |
 | 🧰 | **[Technology Stack](#-technology-stack)** | Languages, frameworks, services and SDKs used |
 | 🚀 | **[Quick Start](#-quick-start)** | How to read the notes and run the code |
 | 🗂️ | **[Repository Structure](#-repository-structure)** | Directory map |
@@ -61,16 +61,16 @@ This repository contains structured lecture notes, system architectures, mathema
 
 | Metric | Value |
 | :--- | ---: |
-| 🎓 Lectures | **18** |
-| 📓 Chapter note files | **143** |
-| 📄 Consolidated note documents | **18** |
-| 🗂️ Markdown files | **452** |
-| ✍️ Lines of notes &amp; guides | **210,000+** |
-| 💻 TypeScript / JavaScript files | **628** |
-| 🧾 Lines of code | **62,000+** |
-| 🏭 Lectures shipping runnable code | **14** (03 · 04 · 05 · 06 · 08 · 10 · 11 · 12 · 13 · 14 · 15 · 16 · 17 · 18) |
-| 🧩 Runnable codebases | **17** |
-| 🎞️ Source slide decks &amp; Excalidraw diagrams | **18 PDF · 17 SVG** |
+| 🎓 Lectures | **19** |
+| 📓 Chapter note files | **152** |
+| 📄 Consolidated note documents | **19** |
+| 🗂️ Markdown files | **476** |
+| ✍️ Lines of notes &amp; guides | **219,000+** |
+| 💻 TypeScript / JavaScript files | **647** |
+| 🧾 Lines of code | **64,800+** |
+| 🏭 Lectures shipping runnable code | **15** (03 · 04 · 05 · 06 · 08 · 10 · 11 · 12 · 13 · 14 · 15 · 16 · 17 · 18 · 19) |
+| 🧩 Runnable codebases | **18** |
+| 🎞️ Source slide decks &amp; Excalidraw diagrams | **19 PDF · 18 SVG** |
 
 > 💡 Every number above is derived from the repository contents — notes are Markdown, code is strict TypeScript or plain JavaScript, and each codebase ships with a chapter-by-chapter implementation guide.
 
@@ -88,7 +88,7 @@ Follow the phases in order — each one assumes only the phase before it.
 | **4 · Embeddings &amp; Retrieval** | 07 · 08 · 09 · 10 | 🟧 | Represent meaning as vectors, then store and search billions of them with ANN indexes |
 | **5 · RAG &amp; Advanced RAG** | 11 · 12 | 🟥 | Build a grounded answering system end to end — then prove which control fixes a wrong answer |
 | **6 · Output Contracts &amp; Integration** | 13 · 14 · 15 | 🟪 | Make a model's output something a program can trust — then give that program standard access to the outside world, with all three primitives under the right owner |
-| **7 · Multimodality, Evals &amp; Release Gating** | 16 · 17 · 18 | 🟫 | Let a model read an image, then **prove** the system still works: a fixed dataset, code as the judge, an LLM judge for meaning, and a threshold that blocks a release |
+| **7 · Multimodality, Evals, Release Gating &amp; Security** | 16 · 17 · 18 · 19 | 🟫 | Let a model read an image, then **prove** the system still works — and **survive being attacked**: a fixed dataset, code as the judge, an LLM judge for meaning, a threshold that blocks a release, and a security architecture that assumes the model *will* be persuaded |
 
 ---
 
@@ -116,6 +116,7 @@ Follow the phases in order — each one assumes only the phase before it.
 | **16** | 🟦 Multimodal AI — How LLMs Understand Images | [📂](./Lecture%2016/notes/README.md) | [📄](./Lecture%2016/notes/Lecture_16_Complete_Notes.md) | [🧱 Basic Code](./Lecture%2016/code/Basic%20Code/README.md) | [🛠️ Basic Code (01 → 10)](./Lecture%2016/code/Basic%20Code/implementations%20guide/README.md) |
 | **17** | 🟫 GenAI Evals & Testing | [📂](./Lecture%2017/notes/README.md) | [📄](./Lecture%2017/notes/Lecture_17_Complete_Notes.md) | [🧱 Basic Code](./Lecture%2017/code/Basic%20Code/README.md) | [🛠️ Basic Code (01 → 10)](./Lecture%2017/code/Basic%20Code/implementations%20guide/README.md) |
 | **18** | 🟫 AI Application Testing — Deterministic Evals &amp; LLM-as-a-Judge | [📂](./Lecture%2018/notes/README.md) | [📄](./Lecture%2018/notes/Lecture_18_Complete_Notes.md) | [🧱 Basic Code](./Lecture%2018/code/Basic%20Code/README.md) | [🛠️ Basic Code (01 → 10)](./Lecture%2018/code/Basic%20Code/implementations%20guide/README.md) |
+| **19** | 🟫 GenAI Security &amp; Guardrails — Prompt Injection, Jailbreaks &amp; Safe Tool Use | [📂](./Lecture%2019/notes/README.md) | [📄](./Lecture%2019/notes/Lecture_19_Complete_Notes.md) | [🧱 Basic Code](./Lecture%2019/code/Basic%20Code/README.md) | [🛠️ Basic Code (01 → 11)](./Lecture%2019/code/Basic%20Code/implementations%20guide/README.md) |
 
 > 🧭 **Want the full chapter-level roadmap with per-chapter topic tables?** Open the **[Main Repository Index & Curriculum Roadmap](./index.md)**.
 
@@ -597,6 +598,41 @@ Chapter 08 assembles the **four-layer pipeline** — deterministic checks → qu
 
 ---
 
+### 🟫 [Lecture 19: GenAI Security & Guardrails — Prompt Injection, Jailbreaks & Safe Tool Use](./Lecture%2019/notes/README.md)
+
+> **Thesis** — the previous lectures gave the model tools, memory and context. This one asks what happens when the model is *persuaded* — and answers with the one rule that survives: **the LLM can propose an action; it should never be the authority that decides whether the action is permitted.** Prompt injection is not solvable, so the architecture must be built on the assumption that the model loses.
+
+`An LLM is not business logic` · `The trust boundary` · `Model output is untrusted` · `Instruction vs data` · `Indirect injection` · `MCP resources are data` · `Multimodal injection` · `Jailbreak ≠ injection` · `Prompts are guidance, not controls` · `Delimiters are a signal, not a boundary` · `Propose, don't authorize` · `Least privilege` · `Capability routing` · `Never trust, always verify` · `Confirmation swapping` · `Four guardrail layers` · `Fail closed` · `Defense in depth`
+
+<details>
+<summary><b>🔎 Full breakdown</b></summary>
+
+<br>
+
+Chapter 01 opens with the break. A traditional application is a control plane over a data plane, and **a user cannot persuade an `if` statement** — so input validation was enough. Insert an LLM and the thing deciding what happens is a persuadable interpreter, which makes the *output* untrusted too, because it is a function of untrusted input. The first principle follows: **an LLM is not business logic.** Chapter 02 then does the threat modelling properly — starting from **five asset classes** (confidential information including the system prompt · other users' data · powerful tools · application behaviour · downstream systems) rather than from attacks, and naming the untrusted input surface, the blast radius, and the risk equation as a **product** rather than a sum.
+
+Chapter 03 is the fundamental problem. SQL injection was solved by keeping **instructions and data in separate channels**; an LLM has exactly one channel, so text written by a third party and text written by the developer are the same kind of thing to the model. That is why prompt injection is not a bug to be patched and why it is **not just "ignore previous instructions"** — phrase-blocking fails against obfuscation, encoding, structural and smuggling evasions. Chapter 04 catalogues the delivery channels, and the important one is **indirect**: a retrieved document, an email, a web page, an **MCP resource**, an image. The attacker does not have to make the assistant read their text — only make it *relevant*, and relevance is what retrieval is for.
+
+Chapters 05–06 draw the line that teams get wrong. A jailbreak breaks a *constraint*; an injection breaks the *instruction/data boundary* — different attacks, different owners. And a sentence in a system prompt that a motivated attacker can argue with is **guidance, not a control**; delimiters are a signal, not a boundary. Tools are where the lecture stops being about text: a tool call is a **proposal**, and the risk model changes the moment the model's mistake becomes the world's state.
+
+Chapters 07–08 are the architecture. **Least privilege** decides what a request may reach *before the model runs* — a capability router that gets no tools itself, because a router that can be injected hands out privileges to an attacker. Then **never trust, always verify**: argument validation, **row-level authorization with identity from the session and never from an argument**, and confirmation for high-impact writes — bound to the exact arguments by a **fingerprint**, because without one an approval for "refund ORD-101, INR 2,500" can be replayed as "refund ORD-202, INR 9,800".
+
+Chapter 09 assembles the **four layers** — input, instructions, actions, output — and the framing is the deliverable: **the first two are filters and the last two are controls.** A filter that has to read the attack to stop it is always one rewrite behind; a layer that judges the *call* rather than the *sentence* can say no without understanding anything, and a layer that compares a **canary token** can prove a prompt leaked without predicting how. Every layer fails **closed**, and a guardrail reports while the policy decides.
+
+</details>
+
+**🧩 One codebase ships with this lecture:**
+
+| Codebase | Language &amp; size | Guide | The question it answers | What it contains |
+| :--- | :--- | :--- | :--- | :--- |
+| 🧱 **[Basic Code](./Lecture%2019/code/Basic%20Code/README.md)** | TypeScript · 19 files · ~2,515 lines | **01 → 11** | *What does the security architecture look like when the model is allowed to lose?* | A ShopX support agent (`config` · `domain` · `middleware` · `controllers` · `routes` · `services`) whose retrieval channel is **untrusted**, plus the architecture around it: a **capability router** that decides privileges before the model runs, **argument validation**, **row-level authorization**, **confirmation bound to arguments by a fingerprint**, **four guardrail layers** with per-layer switches, and a **security trace** that says which layer did what. `npm run demo` runs **eight attacks** and asserts on the **effects that must not have happened** — `SAFETY GATE PASSED, 8/8 contained`, exit 1 if any forbidden effect executed. |
+
+> ⚖️ **Honest limits — documented rather than hidden:** the offline model is a **deterministic stand-in that is persuadable on purpose**, so every attack reproduces with no API key — it obeys directives found in its context rather than being genuinely jailbroken; retrieval scores documents by **content-term overlap** rather than embeddings, so the contract (`trusted: false`) is real but the ranking is not semantic; the **audit log and the confirmation store are in-memory**, so they are reproducible rather than durable, append-only or tamper-evident; the output classifier is a **two-pattern moderation stand-in** whose only job is to make the point that moderation is not injection defence; and the `Excalidraw-Notes.svg` file was not shipped with this lecture, so the board used is the eval-application board from Lecture 18, folded into Chapter 02 as the running example. The guide and the codebase README record all five rather than implying otherwise.
+
+**[📂 Notes index](./Lecture%2019/notes/README.md)** · **[📄 Complete document](./Lecture%2019/notes/Lecture_19_Complete_Notes.md)** · **[🧱 Basic Code](./Lecture%2019/code/Basic%20Code/README.md)** · **[🛠️ Basic guide (01 → 11)](./Lecture%2019/code/Basic%20Code/implementations%20guide/README.md)**
+
+---
+
 ## 🧰 Technology Stack
 
 | Layer | What the curriculum uses |
@@ -701,7 +737,17 @@ RETRIEVAL_TOPK=2 npm run eval   # …and the same suite blocking the build, attr
 npm start                       # POST /chat returns an answer *and* its trace, on :8080
 ```
 
-> 🔑 **Keys are optional where it matters.** The Lecture 12, 16, 17 and 18 codebases are built so their numbers reproduce offline — a deterministic stand-in replaces the model call, which is itself the point of Lectures 17–18 (an evaluation you cannot re-run is not a baseline). Set `OPENAI_API_KEY` (and optionally `COHERE_API_KEY`) to swap in real embeddings, a real model and a real judge without changing a line of pipeline logic.
+```bash
+# Lecture 19 — GenAI Security & Guardrails · Basic Code (runs offline, NO API key)
+cd "Lecture 19/code/Basic Code"
+npm install
+npm run demo        # eight attacks through one safe loop → SAFETY GATE PASSED, 8/8 contained
+npm start           # /chat returns an answer *and* its security trace, on :8080
+                    # …plus /security (the model as data) · /audit · /attack/:scenario
+GUARDRAIL_INSTRUCTIONS=false npm run demo   # turn the filter off and watch the model get persuaded
+```
+
+> 🔑 **Keys are optional where it matters.** The Lecture 12, 16, 17, 18 and 19 codebases are built so their numbers reproduce offline — a deterministic stand-in replaces the model call, which is itself the point of Lectures 17–19 (an evaluation you cannot re-run is not a baseline, and an attack you cannot re-run is not evidence). Set `OPENAI_API_KEY` (and optionally `COHERE_API_KEY`) to swap in real embeddings, a real model and a real judge without changing a line of pipeline logic.
 
 ### 3 · Following an implementation guide
 
@@ -717,22 +763,23 @@ Forward-Deployed-Engineer/
 ├── index.md                        # Master roadmap: every lecture + per-chapter topic tables
 ├── prompt.md                       # Note-generation brief used across lectures
 │
-├── Lecture 01/ … Lecture 18/       # 18 lectures
+├── Lecture 01/ … Lecture 19/       # 19 lectures
 │   ├── notes/
 │   │   ├── README.md               # Chapter index for the lecture
 │   │   ├── Notes.pdf               # Original source slides
 │   │   ├── Excalidraw-Notes.svg    # Hand-drawn diagram source
 │   │   ├── 01_*.md … NN_*.md       # Chapter-by-chapter notes
 │   │   └── Lecture_NN_Complete_Notes.md   # Single consolidated document
-│   └── code/                       # Present for lectures 03 · 04 · 05 · 06 · 08 · 10 · 11 · 12 · 13 · 14 · 15 · 16 · 17 · 18
+│   └── code/                       # Present for lectures 03 · 04 · 05 · 06 · 08 · 10 · 11 · 12 · 13 · 14 · 15 · 16 · 17 · 18 · 19
 │       ├── README.md               # What the codebase does + how to run it
 │       ├── src/ · package.json · tsconfig.json
 │       └── implementations guide/  # Chapter-wise build guide (full source, block by block)
 │
 └── (Lecture 11 ships two codebases — Productions RAG and Eassy RAG; Lecture 13 ships
     the structured-outputs implementation; Lectures 14 and 15 ship Basic Code and
-    Production Code; Lectures 16, 17 and 18 ship a Basic Code each — the multimodal
-    pipeline, the eval system, and the four-layer testing pipeline)
+    Production Code; Lectures 16, 17, 18 and 19 ship a Basic Code each — the multimodal
+    pipeline, the eval system, the four-layer testing pipeline, and the security
+    architecture with its eight attacks)
 ```
 
 ---
@@ -755,12 +802,12 @@ Every artefact in this repository follows the same four-part contract, so you ca
 
 | Status | Item |
 | :---: | :--- |
-| ✅ | Lectures **01 → 18** published with chapter-wise notes and consolidated documents |
-| ✅ | Codebases for lectures **03 · 04 · 05 · 06 · 08 · 10 · 11 · 12 · 13 · 14 · 15 · 16 · 17 · 18**, with implementation guides for **03 · 04 · 05 · 06 · 08 · 10 · 11 · 12 · 14 · 15 · 16 · 17 · 18** |
+| ✅ | Lectures **01 → 19** published with chapter-wise notes and consolidated documents |
+| ✅ | Codebases for lectures **03 · 04 · 05 · 06 · 08 · 10 · 11 · 12 · 13 · 14 · 15 · 16 · 17 · 18 · 19**, with implementation guides for **03 · 04 · 05 · 06 · 08 · 10 · 11 · 12 · 14 · 15 · 16 · 17 · 18 · 19** |
 | ✅ | Master roadmap maintained in [`index.md`](./index.md) |
-| 🔜 | Production-grade codebases alongside the Basic Code for the evaluation lectures (16 · 17 · 18) |
+| 🔜 | Production-grade codebases alongside the Basic Code for the evaluation and security lectures (16 · 17 · 18 · 19) |
 | 🔜 | Additional chapters where the source slides are thinner than the engineering reality |
-| 🔜 | More evaluation golden sets so every quantitative claim stays reproducible |
+| 🔜 | More evaluation golden sets and attack suites so every quantitative and security claim stays reproducible |
 
 > 🟢 The repository is under **active development** — new lecture material lands as the curriculum progresses.
 
