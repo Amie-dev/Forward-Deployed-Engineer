@@ -67,7 +67,7 @@ Basic Code/
     ├── client/
     │   └── client.ts           # Chapter 08 — the MCP client + the lifecycle walkthrough
     └── routes/
-        └── index.ts            # Chapter 09 — the HTTP host: GET /plan?hours=4
+        └── index.ts            # Chapter 09 — the Express host: GET /plan?hours=4
 ```
 
 `node_modules/` and `dist/` are intentionally **not** listed: `node_modules/` is created by
@@ -90,7 +90,7 @@ Basic Code/
 | `src/resources/resources.ts` | primitive | the Resources the **application** may read | MCP `resources/list` |
 | `src/prompts/prompts.ts` | primitive | the Prompts the **user** may select | MCP `prompts/list` |
 | `src/client/client.ts` | client | one function per MCP verb + the lifecycle walkthrough | `src/routes/index.ts` |
-| `src/routes/index.ts` | host | the HTTP routes, including `GET /plan?hours=4` | a browser / curl |
+| `src/routes/index.ts` | host | the Express routes, including `GET /plan?hours=4` | a browser / curl |
 
 ---
 
@@ -172,10 +172,12 @@ Three things to notice, because they are the architecture of the lecture:
     "@modelcontextprotocol/node": "^2.1.1",
     "@modelcontextprotocol/server": "^2.3.1",
     "dotenv": "^16.4.7",
+    "express": "^5.0.0",
     "openai": "^6.0.0",
     "zod": "^4.2.0"
   },
   "devDependencies": {
+    "@types/express": "^5.0.0",
     "@types/node": "^22.13.8",
     "tsx": "^4.23.15",
     "typescript": "^5.9.3"
@@ -230,18 +232,23 @@ Three things to notice, because they are the architecture of the lecture:
 "@modelcontextprotocol/node":   "^2.1.1",   // toNodeHandler + the localhost Host/Origin validators
 "zod":                          "^4.2.0",   // the inputSchema / argsSchema definitions
 "dotenv":                       "^16.4.7",  // reads .env into process.env
+"express":                      "^5.0.0",   // the HOST's HTTP layer: the route table of Chapter 09
 "openai":                       "^6.0.0"    // the model call in Chapter 07 §7.3 (optional at runtime)
 ```
 
 - The three `@modelcontextprotocol/*` packages are the **protocol**; `zod` is the **contract**
   (schemas); `openai` is the **model**, and it is the only dependency the code can run without.
+- `express` is the only dependency that belongs to the **host** rather than the server. The MCP
+  server process (`src/index.ts`) still talks to `node:http` directly — one route, one job — while
+  the host, which has a route table, gets a router.
 
 **Block 5 — the dev dependencies**
 
 ```json
-"tsx": "^4.23.15",        // run .ts directly
-"typescript": "^5.9.3",   // tsc --noEmit
-"@types/node": "^22.13.8" // types for node:http, node:child_process, …
+"tsx": "^4.23.15",         // run .ts directly
+"typescript": "^5.9.3",    // tsc --noEmit
+"@types/node": "^22.13.8", // types for node:http, node:child_process, …
+"@types/express": "^5.0.0" // types for the host's route table (Chapter 09)
 ```
 
 ---
@@ -413,7 +420,7 @@ OPENAI_MODEL=gpt-5.4-mini
 | a database | `taskService` keeps tasks in an array in memory (Chapter 03) |
 | an MCP SDK call inside `services/` | the data layer must stay protocol-agnostic |
 | a `build` script | not needed; `typecheck` is the only compiler step |
-| a framework (Express/Fastify) | `node:http` is enough for four routes, and it keeps the host readable |
+| a database driver | the host is stateless; there is nothing for it to persist |
 
 ---
 

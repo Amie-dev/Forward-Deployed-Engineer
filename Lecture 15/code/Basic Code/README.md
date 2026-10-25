@@ -101,7 +101,7 @@ Basic Code/
     ├── resources/resources.ts     # Resources — the APPLICATION holds it
     ├── prompts/prompts.ts         # Prompts — the USER holds the trigger
     ├── client/client.ts           # the MCP client + the lifecycle walkthrough
-    └── routes/index.ts            # the HTTP host: GET /plan?hours=4
+    └── routes/index.ts            # the HTTP host (Express): GET /plan?hours=4
 ```
 
 ### Chapter map
@@ -205,7 +205,6 @@ all — which is Chapter 01's *"the binding is a detail, not a rewrite"*.
 |---|---|
 | a database | `taskService` keeps tasks in an array; the lecture is about the protocol, not persistence |
 | authentication | Chapter 08's production concern — see `Production Code` for that layer |
-| an HTTP framework | six routes do not justify Express |
 | LLM routing for resource selection | Chapter 05's expensive fifth strategy; the other four are enough to teach the point |
 | a build step | `tsx` runs the TypeScript directly, so what you read is what runs |
 

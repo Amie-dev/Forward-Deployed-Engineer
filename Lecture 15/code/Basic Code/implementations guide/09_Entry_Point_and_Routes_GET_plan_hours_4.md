@@ -16,7 +16,7 @@
 | **Purpose** | the MCP **server** process, on Streamable HTTP | the **host** process: HTTP routes a user calls |
 | **Port** | `8081` (`MCP_PORT`) | `8080` (`HOST_PORT`) |
 | **Speaks** | MCP / JSON-RPC | plain HTTP |
-| **Imports** | `node:http`, `@modelcontextprotocol/node`, `@modelcontextprotocol/server`, `server/server`, `config` | `node:http`, `config`, `client/client` |
+| **Imports** | `node:http`, `@modelcontextprotocol/node`, `@modelcontextprotocol/server`, `server/server`, `config` | `express`, `config`, `client/client` |
 | **Imports the other?** | **no** | **no** — it talks over HTTP, not by import |
 | **Run with** | `npm run server` | `npm run host` |
 
@@ -105,8 +105,12 @@ for (const signal of ["SIGINT", "SIGTERM"] as const) {
  * division of labour in it: the USER chose the workflow (the Prompt), the
  * APPLICATION chose the context (the Resources), and the MODEL chooses any tool
  * call. Three primitives, three owners, one request.
+ *
+ * The host is plain Express: one route table, one 404 catch-all, one error
+ * handler. Everything protocol-shaped stays behind `../client/client.js` —
+ * this file speaks HTTP and nothing else.
  */
-import { createServer } from "node:http";
+import express, { type Express, type NextFunction, type Request, type Response } from "express";
 
 import { hostPort } from "../config/config.js";
 import {
@@ -125,11 +129,23 @@ const connection = await connect();
 const { client } = connection;
 
 /**
- * The route table. Each entry is one endpoint; the key is the pathname.
- * `URL` gives us the query string for free, which is how `hours` reaches the
- * Prompt argument.
+ * `req.query` values are `string | string[] | ParsedQs`, and every route below
+ * wants a single string — or nothing. This narrows the type in one place, so a
+ * missing (or repeated) parameter becomes `undefined` and the `??` defaults
+ * turn it into a sensible value. **No route can crash on a bad query string.**
  */
-const routes: Record<string, (url: URL) => Promise<string>> = {
+function query(request: Request, key: string): string | undefined {
+  const value = request.query[key];
+
+  return typeof value === "string" ? value : undefined;
+}
+
+/**
+ * The route table. Each entry is one endpoint; the key is the pathname and the
+ * value is a function that turns a request into text. `req.query` is Express's
+ * parsed query string, which is how `hours` reaches the Prompt argument.
+ */
+const routes: Record<string, (request: Request) => Promise<string>> = {
   /* Chapter 03 — discovery of everything the server offers. */
   "/resources": async () => {
     const { resources, resourceTemplates } = await listResources(client);
@@ -141,7 +157,7 @@ const routes: Record<string, (url: URL) => Promise<string>> = {
   },
 
   /* Chapter 03 — consumption: read one Resource by URI. */
-  "/read": async (url) => readResource(client, url.searchParams.get("uri") ?? "task://guidelines"),
+  "/read": async (request) => readResource(client, query(request, "uri") ?? "task://guidelines"),
 
   /* Chapter 06 — what workflows does the server offer? */
   "/prompts": async () =>
@@ -150,14 +166,14 @@ const routes: Record<string, (url: URL) => Promise<string>> = {
       .join("\n"),
 
   /* Chapter 07 §7.3 — fetch the Prompt. No model is called by this route. */
-  "/prompt": async (url) =>
-    getPromptText(client, url.searchParams.get("name") ?? "plan_day", {
-      availableHours: url.searchParams.get("hours") ?? "4",
+  "/prompt": async (request) =>
+    getPromptText(client, query(request, "name") ?? "plan_day", {
+      availableHours: query(request, "hours") ?? "4",
     }),
 
   /* Chapter 05 — the application selects context, then the model answers. */
-  "/ask": async (url) => {
-    const message = url.searchParams.get("message");
+  "/ask": async (request) => {
+    const message = query(request, "message");
 
     if (!message) {
       throw new Error("Query parameter 'message' is required.");
@@ -167,31 +183,37 @@ const routes: Record<string, (url: URL) => Promise<string>> = {
   },
 
   /* Chapter 08 — the lecture's end-to-end request: Prompt → (Resources + Tools) → answer. */
-  "/plan": async (url) => planDay(client, url.searchParams.get("hours") ?? "4"),
+  "/plan": async (request) => planDay(client, query(request, "hours") ?? "4"),
 };
 
-const httpServer = createServer((request, response) => {
-  const url = new URL(request.url ?? "/", `http://127.0.0.1:${hostPort}`);
-  const handler = routes[url.pathname];
+const app: Express = express();
 
-  if (!handler) {
-    response.writeHead(404, { "Content-Type": "text/plain; charset=utf-8" });
-    response.end(`Not found. Try one of:\n${Object.keys(routes).join("\n")}`);
-    return;
-  }
+// The raw Node host sent no `X-Powered-By` header; disabling it keeps the
+// response surface identical after the swap to Express.
+app.disable("x-powered-by");
 
-  handler(url)
-    .then((body) => {
-      response.writeHead(200, { "Content-Type": "text/plain; charset=utf-8" });
-      response.end(body);
-    })
-    .catch((error: Error) => {
-      response.writeHead(500, { "Content-Type": "text/plain; charset=utf-8" });
-      response.end(error.message);
-    });
+/**
+ * Register the table. Every handler returns text or throws: Express 5 forwards
+ * a rejected promise straight to the error handler below, so no route needs a
+ * `try`/`catch` of its own.
+ */
+for (const [path, handler] of Object.entries(routes)) {
+  app.get(path, async (request, response) => {
+    response.type("text/plain").send(await handler(request));
+  });
+}
+
+/** The 404 lists the routes, so a wrong URL tells you the right ones. */
+app.use((_request, response) => {
+  response.status(404).type("text/plain").send(`Not found. Try one of:\n${Object.keys(routes).join("\n")}`);
 });
 
-httpServer.listen(hostPort, "127.0.0.1", () => {
+/** The only other status this host has: 500, with the message as the body. */
+app.use((error: Error, _request: Request, response: Response, _next: NextFunction) => {
+  response.status(500).type("text/plain").send(error.message);
+});
+
+const httpServer = app.listen(hostPort, "127.0.0.1", () => {
   console.error(`Task host is running at http://127.0.0.1:${hostPort}`);
   console.error(`Try: http://127.0.0.1:${hostPort}/plan?hours=4`);
 });
@@ -223,8 +245,10 @@ import { createServer as createMcpServer } from "./server/server.js";
 
 - `#!/usr/bin/env node` makes the file directly executable (`./src/index.ts`). It is optional with
   `tsx`, but it is honest documentation that this file *is* a program.
-- `createServer` comes from `node:http` — **the raw Node HTTP server, no framework.** Four routes
-  and one MCP endpoint do not need Express.
+- `createServer` comes from `node:http` — **the raw Node HTTP server.** This process stays
+  framework-free on purpose: it has exactly one route (`POST /mcp`) and one job (speak the
+  protocol). The process with an actual route table is the *host*, and that one uses Express —
+  see §9.6.
 - **The alias is the interesting part.** `import { createServer as createMcpServer }` — there are
   two different "create server" functions in this file, so one is renamed. Without it you would
   have a name collision, and with a worse name you would lose the reader. `createMcpServer` says
@@ -349,10 +373,10 @@ for (const signal of ["SIGINT", "SIGTERM"] as const) {
 
 ## 9.6 Block-by-block explanation — `src/routes/index.ts`
 
-### Block 1 — the imports and the single connection
+### Block 1 — the imports, the single connection, and the query helper
 
 ```ts
-import { createServer } from "node:http";
+import express, { type Express, type NextFunction, type Request, type Response } from "express";
 
 import { hostPort } from "../config/config.js";
 import {
@@ -369,10 +393,31 @@ import {
 // One client, opened once, for the whole life of the host.
 const connection = await connect();
 const { client } = connection;
+
+/**
+ * `req.query` values are `string | string[] | ParsedQs`, and every route below
+ * wants a single string — or nothing. This narrows the type in one place, so a
+ * missing (or repeated) parameter becomes `undefined` and the `??` defaults
+ * turn it into a sensible value. **No route can crash on a bad query string.**
+ */
+function query(request: Request, key: string): string | undefined {
+  const value = request.query[key];
+
+  return typeof value === "string" ? value : undefined;
+}
 ```
 
-- **This file imports the client, and nothing else.** No MCP SDK, no OpenAI, no task service. The
-  host's job is HTTP in, HTTP out; everything protocol-shaped is behind Chapter 08's functions.
+- **This file imports the client and Express, and nothing else.** No MCP SDK, no OpenAI, no task
+  service. The host's job is HTTP in, HTTP out; everything protocol-shaped is behind Chapter 08's
+  functions.
+- `express` supplies the router, the parsed query string and the error pipeline. The four named
+  imports are **types only** (`import { type … }`), so they are erased at runtime — they document
+  the shapes the handlers work with without adding anything to the process.
+- **The `query()` helper exists because `req.query` is not a string map.** Express parses the query
+  string into `string | string[] | ParsedQs` per key — a repeated parameter becomes an array, a
+  bracketed one becomes an object. Every route here wants *one string or nothing*, so the narrowing
+  happens once, in a named function, instead of six times inside the table. Returning `undefined`
+  for anything unexpected is what makes the `??` defaults in Block 2 safe.
 - `hostPort` is the only config it needs. Note it does **not** import `mcpServerUrl` — the client
   module already handled that.
 - **Top-level `await`** — `const connection = await connect();` at module scope. This is why
@@ -388,26 +433,29 @@ const { client } = connection;
 ### Block 2 — the route table
 
 ```ts
-const routes: Record<string, (url: URL) => Promise<string>> = {
+const routes: Record<string, (request: Request) => Promise<string>> = {
   "/resources": async () => { … },
-  "/read": async (url) => readResource(client, url.searchParams.get("uri") ?? "task://guidelines"),
+  "/read": async (request) => readResource(client, query(request, "uri") ?? "task://guidelines"),
   "/prompts": async () => …,
-  "/prompt": async (url) => …,
-  "/ask": async (url) => { … },
-  "/plan": async (url) => planDay(client, url.searchParams.get("hours") ?? "4"),
+  "/prompt": async (request) => …,
+  "/ask": async (request) => { … },
+  "/plan": async (request) => planDay(client, query(request, "hours") ?? "4"),
 };
 ```
 
-- **The type is the design.** `Record<string, (url: URL) => Promise<string>>` says: a map from
-  pathname to a function that takes a parsed URL and returns text. Every route has the same shape,
-  which is why the dispatcher below can be five lines.
-- **Why a table instead of `if (pathname === "/plan") …`?** Three reasons:
+- **The type is the design.** `Record<string, (request: Request) => Promise<string>>` says: a map
+  from pathname to a function that takes an Express request and returns text. Every route has the
+  same shape, which is why the registration loop in Block 4 can be that short.
+- **Why a table instead of six `app.get(…)` calls?** Three reasons:
   1. The 404 handler can list the routes automatically — `Object.keys(routes)`.
   2. Adding a route is one entry, not one more branch in a growing chain.
   3. The whole API surface is visible in one screen.
-- `url.searchParams.get("uri") ?? "task://guidelines"` — `get` returns `string | null`, and `??`
+- `query(request, "uri") ?? "task://guidelines"` — the helper returns `string | undefined`, and `??`
   supplies a sensible default. Every route uses this pattern, so **no route can crash on a missing
   query parameter**.
+- Two Express 5 details worth knowing, both relevant here: the default query parser changed from
+  *extended* to *simple*, and `req.query` is now a **getter** — you read it, you never assign to it.
+  `query()` reads one key and does not mutate anything, so neither change touches this file.
 - Note the deliberate **symmetry** of the six routes — each one maps to exactly one lecture
   capability:
 
@@ -433,8 +481,8 @@ const routes: Record<string, (url: URL) => Promise<string>> = {
 
 ```ts
   /* Chapter 05 — the application selects context, then the model answers. */
-  "/ask": async (url) => {
-    const message = url.searchParams.get("message");
+  "/ask": async (request) => {
+    const message = query(request, "message");
 
     if (!message) {
       throw new Error("Query parameter 'message' is required.");
@@ -444,72 +492,93 @@ const routes: Record<string, (url: URL) => Promise<string>> = {
   },
 
   /* Chapter 08 — the lecture's end-to-end request: Prompt → (Resources + Tools) → answer. */
-  "/plan": async (url) => planDay(client, url.searchParams.get("hours") ?? "4"),
+  "/plan": async (request) => planDay(client, query(request, "hours") ?? "4"),
 ```
 
 - `/ask` is the only route that **validates**. `message` has no sensible default — a request
   without it is a mistake, so it throws.
-- **Throwing here is the right call, because of the dispatcher's `.catch`.** The error becomes a
-  `500` with the message as the body. In a bigger app you would return `400`; for a teaching host,
-  the important thing is that the failure is *visible and named*.
+- **Throwing here is the right call, because of Express's error pipeline.** Express 5 calls
+  `next(value)` automatically when a handler's returned promise rejects, so the thrown `Error`
+  travels to the error handler at the bottom of the file and becomes a `500` with the message as
+  the body. In a bigger app you would return `400`; for a teaching host, the important thing is that
+  the failure is *visible and named* — and that no route needed a `try`/`catch` to make it so.
 - `/plan` is a **one-liner**, and that is the payoff of the whole architecture. The lecture's
   flagship request — `GET /plan?hours=4` — needs no logic in the host at all, because the flow
   lives in `planDay()` (Chapter 08), the template lives on the server (Chapter 06), and the
   context lives in Resources (Chapter 04).
-- `url.searchParams.get("hours") ?? "4"` — this is where the URL becomes the Prompt argument.
+- `query(request, "hours") ?? "4"` — this is where the query string becomes the Prompt argument.
   The path is: query string → `getPromptText(…, { availableHours })` → `z.string()` schema →
   template interpolation. **Four layers, one value.**
 - **Neither route mentions `resources/read`, `prompts/get` or `tools/call`.** The host speaks HTTP
   and calls client functions. The protocol stays behind the boundary — which is exactly why you
   could replace the MCP server without touching this file.
 
-### Block 4 — the dispatcher
+### Block 4 — registering the table, the 404, and the error handler
 
 ```ts
-const httpServer = createServer((request, response) => {
-  const url = new URL(request.url ?? "/", `http://127.0.0.1:${hostPort}`);
-  const handler = routes[url.pathname];
+const app: Express = express();
 
-  if (!handler) {
-    response.writeHead(404, { "Content-Type": "text/plain; charset=utf-8" });
-    response.end(`Not found. Try one of:\n${Object.keys(routes).join("\n")}`);
-    return;
-  }
+// The raw Node host sent no `X-Powered-By` header; disabling it keeps the
+// response surface identical after the swap to Express.
+app.disable("x-powered-by");
 
-  handler(url)
-    .then((body) => {
-      response.writeHead(200, { "Content-Type": "text/plain; charset=utf-8" });
-      response.end(body);
-    })
-    .catch((error: Error) => {
-      response.writeHead(500, { "Content-Type": "text/plain; charset=utf-8" });
-      response.end(error.message);
-    });
+/**
+ * Register the table. Every handler returns text or throws: Express 5 forwards
+ * a rejected promise straight to the error handler below, so no route needs a
+ * `try`/`catch` of its own.
+ */
+for (const [path, handler] of Object.entries(routes)) {
+  app.get(path, async (request, response) => {
+    response.type("text/plain").send(await handler(request));
+  });
+}
+
+/** The 404 lists the routes, so a wrong URL tells you the right ones. */
+app.use((_request, response) => {
+  response.status(404).type("text/plain").send(`Not found. Try one of:\n${Object.keys(routes).join("\n")}`);
+});
+
+/** The only other status this host has: 500, with the message as the body. */
+app.use((error: Error, _request: Request, response: Response, _next: NextFunction) => {
+  response.status(500).type("text/plain").send(error.message);
 });
 ```
 
-- `new URL(request.url ?? "/", \`http://127.0.0.1:${hostPort}\`)` — Node gives you only the
-  **path** (`/plan?hours=4`), which is not a valid URL on its own. The second argument supplies
-  the base, so `searchParams` works. This is the standard idiom, and forgetting it is the most
-  common mistake with `node:http`.
-- `routes[url.pathname]` — a **single object lookup** replaces the whole routing chain. `pathname`
-  excludes the query string, so `/plan?hours=4` and `/plan` hit the same entry.
+- **`express()` builds the application**, and `const app: Express = …` annotates it so the file reads
+  like the other lectures' `app.ts` files.
+- `app.disable("x-powered-by")` — Express advertises itself with an `X-Powered-By: Express`
+  response header by default. The previous `node:http` host did not, and changing the framework
+  should not change the bytes on the wire, so the header is turned off. (Lecture 06's `app.ts` does
+  the same, for a security reason rather than a fidelity one.) Check it with
+  `curl -i` — the header should be absent.
+- **`for (const [path, handler] of Object.entries(routes))` registers all six routes**, one line of
+  body each. This is the payoff of Block 2's uniform type: because every entry is
+  `(request) => Promise<string>`, the loop does not care which route it is registering.
+- `response.type("text/plain").send(…)` replaces `writeHead` + `end`. Express appends
+  `charset=utf-8` to a `text/*` type for you, which matters because the output contains em dashes
+  and box-drawing characters from the Resource text — the old `"text/plain; charset=utf-8"` header
+  is reproduced exactly. Confirm with `curl -i`; the `Content-Type` line is identical.
+- `await handler(request)` is the only part that varies per route. A route that returns text is
+  sent; a route that throws rejects the handler's promise, and **Express 5 calls `next(err)` for
+  you** — that is the documented behaviour for handlers that return a promise. Which is why there
+  is no `try`/`catch` anywhere in this file.
 - **The 404 is self-documenting.** `Object.keys(routes).join("\n")` lists every endpoint, so a
-  wrong URL tells you the right ones. Same philosophy as Chapter 03's recovery-instruction error
-  message.
-- `handler(url)` returns a Promise, so the result is handled with `.then` / `.catch` rather than
-  `await`. Node's `createServer` callback is not `async`; using `.then` keeps it honest.
-- `(error: Error)` is an explicit annotation — with `strict` mode, `error` in a `.catch` is
-  `unknown`, and annotating it lets `error.message` type-check.
-- **`"text/plain; charset=utf-8"` on every response**, including errors. The `charset` matters
-  because the output contains em dashes and box-drawing characters from the Resource text.
+  wrong URL tells you the right ones — same philosophy as Chapter 03's recovery-instruction error
+  message. A two-argument `app.use(…)` is an ordinary middleware, so it only runs when no route
+  matched; that is the entire 404 mechanism.
+- **The error handler is the four-argument overload.** Express identifies an error handler by
+  arity, so `(error, _request, response, _next)` is not a style choice — drop the last parameter
+  and Express treats the function as ordinary middleware. The unused parameters are prefixed `_`,
+  the same convention Chapter 08 uses for deliberately-unused values.
+- **`(error: Error)` is an explicit annotation.** Express types an error handler's first argument
+  as `any`; naming it `Error` is what lets `error.message` type-check under `strict`.
 - The two status codes are the whole error model: `404` for an unknown path, `500` for anything a
   handler threw. For a teaching host, that is the right amount.
 
 ### Block 5 — listen and shutdown
 
 ```ts
-httpServer.listen(hostPort, "127.0.0.1", () => {
+const httpServer = app.listen(hostPort, "127.0.0.1", () => {
   console.error(`Task host is running at http://127.0.0.1:${hostPort}`);
   console.error(`Try: http://127.0.0.1:${hostPort}/plan?hours=4`);
 });
@@ -522,6 +591,9 @@ for (const signal of ["SIGINT", "SIGTERM"] as const) {
 }
 ```
 
+- `app.listen(hostPort, "127.0.0.1", …)` **returns the underlying `http.Server`**, which is why the
+  result is still stored in `httpServer`: the shutdown loop below needs a handle to close. Express
+  builds a request pipeline in front of the server; it does not hide it.
 - Same `127.0.0.1` binding and the same `console.error` reasoning as `src/index.ts`.
 - The banner **prints the example request**. For a teaching host that is worth two lines: the
   first thing you see is the thing you came to try.
@@ -743,7 +815,7 @@ You have now read every file. Here is the entire project compressed.
 
 | File | Lines | The one idea |
 |---|---|---|
-| `package.json` | 40 | four scripts: `server`, `host`, `lifecycle`, `typecheck` |
+| `package.json` | 42 | four scripts: `server`, `host`, `lifecycle`, `typecheck` |
 | `tsconfig.json` | 19 | `NodeNext` + `strict` — why imports end in `.js` |
 | `.env` / `.env.example` | 19 | ports, identity, and an **empty** API key so it runs offline |
 | `src/config/config.ts` | 42 | identity, **URI schemes**, ports, `hasModelKey` |
@@ -755,9 +827,9 @@ You have now read every file. Here is the entire project compressed.
 | `src/server/server.ts` | 24 | **three primitives, three owners, one function** |
 | `src/client/client.ts` | 233 | one function per MCP verb; `askModel` is the only model call |
 | `src/index.ts` | 46 | the **transport binding** + the two security validators |
-| `src/routes/index.ts` | 104 | the host; **`GET /plan?hours=4` is a one-liner** |
+| `src/routes/index.ts` | 126 | the Express host; **`GET /plan?hours=4` is a one-liner** |
 
-**Total: 975 lines** across 13 files, and it demonstrates the whole of Lecture 15: three
+**Total: 997 lines** across 13 files, and it demonstrates the whole of Lecture 15: three
 primitives, three owners, resource selection, prompt arguments, and the end-to-end flow.
 
 ### If you remember only five things

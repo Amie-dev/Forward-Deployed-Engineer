@@ -5,8 +5,12 @@
  * division of labour in it: the USER chose the workflow (the Prompt), the
  * APPLICATION chose the context (the Resources), and the MODEL chooses any tool
  * call. Three primitives, three owners, one request.
+ *
+ * The host is plain Express: one route table, one 404 catch-all, one error
+ * handler. Everything protocol-shaped stays behind `../client/client.js` —
+ * this file speaks HTTP and nothing else.
  */
-import { createServer } from "node:http";
+import express, { type Express, type NextFunction, type Request, type Response } from "express";
 
 import { hostPort } from "../config/config.js";
 import {
@@ -25,11 +29,23 @@ const connection = await connect();
 const { client } = connection;
 
 /**
- * The route table. Each entry is one endpoint; the key is the pathname.
- * `URL` gives us the query string for free, which is how `hours` reaches the
- * Prompt argument.
+ * `req.query` values are `string | string[] | ParsedQs`, and every route below
+ * wants a single string — or nothing. This narrows the type in one place, so a
+ * missing (or repeated) parameter becomes `undefined` and the `??` defaults
+ * turn it into a sensible value. **No route can crash on a bad query string.**
  */
-const routes: Record<string, (url: URL) => Promise<string>> = {
+function query(request: Request, key: string): string | undefined {
+  const value = request.query[key];
+
+  return typeof value === "string" ? value : undefined;
+}
+
+/**
+ * The route table. Each entry is one endpoint; the key is the pathname and the
+ * value is a function that turns a request into text. `req.query` is Express's
+ * parsed query string, which is how `hours` reaches the Prompt argument.
+ */
+const routes: Record<string, (request: Request) => Promise<string>> = {
   /* Chapter 03 — discovery of everything the server offers. */
   "/resources": async () => {
     const { resources, resourceTemplates } = await listResources(client);
@@ -41,7 +57,7 @@ const routes: Record<string, (url: URL) => Promise<string>> = {
   },
 
   /* Chapter 03 — consumption: read one Resource by URI. */
-  "/read": async (url) => readResource(client, url.searchParams.get("uri") ?? "task://guidelines"),
+  "/read": async (request) => readResource(client, query(request, "uri") ?? "task://guidelines"),
 
   /* Chapter 06 — what workflows does the server offer? */
   "/prompts": async () =>
@@ -50,14 +66,14 @@ const routes: Record<string, (url: URL) => Promise<string>> = {
       .join("\n"),
 
   /* Chapter 07 §7.3 — fetch the Prompt. No model is called by this route. */
-  "/prompt": async (url) =>
-    getPromptText(client, url.searchParams.get("name") ?? "plan_day", {
-      availableHours: url.searchParams.get("hours") ?? "4",
+  "/prompt": async (request) =>
+    getPromptText(client, query(request, "name") ?? "plan_day", {
+      availableHours: query(request, "hours") ?? "4",
     }),
 
   /* Chapter 05 — the application selects context, then the model answers. */
-  "/ask": async (url) => {
-    const message = url.searchParams.get("message");
+  "/ask": async (request) => {
+    const message = query(request, "message");
 
     if (!message) {
       throw new Error("Query parameter 'message' is required.");
@@ -67,31 +83,37 @@ const routes: Record<string, (url: URL) => Promise<string>> = {
   },
 
   /* Chapter 08 — the lecture's end-to-end request: Prompt → (Resources + Tools) → answer. */
-  "/plan": async (url) => planDay(client, url.searchParams.get("hours") ?? "4"),
+  "/plan": async (request) => planDay(client, query(request, "hours") ?? "4"),
 };
 
-const httpServer = createServer((request, response) => {
-  const url = new URL(request.url ?? "/", `http://127.0.0.1:${hostPort}`);
-  const handler = routes[url.pathname];
+const app: Express = express();
 
-  if (!handler) {
-    response.writeHead(404, { "Content-Type": "text/plain; charset=utf-8" });
-    response.end(`Not found. Try one of:\n${Object.keys(routes).join("\n")}`);
-    return;
-  }
+// The raw Node host sent no `X-Powered-By` header; disabling it keeps the
+// response surface identical after the swap to Express.
+app.disable("x-powered-by");
 
-  handler(url)
-    .then((body) => {
-      response.writeHead(200, { "Content-Type": "text/plain; charset=utf-8" });
-      response.end(body);
-    })
-    .catch((error: Error) => {
-      response.writeHead(500, { "Content-Type": "text/plain; charset=utf-8" });
-      response.end(error.message);
-    });
+/**
+ * Register the table. Every handler returns text or throws: Express 5 forwards
+ * a rejected promise straight to the error handler below, so no route needs a
+ * `try`/`catch` of its own.
+ */
+for (const [path, handler] of Object.entries(routes)) {
+  app.get(path, async (request, response) => {
+    response.type("text/plain").send(await handler(request));
+  });
+}
+
+/** The 404 lists the routes, so a wrong URL tells you the right ones. */
+app.use((_request, response) => {
+  response.status(404).type("text/plain").send(`Not found. Try one of:\n${Object.keys(routes).join("\n")}`);
 });
 
-httpServer.listen(hostPort, "127.0.0.1", () => {
+/** The only other status this host has: 500, with the message as the body. */
+app.use((error: Error, _request: Request, response: Response, _next: NextFunction) => {
+  response.status(500).type("text/plain").send(error.message);
+});
+
+const httpServer = app.listen(hostPort, "127.0.0.1", () => {
   console.error(`Task host is running at http://127.0.0.1:${hostPort}`);
   console.error(`Try: http://127.0.0.1:${hostPort}/plan?hours=4`);
 });

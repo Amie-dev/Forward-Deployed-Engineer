@@ -57,7 +57,7 @@ and Prompt half of the protocol is still visible.
 ```bash
 cd "Lecture 15/code/Basic Code"
 
-npm install        # @modelcontextprotocol/*, zod, dotenv, openai, tsx, typescript
+npm install        # @modelcontextprotocol/*, zod, dotenv, openai, express, tsx, typescript
 
 npm run lifecycle  # ONE command: starts the server, walks the whole lifecycle  ← start here
 npm run typecheck  # tsc --noEmit — type-checks the whole project
