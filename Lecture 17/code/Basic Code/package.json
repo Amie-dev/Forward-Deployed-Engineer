@@ -1,0 +1,39 @@
+{
+  "name": "lecture-17-genai-evals-and-testing",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Lecture 17 — GenAI Evals & Testing. The minimal, runnable code behind the notes: a fixed evaluation dataset, deterministic checks, an LLM-as-a-judge with rubrics, pointwise and pairwise scoring, RAG retrieval and response evaluation with failure attribution, and the offline/online loop that turns production failures into regression tests.",
+  "type": "module",
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "scripts": {
+    "start": "tsx src/index.ts",
+    "dev": "tsx watch src/index.ts",
+    "eval": "tsx src/cli.ts",
+    "typecheck": "tsc --noEmit"
+  },
+  "keywords": [
+    "fde",
+    "evals",
+    "evaluation",
+    "llm-as-a-judge",
+    "rubrics",
+    "rag-evaluation",
+    "regression-testing",
+    "typescript"
+  ],
+  "author": "Forward Deployed Engineering Team",
+  "license": "MIT",
+  "dependencies": {
+    "dotenv": "^16.4.7",
+    "express": "^5.3.0",
+    "openai": "^6.0.0"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.0",
+    "@types/node": "^22.13.8",
+    "tsx": "^4.23.15",
+    "typescript": "^5.9.3"
+  }
+}
